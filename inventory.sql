@@ -14,11 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Dumping database structure for inventory
-CREATE DATABASE IF NOT EXISTS `inventory` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `inventory`;
-
 -- Dumping structure for table inventory.activity_logs
 CREATE TABLE IF NOT EXISTS `activity_logs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -176,6 +171,21 @@ CREATE TABLE IF NOT EXISTS `employees` (
 
 -- Dumping data for table inventory.employees: ~0 rows (approximately)
 
+-- Dumping structure for table inventory.failed_jobs
+CREATE TABLE IF NOT EXISTS `failed_jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table inventory.failed_jobs: ~0 rows (approximately)
+
 -- Dumping structure for table inventory.general_notes
 CREATE TABLE IF NOT EXISTS `general_notes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -240,6 +250,21 @@ CREATE TABLE IF NOT EXISTS `invoice_details` (
 
 -- Dumping data for table inventory.invoice_details: ~0 rows (approximately)
 
+-- Dumping structure for table inventory.migrations
+CREATE TABLE IF NOT EXISTS `migrations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table inventory.migrations: ~4 rows (approximately)
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+	(1, '2014_10_12_000000_create_users_table', 1),
+	(2, '2014_10_12_100000_create_password_reset_tokens_table', 1),
+	(3, '2019_08_19_000000_create_failed_jobs_table', 1),
+	(4, '2019_12_14_000001_create_personal_access_tokens_table', 1);
+
 -- Dumping structure for table inventory.password_resets
 CREATE TABLE IF NOT EXISTS `password_resets` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -249,6 +274,16 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table inventory.password_resets: ~0 rows (approximately)
+
+-- Dumping structure for table inventory.password_reset_tokens
+CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table inventory.password_reset_tokens: ~0 rows (approximately)
 
 -- Dumping structure for table inventory.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -283,11 +318,12 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `abilities` text COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `personal_access_tokens_token_unique` (`token`) USING BTREE,
-  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`) USING BTREE
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table inventory.personal_access_tokens: ~0 rows (approximately)
@@ -310,7 +346,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table inventory.products: ~0 rows (approximately)
 
@@ -389,7 +425,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table inventory.suppliers: ~0 rows (approximately)
 
