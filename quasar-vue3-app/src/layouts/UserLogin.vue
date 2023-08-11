@@ -69,6 +69,7 @@ const metaData = {
 const $q = useQuasar()
 
 export default defineComponent({
+  name: 'UserLogin',
   // mixins: [
   //   createMetaMixin({ helperMixin })
   // ],
