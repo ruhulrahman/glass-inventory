@@ -101,9 +101,9 @@ export default defineComponent({
               //     showConfirmButton: false,
               //     timer: 1500
               // })
-              // console.log('base url', ref.apiUrl(''))
+              console.log('base url', ref.apiUrl(''))
 
-              ref.$router.push('/dashboard')
+              ref.$router.push('/')
 
               // this.$emit('getBankInfos');
               // this.ladderUserListShow = true
