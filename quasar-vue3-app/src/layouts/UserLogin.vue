@@ -2,7 +2,7 @@
   <q-layout>
     <q-page-container>
         <!-- bg-image  -->
-      <q-page class="flex flex-center" style="background: #ddd;">
+      <q-page class="flex flex-center wait_me" style="background: #ddd;">
         <q-card class="" v-bind:style="$q.screen.lt.sm?{'width': '80%'}:{'width':'30%'}">
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
@@ -92,26 +92,17 @@ export default defineComponent({
           let jq = ref.jq();
 
           try {
-              // ref.wait_me(".wait_me_ladder_users");
-              // let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
-              // Swal.fire({
-              //     // position: 'top-end',
-              //     icon: 'success',
-              //     title: res.msg,
-              //     showConfirmButton: false,
-              //     timer: 1500
-              // })
-              console.log('base url', ref.apiUrl(''))
+              ref.wait_me(".wait_me");
+              let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
+              $q.notify({ type: 'positive', message: res.msg })
 
               ref.$router.push('/')
 
-              // this.$emit('getBankInfos');
-              // this.ladderUserListShow = true
-              // this.getLadderUsersData();
           } catch (err) {
               ref.alert(ref.err_msg(err), "error");
+              $q.notify({ type: 'negative', message: ref.err_msg(err) })
           } finally{
-              // ref.wait_me(".wait_me_ladder_users", "hide");
+              ref.wait_me(".wait_me", "hide");
           }
 
           // $q.notify({

@@ -43,8 +43,7 @@
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
           </q-btn>
-          <q-btn round dense flat style="color:red !important;" type="a" href="https://github.com/sponsors/pratik227"
-                 target="_blank">
+          <q-btn to="/login" round dense flat style="color:red !important;">
                  <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
                   Logout
                 </q-tooltip>
