@@ -107,10 +107,11 @@ class AuthController extends Controller
 		->where('user_type', 'admin')
 		->orwhere('user_type', 'system_admin')
 		->orwhere('user_type', 'super_admin')
-		->orwhere([
-			'user_type' => 'user',
-			'manager' => 1,
-		])->first();
+		->orwhere('user_type', 'user')->first();
+		// ->orwhere([
+		// 	'user_type' => 'user',
+		// 	'manager' => 1,
+		// ]);
 
 		$err_txt='Given credentials do not match with our records';
 
