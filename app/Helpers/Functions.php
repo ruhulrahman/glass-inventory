@@ -42,7 +42,6 @@ $helpers=[
 	'tmp_aws_media',
 	'flag_url',
 	'lt_to_utc',
-	'laravel_paginate_array'
 ];
 
 $helper_exists=FALSE;
@@ -864,7 +863,7 @@ else{
 		return $current_local_time;
 	}
 
-	function laravel_paginate_array($total, $per_page, $current_page=NULL, $array_data){
+	function laravel_paginate_array($total, $per_page, $current_page=NULL, $array_data=NULL){
 
 		if(empty($current_page)) $current_page=1;
 
