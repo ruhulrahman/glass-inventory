@@ -3,7 +3,6 @@ import Noty from "noty";
 
 import waitMe from "./waitMe.min.js";
 import moment from "moment";
-// import moment from 'moment-timezone'
 import Hashids from "hashids";
 
 waitMe($);
@@ -21,6 +20,7 @@ var base_url=process.env.VUE_APP_API_URL;
 export default {
     data() {
         return {
+            base_url: 'http://glass-inventory.local',
             pagination: {
                 currentPage: 1,
                 totalRows: 0,
@@ -255,10 +255,10 @@ export default {
         // },
         apiUrl: function (path, base_url = null) {
             if (!base_url) {
-                // base_url = this.base_url;
-                base_url = process.env.BASE_API_URL
+                base_url = this.base_url;
             }
             return `${base_url}/${path}`;
+            // return `${process.env.BASE_API_URL}/${path}`;
         },
         jq: function () {
             return $;

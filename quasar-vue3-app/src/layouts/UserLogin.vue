@@ -56,6 +56,7 @@
 import { useMeta, useQuasar, createMetaMixin } from 'quasar'
 import { ref } from 'vue'
 import helperMixin from '../mixins/helper_mixin.js'
+import {defineComponent} from 'vue'
 // Vue.mixin(helperMixin);
 
 const metaData = {
@@ -67,7 +68,7 @@ const metaData = {
 
 const $q = useQuasar()
 
-export default({
+export default defineComponent({
   // mixins: [
   //   createMetaMixin({ helperMixin })
   // ],
@@ -81,6 +82,7 @@ export default({
     }
   },
   created: function () {
+    console.log('process.env.BASE_API_URL', process.env.BASE_API_URL)
         // this.setup_urls();
   },
   methods: {
