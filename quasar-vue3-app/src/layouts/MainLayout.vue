@@ -10,22 +10,19 @@
           icon="menu"
           aria-label="Menu"
         />
-        <q-toolbar-title>
-          Quasar App
+        <q-toolbar-title class="text-green-14">
+          Welcome to Glass Garden Invetory Software
         </q-toolbar-title>
         <q-space/>
         <div class="q-gutter-sm row items-center no-wrap">
-                    <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
-                           @click="$q.fullscreen.toggle()"
-                           v-if="$q.screen.gt.sm">
-                    </q-btn>
-          <q-btn round dense flat color="white" icon="fab fa-github" type="a"
-                 href="https://github.com/pratik227/quasar-admin" target="_blank">
+          <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+                  @click="$q.fullscreen.toggle()"
+                  v-if="$q.screen.gt.sm">
           </q-btn>
-          <q-btn round dense flat style="color:red !important;" type="a" href="https://github.com/sponsors/pratik227"
+          <!-- <q-btn round dense flat style="color:red !important;" type="a" href="https://github.com/sponsors/pratik227"
                  target="_blank">
             <i class="fa fa-heart fa-2x fa-beat"></i>
-          </q-btn>
+          </q-btn> -->
           <q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               5
@@ -46,6 +43,13 @@
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
           </q-btn>
+          <q-btn round dense flat style="color:red !important;" type="a" href="https://github.com/sponsors/pratik227"
+                 target="_blank">
+                 <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                  Logout
+                </q-tooltip>
+            <i class="fa-solid fa-power-off fa-2x"></i>
+          </q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -57,7 +61,12 @@
       class="bg-primary text-white"
     >
       <q-list>
-        <q-item to="/" active-class="q-item-no-link-highlighting">
+        <q-item active-class="q-item-no-link-highlighting">
+          <q-item-section>
+            <q-item-label class="text-h6 text-green-13">Glass Inventory</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item to="/dashboard" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
           </q-item-section>
@@ -329,7 +338,14 @@ import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
 
 import {defineComponent, ref} from 'vue'
-import {useQuasar} from "quasar";
+import {useQuasar, useMeta} from "quasar";
+
+const metaData = {
+  // sets document title
+  title: 'Dashboard Page',
+  // optional; sets final title as "Login Page - nventory App", useful for multiple level meta
+  titleTemplate: title => `${title} - Inventory App`,
+}
 
 export default defineComponent({
   name: 'MainLayout',
@@ -340,6 +356,7 @@ export default defineComponent({
   },
 
   setup() {
+    useMeta(metaData)
     const leftDrawerOpen = ref(false)
     const $q = useQuasar()
 
