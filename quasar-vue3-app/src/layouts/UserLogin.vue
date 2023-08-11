@@ -54,9 +54,9 @@
 
 <script>
 import { useMeta, useQuasar, createMetaMixin } from 'quasar'
-import { ref } from 'vue'
 import helperMixin from '../mixins/helper_mixin.js'
 import {defineComponent} from 'vue'
+import {ref} from 'vue'
 // Vue.mixin(helperMixin);
 
 const metaData = {
@@ -82,7 +82,7 @@ export default defineComponent({
     }
   },
   created: function () {
-    console.log('process.env.BASE_API_URL', process.env.BASE_API_URL)
+    // console.log('process.env.BASE_API_URL', process.env.BASE_API_URL)
         // this.setup_urls();
   },
   methods: {
@@ -92,14 +92,17 @@ export default defineComponent({
 
           try {
               // ref.wait_me(".wait_me_ladder_users");
-              let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
-              Swal.fire({
-                  // position: 'top-end',
-                  icon: 'success',
-                  title: res.msg,
-                  showConfirmButton: false,
-                  timer: 1500
-              })
+              // let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
+              // Swal.fire({
+              //     // position: 'top-end',
+              //     icon: 'success',
+              //     title: res.msg,
+              //     showConfirmButton: false,
+              //     timer: 1500
+              // })
+              // console.log('base url', ref.apiUrl(''))
+
+              ref.$router.push('/dashboard')
 
               // this.$emit('getBankInfos');
               // this.ladderUserListShow = true

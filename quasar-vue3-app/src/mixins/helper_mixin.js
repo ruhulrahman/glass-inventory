@@ -7,20 +7,20 @@ import Hashids from "hashids";
 
 waitMe($);
 
-/*
-$.ajaxSetup({
-	headers:{
-		'Api-Token': process.env.VUE_APP_API_TOKEN,
-		'Access-Control-Allow-Origin': '*'
-	}
-});
 
-var base_url=process.env.VUE_APP_API_URL;
-*/
+// $.ajaxSetup({
+// 	headers:{
+// 		'Api-Token': process.env.VUE_APP_API_TOKEN,
+// 		'Access-Control-Allow-Origin': '*'
+// 	}
+// });
+
+var base_url=process.env.VUE_APP_BASE_URL;
+
 export default {
     data() {
         return {
-            base_url: 'http://glass-inventory.local',
+            base_url: base_url,
             pagination: {
                 currentPage: 1,
                 totalRows: 0,
