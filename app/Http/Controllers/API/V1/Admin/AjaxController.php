@@ -25,7 +25,14 @@ class AjaxController extends Controller
 				'auth_user' => $auth_user
 			]);
 
-		}else if($name == 'get_department_list_with_pagination'){
+		} else if($name=="get_statuses_with_groups"){
+
+			return res_msg('Statuses and status group list', 200, [
+				'status_groups'=>model('StatusGroup')::with('statuses')->get(),
+				'statuses'=>model('Status')::with('group')->orderBy('serial', 'asc')->get()
+			]);
+
+		} else if($name == 'get_department_list_with_pagination'){
 
             $list = model('Department')::with('parent')->paginate($default_per_page);
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\API\V1\Admin\AuthController;
 Route::post('sign_up', [AuthController::class, 'sign_up'])->name('sign_up');
 Route::post('sign_in', [AuthController::class, 'sign_in'])->name('sign_in');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('verify_email', [AuthController::class, 'verify_email'])->name('verify_email');
 
 //route: api/v1/admin/ajax/
 Route::middleware('auth:sanctum')->group(function(){
