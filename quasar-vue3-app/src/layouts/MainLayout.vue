@@ -73,14 +73,32 @@
             <q-item-label>Dashboard</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
+
+
+        <q-expansion-item
+          icon="settings"
+          label="Configuration"
+        >
+          <q-list class="q-pl-lg">
+            <q-item to="/users" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="person"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>User List</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+        
+        <!-- <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
           </q-item-section>
           <q-item-section>
             <q-item-label>CRM Dashboard</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
         <q-expansion-item
           icon="pages"
           label="Pages"
