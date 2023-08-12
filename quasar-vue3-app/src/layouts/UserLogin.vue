@@ -21,10 +21,10 @@
               <q-input
                 rounded
                 standout="bg-teal text-white"
-                v-model="user.email"
-                label="Email"
+                v-model="user.identity"
+                label="Email/Username"
                 lazy-rules
-                type="email"
+                type="text"
                 :rules="[val => val && val.length > 0 || 'Please enter email']"
                 spellcheck="false"
                 autocapitalize="off"
@@ -57,7 +57,6 @@ import { useMeta, useQuasar, createMetaMixin } from 'quasar'
 import helperMixin from '../mixins/helper_mixin.js'
 import {defineComponent} from 'vue'
 import {ref} from 'vue'
-// Vue.mixin(helperMixin);
 
 const metaData = {
   // sets document title
@@ -66,7 +65,6 @@ const metaData = {
   titleTemplate: title => `${title} - Inventory App`,
 }
 
-const $q = useQuasar()
 
 export default defineComponent({
   name: 'UserLogin',
@@ -77,8 +75,8 @@ export default defineComponent({
   data(){
     return{
         user: {
-          email: null,
-          password: null
+          identity: '',
+          password: ''
         }
     }
   },
@@ -87,40 +85,27 @@ export default defineComponent({
         // this.setup_urls();
   },
   methods: {
-    async submitData (){
-          let ref = this;
-          let jq = ref.jq();
+    submitData: async function  (){
+        let ref = this;
+        let jq = ref.jq();
 
-          try {
-              ref.wait_me(".wait_me");
-              let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
-              $q.notify({ type: 'positive', message: res.msg })
+        try {
+            ref.wait_me(".wait_me");
+            let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
+            this.notify(res.msg)
 
-              ref.$router.push('/')
+            ref.$router.push('/')
 
-          } catch (err) {
-              ref.alert(ref.err_msg(err), "error");
-              $q.notify({ type: 'negative', message: ref.err_msg(err) })
-          } finally{
-              ref.wait_me(".wait_me", "hide");
-          }
-
-          // $q.notify({
-          //     type: 'positive',
-          //     message: 'Login has been successfull.'
-          //   })
-          //   this.$router.push('/dashboard')
-          // } else {
-          //   $q.notify({
-          //     type: 'negative',
-          //     message: 'This is a "negative" type notification.'
-          //   })
-          // }
-      }
+        } catch (err) {
+            this.notify(this.err_msg(err), 'negative')
+            // $q.notify({ type: 'negative', message: ref.err_msg(err) })
+        } finally{
+            ref.wait_me(".wait_me", "hide");
+        }
+    }
   },
   setup () {
     useMeta(metaData)
-
     // const email = ref(null)
     // const password = ref(null)
 

@@ -5,6 +5,8 @@ import waitMe from "./waitMe.min.js";
 import moment from "moment";
 import Hashids from "hashids";
 
+import { Notify } from 'quasar'
+
 waitMe($);
 
 
@@ -262,6 +264,30 @@ export default {
         },
         jq: function () {
             return $;
+        },
+        notify: function (msg = "No message specified", responseColor = "positive", position = '', icon = '') {
+          let responsePosition = ''
+          let responseIcon = ''
+          if (position) {
+            responsePosition= position
+          } else {
+            if (responseColor == 'positive') {
+              responsePosition="top-right"
+            } else {
+              responsePosition="bottom"
+            }
+          }
+          if (icon) {
+            responseicon= position
+          } else {
+            if (responseColor == 'positive') {
+              responseIcon="check_circle"
+            } else {
+              responseIcon="warning"
+            }
+          }
+
+          Notify.create({ color: responseColor, message: msg, position: responsePosition, icon: responseIcon })
         },
         alert: function (
             msg = "No message specified",

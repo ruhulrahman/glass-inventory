@@ -43,12 +43,12 @@
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
           </q-btn>
-          <q-btn to="/login" round dense flat style="color:red !important;">
-                 <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
-                  Logout
-                </q-tooltip>
-            <i class="fa-solid fa-power-off fa-2x"></i>
-          </q-btn>
+            <router-link to="/logout" round dense flat style="color:red !important;">
+              <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                Logout
+              </q-tooltip>
+              <i class="fa-solid fa-power-off fa-2x"></i>
+            </router-link>
         </div>
       </q-toolbar>
     </q-header>
@@ -335,13 +335,13 @@
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
+import helperMixin from '../mixins/helper_mixin.js'
 
 import {defineComponent, ref} from 'vue'
 import {useQuasar, useMeta} from "quasar";
 
+
 const metaData = {
-  // sets document title
-  title: 'Dashboard Page',
   // optional; sets final title as "Login Page - nventory App", useful for multiple level meta
   titleTemplate: title => `${title} - Inventory App`,
 }
@@ -353,7 +353,7 @@ export default defineComponent({
     EssentialLink,
     Messages
   },
-
+  mixins: [helperMixin],
   setup() {
     useMeta(metaData)
     const leftDrawerOpen = ref(false)
