@@ -31,6 +31,18 @@ export default route(function (/* { store, ssrContext } */) {
     history: createWebHashHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  Router.beforeEach((to, from, next) => {
+    var api_token=localStorage.getItem('api_token');
+
+    if (to.matched.some(record => record.meta.requiresAuth) && !api_token) {
+      sessionStorage.setItem('redirectPath', to.path);
+      next('/login')
+      // next({ name: 'account-signin', query: { next: to.fullPath } })
+    } else {
+      next()
+    }
+  })
+
   return Router
 })
 
