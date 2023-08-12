@@ -113,11 +113,13 @@ class AuthController extends Controller
 		// 	'manager' => 1,
 		// ]);
 
+		
 		$err_txt='Given credentials do not match with our records';
-
+		
 		if(empty($auth_user)) return res_msg($err_txt, 422); //unauthorised http status code 422;
-
+		
 		if(Hash::check($req->password, $auth_user->password)){
+			// return $auth_user;
 
 			// $auth_user->update([
 			// 	'last_timezone'=>$req->timezone

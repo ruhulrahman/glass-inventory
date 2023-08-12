@@ -88,7 +88,7 @@
           label="Configuration"
         >
           <q-list class="q-pl-lg">
-            <q-item to="/users" active-class="q-item-no-link-highlighting">
+            <q-item to="/user-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="person"/>
               </q-item-section>
@@ -96,6 +96,43 @@
                 <q-item-label>User List</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item to="/company-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="home"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Company List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/department-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="business_center"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Department List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/designation-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="business_center"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Designation List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/company-bank-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="business_center"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Bank List</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
         </q-expansion-item>
         

@@ -17,6 +17,8 @@ class AjaxController extends Controller
 		$default_per_page = 10;
 		$carbon = new Carbon();
 
+		return 'ok';
+
         if($name == 'get_auth_user'){
 
             $auth_user = model('User')::find($user->id);

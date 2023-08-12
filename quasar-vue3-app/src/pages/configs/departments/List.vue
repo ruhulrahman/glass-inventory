@@ -2,7 +2,7 @@
   <q-card class="no-shadow" bordered>
     <q-card-section>
       <div class="row">
-        <div class="text-h6 col-10 text-grey-8">User List</div>
+        <div class="text-h6 col-10 text-grey-8">Department List</div>
         <div class="col-2 text-right">
           <q-btn
             flat
@@ -11,15 +11,15 @@
             style="text-transform: capitalize; padding: 0px 10px 0 19px"
             @click="
               () => {
-                $refs.user_modal.show();
+                $refs.department_modal.show();
               }
             "
           >
             <q-icon
-              name="person"
+              name="home"
               style="margin-left: -13px !important"
             ></q-icon>
-            Create New User
+            Create Department
           </q-btn>
         </div>
       </div>
@@ -65,12 +65,12 @@
       </q-table>
     </q-card-section>
 
-    <q-dialog position="right" ref="user_modal">
-      <create-user
-        :title="'Create User'"
+    <q-dialog position="right" ref="department_modal">
+      <create-department
+        :title="'Create Department'"
         @closeModal="
           () => {
-            $refs.user_modal.hide();
+            $refs.department_modal.hide();
           }
         "
       />
@@ -83,37 +83,35 @@ import { useMeta } from 'quasar'
 import helperMixin from '../../../mixins/helper_mixin.js'
 import {ref} from 'vue'
 const metaData = {
-  title: 'User List',
+  title: 'Department List',
   titleTemplate: title => `${title} - Inventory App`,
 }
-import createUser from "./CreateUser.vue";
+import createDepartment from "./Create.vue";
 const data = [
   {
     name: "Frozen Yogurt",
-    username: 159,
-    email: 6.0,
-    photo: 24,
+    company_name: "Company Name",
+    status: "Active"
   },
 ];
 const columns = [
   {
     name: "name",
     required: true,
-    label: "Name",
+    label: "Department Name",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
   {
-    name: "username",
+    name: "company_name",
     align: "center",
-    label: "Username",
-    field: "username",
+    label: "Company Name",
+    field: "company_name",
     sortable: true,
   },
-  { name: "email", label: "Email", field: "email", sortable: true },
-  { name: "photo", label: "Photo", field: "photo" },
+  { name: "status", label: "Status", field: "status", sortable: true },
   {
     name: "Action",
     label: "Action",
@@ -124,10 +122,10 @@ const columns = [
 ];
 
 export default({
-  name: "UserList",
+  name: "DepartmentList",
   mixins: [helperMixin],
   components: {
-    createUser,
+    createDepartment,
   },
   setup() {
     useMeta(metaData);
@@ -146,7 +144,7 @@ export default({
     };
   },
   mounted(){
-     this.getUsers();
+    //  this.getUsers();
   },
   methods:{
     getUsers:async function(){
@@ -155,9 +153,9 @@ export default({
         ref.wait_me(".user-list");
 
         try {
-            let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list'));
+            // let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list'));
             // this.notify(res.msg)
-            console.log(res.data);
+            // console.log(res.data);
             // localStorage.setItem('api_token', res.data.api_token);
 
             // this.$router.replace(sessionStorage.getItem('redirectPath') || '/')
