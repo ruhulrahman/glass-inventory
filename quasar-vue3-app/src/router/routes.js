@@ -2,10 +2,12 @@ const routes = [
   {
     path: '/login',
     component: () => import('layouts/UserLogin.vue'),
+    meta: { requiresAuth : false },
   },
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: { requiresAuth : true },
     children: [
       {path: '', component: () => import('pages/Dashboard.vue')},
       {path: '/logout', component: () => import('pages/Logout.vue')},
@@ -26,6 +28,7 @@ const routes = [
       {path: '/Directory', component: () => import('pages/Directory.vue')},
       {path: '/Footer', component: () => import('pages/Footer.vue')},
       {path: '/CardHeader', component: () => import('pages/CardHeader.vue')},
+      {path: '/product-category', component: () => import('pages/Category.vue')},
 
       // Not completed yet
       // {path: '/Taskboard', component: () => import('pages/TaskBoard.vue')},
@@ -40,27 +43,33 @@ const routes = [
   },
   {
     path: '/Mail',
-    component: () => import('layouts/Mail.vue')
+    component: () => import('layouts/Mail.vue'),
+    meta: { requiresAuth : true },
   },
   {
     path: '/Maintenance',
-    component: () => import('pages/Maintenance.vue')
+    component: () => import('pages/Maintenance.vue'),
+    meta: { requiresAuth : true },
   },
   {
     path: '/Pricing',
-    component: () => import('pages/Pricing.vue')
+    component: () => import('pages/Pricing.vue'),
+    meta: { requiresAuth : true },
   },
   {
     path: '/Login-1',
-    component: () => import('pages/Login-1.vue')
+    component: () => import('pages/Login-1.vue'),
+    meta: { requiresAuth : true },
   },
   {
     path: '/Lock',
-    component: () => import('pages/LockScreen.vue')
+    component: () => import('pages/LockScreen.vue'),
+    meta: { requiresAuth : false },
   },
   {
     path: '/Lock-2',
-    component: () => import('pages/LockScreen-2.vue')
+    component: () => import('pages/LockScreen-2.vue'),
+    meta: { requiresAuth : false },
   }
 ]
 

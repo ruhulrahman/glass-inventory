@@ -25,7 +25,7 @@
                 label="Email/Username"
                 lazy-rules
                 type="text"
-                :rules="[val => val && val.length > 0 || 'Please enter email']"
+                :rules="[val => val && val.length > 0 || 'Please enter email/username']"
                 spellcheck="false"
                 autocapitalize="off"
                 autocorrect="off"
@@ -68,9 +68,6 @@ const metaData = {
 
 export default defineComponent({
   name: 'UserLogin',
-  // mixins: [
-  //   createMetaMixin({ helperMixin })
-  // ],
   mixins: [helperMixin],
   data(){
     return{
@@ -81,8 +78,11 @@ export default defineComponent({
     }
   },
   created: function () {
-    // console.log('process.env.BASE_API_URL', process.env.BASE_API_URL)
-        // this.setup_urls();
+    var api_token = localStorage.getItem('api_token');
+
+    if(api_token){
+      this.$router.replace('/');
+    }
   },
   methods: {
     submitData: async function  (){
@@ -94,7 +94,12 @@ export default defineComponent({
             let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
             this.notify(res.msg)
 
-            ref.$router.push('/')
+            localStorage.setItem('api_token', res.data.api_token);
+
+            this.$router.replace(sessionStorage.getItem('redirectPath') || '/')
+            sessionStorage.removeItem('redirectPath')
+
+            // ref.$router.push('/')
 
         } catch (err) {
             this.notify(this.err_msg(err), 'negative')

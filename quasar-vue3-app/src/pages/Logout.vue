@@ -33,7 +33,7 @@ export default defineComponent({
         try {
             let res = await jq.post(ref.apiUrl('api/v1/admin/logout'));
             this.notify(res.msg)
-
+            localStorage.removeItem('api_token');
             ref.$router.push('/login')
 
         } catch (err) {

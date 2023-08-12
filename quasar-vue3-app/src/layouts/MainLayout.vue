@@ -65,6 +65,14 @@
             <q-item-label class="text-h6 text-green-13">Glass Inventory</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item to="/product-category" active-class="q-item-no-link-highlighting">
+          <q-item-section avatar>
+            <q-icon name="category"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Category</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item to="/dashboard" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
