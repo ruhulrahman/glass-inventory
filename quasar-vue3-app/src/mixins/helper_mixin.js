@@ -23,6 +23,11 @@ export default {
     data() {
         return {
             base_url: base_url,
+            initialPagination: {
+              // page: 5,
+              rowsPerPage: 20,
+              // rowsNumber: 0 //if getting data from a server
+            },
             pagination: {
                 currentPage: 1,
                 totalRows: 0,

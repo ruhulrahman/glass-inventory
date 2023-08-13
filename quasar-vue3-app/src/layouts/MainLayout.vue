@@ -99,7 +99,7 @@
 
             <q-item to="/company-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="home"/>
+                <q-icon name="business"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label>Company List</q-item-label>
@@ -108,7 +108,7 @@
 
             <q-item to="/department-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="business_center"/>
+                <q-icon name="apartment"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label>Department List</q-item-label>
@@ -126,7 +126,7 @@
 
             <q-item to="/company-bank-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="business_center"/>
+                <q-icon name="account_balance"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label>Bank List</q-item-label>
@@ -135,7 +135,7 @@
 
           </q-list>
         </q-expansion-item>
-        
+
         <!-- <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -398,7 +398,7 @@
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
-import helperMixin from '../mixins/helper_mixin.js'
+import helperMixin from 'src/mixins/helper_mixin.js'
 
 import {defineComponent, ref} from 'vue'
 import {useQuasar, useMeta} from "quasar";
@@ -429,7 +429,40 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
-  }
+  },
+  created () {
+
+    let api_token=localStorage.getItem('api_token');
+
+    if(api_token){
+
+      // this.$store.commit('setApiToken', api_token);
+      this.ajax_setup();
+      // this.getAuthUserInfo();
+
+    }
+  },
+  mounted: async function(){
+
+    // this.getCommonDropdownList();
+
+
+  },
+  methods: {
+    getCommonDropdownList: async function () {
+
+      let ref = this;
+      let url = `${this.base_url}/api/v1/get_common_dropdown_list`;
+      let jq = ref.jq();
+
+      try {
+          let res = await jq.get(url);
+          this.$store.commit('setDropdowns', res.data);
+      } catch (error) {
+          this.alert(ref.err_msg(error), 'error')
+      }
+    },
+  },
 })
 </script>
 

@@ -15,7 +15,7 @@
 
 <script>
 import {defineComponent} from 'vue'
-import helperMixin from '../mixins/helper_mixin.js'
+import helperMixin from 'src/mixins/helper_mixin.js'
 
 export default defineComponent({
   name: 'Logout',

@@ -17,8 +17,6 @@ class AjaxController extends Controller
 		$default_per_page = 10;
 		$carbon = new Carbon();
 
-		return 'ok';
-
         if($name == 'get_auth_user'){
 
             $auth_user = model('User')::find($user->id);
@@ -45,6 +43,11 @@ class AjaxController extends Controller
 		} else if($name == 'get_department_list'){
 
             $list = model('Department')::with('parent')->get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -132,7 +135,6 @@ class AjaxController extends Controller
 
 			$validator= Validator::make($req->all(), [
 				'name'=>'required',
-				'vat_group_id'=>'required',
 			]);
 
 			if($validator->fails()){
@@ -140,12 +142,14 @@ class AjaxController extends Controller
 				return response(['msg'=>$errors[0]], 422);
 			}
 
+            info($req->all());
+
 			model('Department')::create([
 				'company_id' => $user->company_id,
 				'name' => $req->name,
 				'parent_id' => $req->parent_id,
 				'creator_id' => $user->id,
-				'active' => 1,
+				'active' => $req->active == 'true' ? 1 : 0,
 				'created_at' => Carbon::now(),
 			]);
 
@@ -155,7 +159,6 @@ class AjaxController extends Controller
 
 			$validator= Validator::make($req->all(), [
 				'name'=>'required',
-				'vat_group_id'=>'required',
 			]);
 
 			if($validator->fails()){
@@ -169,7 +172,7 @@ class AjaxController extends Controller
 				'name' => $req->name,
 				'parent_id' => $req->parent_id,
 				'editor_id' => $user->id,
-				'active' => $req->active,
+				'active' => $req->active == 'true' ? 1 : 0,
 				'created_at' => Carbon::now(),
 			]);
 

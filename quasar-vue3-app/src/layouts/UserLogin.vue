@@ -54,7 +54,7 @@
 
 <script>
 import { useMeta, useQuasar, createMetaMixin } from 'quasar'
-import helperMixin from '../mixins/helper_mixin.js'
+import helperMixin from 'src/mixins/helper_mixin.js'
 import {defineComponent} from 'vue'
 import {ref} from 'vue'
 
@@ -99,11 +99,8 @@ export default defineComponent({
             this.$router.replace(sessionStorage.getItem('redirectPath') || '/')
             sessionStorage.removeItem('redirectPath')
 
-            // ref.$router.push('/')
-
         } catch (err) {
             this.notify(this.err_msg(err), 'negative')
-            // $q.notify({ type: 'negative', message: ref.err_msg(err) })
         } finally{
             ref.wait_me(".wait_me", "hide");
         }

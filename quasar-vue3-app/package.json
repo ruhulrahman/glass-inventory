@@ -24,6 +24,7 @@
     "noty": "^3.2.0-beta-deprecated",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
+    "sweetalert2": "^11.7.22",
     "vue": "^3.0.0",
     "vue-echarts": "^6.5.4",
     "vue-i18n": "^9.0.0",

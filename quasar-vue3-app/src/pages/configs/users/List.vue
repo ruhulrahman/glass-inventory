@@ -172,8 +172,8 @@ export default({
             ref.wait_me(".user-list", "hide");
         }
     }
-  
-    
+
+
   }
 });
 </script>
