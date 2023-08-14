@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ department.id ? 'Update' : 'Add New' }} Departmetnt</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ department.id ? 'Update' : 'Add New' }} Department</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"

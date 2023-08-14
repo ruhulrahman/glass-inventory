@@ -224,7 +224,7 @@ export default ({
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_department_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_designation_data'), item);
         this.notify(res.msg)
         this.getListData()
 
