@@ -6,9 +6,9 @@
           <div class="text-h6 col-10 text-grey-8">Department List</div>
           <div class="col-2 text-right">
             <q-btn flat color="white" class="bg-green-7 d-block"
-              style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="showModal = true">
+              style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Create Department
+              Add New Department
             </q-btn>
           </div>
         </div>
@@ -70,9 +70,9 @@
 
     </q-card>
 
-    <q-dialog v-model="showModal" position="right">
+    <q-dialog v-model="showAddNewDialog" position="right">
       <create-department ref="department_modal" :title="'Create Department'" :departments="listData" :editItem="editItem"
-        @reloadtListData="getListData" @closeModal="showModal = false" />
+        @reloadtListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -146,7 +146,7 @@ export default ({
   data() {
     return {
       opened: false,
-      showModal: false,
+      showAddNewDialog: false,
       loading: false,
       listData: [],
       editItem: '',
@@ -172,6 +172,10 @@ export default ({
     this.getListData();
   },
   methods: {
+    openAddNewDialog: function() {
+      this.editItem = ''
+      this.showAddNewDialog = true
+    },
     getListData: async function () {
       let ref = this;
       let jq = ref.jq();
@@ -188,7 +192,7 @@ export default ({
     },
     editData: async function (item) {
       this.editItem = this.clone_object(item)
-      this.showModal = true
+      this.showAddNewDialog = true
     },
     deleteData: async function (item) {
       Dialog.create({

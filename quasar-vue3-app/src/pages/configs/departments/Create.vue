@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ title }}</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ department.id ? 'Update' : 'Add New' }} Departmetnt</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -47,7 +47,7 @@
         </q-list>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn @click="saveData" class="text-capitalize bg-white q-mr-md q-mb-md text-primary">Save</q-btn>
+        <q-btn type="submit" class="text-capitalize bg-white q-mr-md q-mb-md text-primary">Save</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>
