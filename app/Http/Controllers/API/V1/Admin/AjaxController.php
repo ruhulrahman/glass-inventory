@@ -53,6 +53,19 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
+		} else if($name == 'get_designation_list'){
+
+            $list = model('Designation')::with('department')->get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
 		} else if($name == 'get_supplier_list_with_pagination'){
 
             $list = model('Supplier')::paginate($default_per_page);
@@ -142,8 +155,6 @@ class AjaxController extends Controller
 				return response(['msg'=>$errors[0]], 422);
 			}
 
-            info($req->all());
-
 			model('Department')::create([
 				'company_id' => $user->company_id,
 				'name' => $req->name,
@@ -196,6 +207,75 @@ class AjaxController extends Controller
 			}
 
 			return res_msg('Department active status updated successfully!', 200);
+
+		} else if($name == 'store_designation_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+				'department_id'=>'required',
+			],[
+                'department_id.required'=>'Department filed is required',
+            ]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			model('Designation')::create([
+				'company_id' => $user->company_id,
+				'name' => $req->name,
+				'department_id' => $req->department_id,
+				'ranking_number' => $req->ranking_number,
+				'creator_id' => $user->id,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'created_at' => Carbon::now(),
+			]);
+
+			return res_msg('Designation inserted successfully!', 200);
+
+		} else if($name == 'update_designation_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			$Designation = model('Designation')::find($req->id);
+
+			$Designation->update([
+				'name' => $req->name,
+				'department_id' => $req->department_id,
+				'ranking_number' => $req->ranking_number,
+				'editor_id' => $user->id,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'updated_at' => Carbon::now(),
+			]);
+
+			return res_msg('Designation updated successfully!', 200);
+
+		} else if($name == 'delete_designation_data'){
+
+			$Designation = model('Designation')::find($req->id);
+
+			$Designation->delete();
+
+			return res_msg('Designation deleted successfully!', 200);
+
+		} else if($name == 'designation_active_status_change'){
+
+			$Designation = model('Designation')::find($req->id);
+
+			if ($Designation) {
+				$Designation->active = !$Designation->active;
+				$Designation->save();
+			}
+
+			return res_msg('Designation active status updated successfully!', 200);
 
 		} else if($name == 'store_supplier_data'){
 

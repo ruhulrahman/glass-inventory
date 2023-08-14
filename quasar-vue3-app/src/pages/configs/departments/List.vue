@@ -71,7 +71,7 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <create-department ref="department_modal" :title="'Create Department'" :departments="listData" :editItem="editItem"
+      <add-or-update ref="department_modal" :title="'Create Department'" :departments="listData" :editItem="editItem"
         @reloadtListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
@@ -83,21 +83,9 @@ import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
-import createDepartment from "./Create.vue";
-// ES6 Modules or TypeScript
-import Swal from 'sweetalert2'
-
+import AddOrUpdate from "./AddOrUpdate.vue";
 
 const metaData = { title: 'Department List' }
-
-
-const data = [
-  {
-    name: "Frozen Yogurt",
-    company_name: "Company Name",
-    status: "Active"
-  },
-];
 
 const columns = [
   {
@@ -130,7 +118,7 @@ export default ({
   name: "DepartmentList",
   mixins: [helperMixin],
   components: {
-    createDepartment,
+    AddOrUpdate,
   },
   setup() {
     useMeta(metaData);
@@ -139,7 +127,6 @@ export default ({
     return {
       filter: ref(""),
       show_filter,
-      data,
       columns,
     };
   },
