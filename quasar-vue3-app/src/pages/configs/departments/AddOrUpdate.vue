@@ -47,7 +47,7 @@
         </q-list>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn type="submit" class="text-capitalize bg-white q-mr-md q-mb-md text-primary">Save</q-btn>
+        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>

@@ -1,11 +1,21 @@
 <template>
   <q-page class="q-pa-sm">
+
+    <q-breadcrumbs class="text-grey q-mb-sm q-mt-sm" active-color="green">
+      <template v-slot:separator>
+        <q-icon size="1.2em" name="arrow_forward" color="green" />
+      </template>
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
+      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Designation" />
+    </q-breadcrumbs>
+
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
           <div class="text-h6 col-10 text-grey-8">Designation List</div>
           <div class="col-2 text-right">
-            <q-btn flat color="white" class="bg-green-7 d-block"
+            <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
               Add New Designation
