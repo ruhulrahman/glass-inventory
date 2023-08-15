@@ -383,7 +383,7 @@ export default {
             } else {
                 jq(selector).waitMe({
                     effect: "facebook",
-                    //color: '#000',
+                    // color: 'grey',
                     text: "Please! Wait ...",
                 });
             }

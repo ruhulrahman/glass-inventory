@@ -1,103 +1,120 @@
 <template>
-  <q-card class="no-shadow" bordered>
-    <q-card-section>
-      <div class="row">
-        <div class="text-h6 col-10 text-grey-8">Company List</div>
-        <div class="col-2 text-right">
-          <q-btn
-            flat
-            color="white"
-            class="bg-blue d-block"
-            style="text-transform: capitalize; padding: 0px 10px 0 19px"
-            @click="
-              () => {
-                $refs.company_modal.show();
-              }
-            "
-          >
-            <q-icon
-              name="home"
-              style="margin-left: -13px !important"
-            ></q-icon>
-            Create Company
-          </q-btn>
+  <q-page class="q-pa-sm">
+    <q-breadcrumbs class="text-grey q-mb-sm q-mt-sm" active-color="green">
+      <template v-slot:separator>
+        <q-icon size="1.2em" name="arrow_forward" color="green" />
+      </template>
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
+      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Company" />
+    </q-breadcrumbs>
+    <q-card class="no-shadow" bordered>
+      <q-card-section>
+        <div class="row">
+          <div class="text-h6 col-10 text-grey-8">Company List</div>
+          <div class="col-2 text-right">
+            <q-btn glossy flat color="white" class="bg-green-7 d-block"
+              style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
+              <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
+              Add New Company
+            </q-btn>
+          </div>
         </div>
-      </div>
-    </q-card-section>
-    <q-separator></q-separator>
-    <q-card-section class="q-pa-none">
-      <q-table
-        square
-        class="no-shadow user-list"
-        :rows="data"
-        :columns="columns"
-        row-key="name"
-        :filter="filter"
-      >
-        <template v-slot:top-right>
-          <q-input
-            v-if="show_filter"
-            filled
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="Search"
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+      </q-card-section>
+      <q-separator></q-separator>
+      <q-card-section class="q-pa-none">
+        <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
+        <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
+          row-key="name" no-data-label=" I didn't find anything for you"
+          :loading="loading"
+          :pagination="initialPagination"
+          :filter="filter">
+          <template v-slot:top-right>
+            <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
 
-          <q-btn
-            class="q-ml-sm"
-            icon="filter_list"
-            @click="show_filter = !show_filter"
-            flat
-          />
-        </template>
-        <template v-slot:body-cell-Action="props">
-          <q-td :props="props">
-            <q-btn icon="edit" size="sm" flat dense />
-            <q-btn icon="delete" size="sm" class="q-ml-sm" flat dense />
-          </q-td>
-        </template>
-      </q-table>
-    </q-card-section>
-
-    <q-dialog ref="company_modal">
-      <create-company
-        :title="'Create Company'"
-        @closeModal="
-          () => {
-            $refs.company_modal.hide();
-          }
-        "
-      />
-    </q-dialog>
-  </q-card>
+            <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
+          </template>
+          <template v-slot:no-data="{ icon, message, filter }">
+            <div class="full-width row flex-center text-red q-gutter-sm">
+              <q-icon size="2em" name="sentiment_dissatisfied" />
+              <span>
+                Well this is sad... {{ message }}
+              </span>
+              <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+            </div>
+          </template>
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-blue-grey-2 text-primary">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="sl" :props="props">
+                {{ props.row.sl }}
+              </q-td>
+              <q-td key="name" :props="props">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="title" :props="props">
+                {{ props.row.title }}
+              </q-td>
+              <q-td key="address" :props="props">
+                {{ props.row.address }}
+              </q-td>
+              <q-td key="logo" :props="props">
+                  <img v-if="props.row.logo != 'NA'" style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/logo/'+props.row.logo)">
+                  <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+              </q-td>
+              <q-td key="total_emp" :props="props">
+                  {{ props.row.total_emp }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
+                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+      <q-dialog v-model="showAddNewDialog" position="right">
+        <create-company
+          :title="editItem.id ? 'Update Company' : 'Create Company'"
+          :companies="companies" :editItem="editItem"
+          @reloadtListData="getListData" @closeModal="showAddNewDialog = false" 
+        />
+      </q-dialog>
+  </q-page>
 </template>
 
 <script>
-import { useMeta } from 'quasar'
-import helperMixin from '../../../mixins/helper_mixin.js'
-import {ref} from 'vue'
+import { useMeta, Dialog } from "quasar";
+import helperMixin from "../../../mixins/helper_mixin.js";
+import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
+import { ref } from "vue";
 const metaData = {
-  title: 'Company List',
-  titleTemplate: title => `${title} - Inventory App`,
-}
-import createCompany from "./CreateCompany.vue";
-const data = [
-  {
-    name: "Frozen Yogurt",
-    title: "Company Title",
-    address: "Address",
-    email: "email",
-    logo: "logo",
-    total_emp: 10
-  },
-];
+  title: "Company List",
+  titleTemplate: (title) => `${title} - Inventory App`,
+};
+import createCompany from "./AddOrUpdate.vue";
+
 const columns = [
+    {
+    name: "sl",
+    required: true,
+    label: "#SL",
+    align: "left",
+    field: (row) => row.sl,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
   {
     name: "name",
     required: true,
@@ -109,24 +126,24 @@ const columns = [
   },
   {
     name: "title",
+    required: true,
     align: "center",
     label: "Title",
-    field: "title",
-    sortable: true,
+    field: "title"
   },
-  { name: "address", label: "Address", field: "address", sortable: true },
-  { name: "logo", label: "logo", field: "logo" },
+  { name: "address", label: "Address", field: "address"},
+  { name: "logo", label: "Logo", field: "logo" },
   { name: "total_emp", label: "Total Employee", field: "total_emp" },
   {
-    name: "Action",
+    name: "action",
     label: "Action",
-    field: "Action",
+    field: "action",
     sortable: false,
     align: "center",
   },
 ];
 
-export default({
+export default {
   name: "CompanyList",
   mixins: [helperMixin],
   components: {
@@ -139,48 +156,125 @@ export default({
     return {
       filter: ref(""),
       show_filter,
-      data,
       columns,
     };
   },
   data() {
     return {
       opened: false,
+      showAddNewDialog: false,
+      loading: false,
+      departments: [],
+      listData: [],
+      editItem: '',
     };
   },
-  mounted(){
-    //  this.getUsers();
-  },
-  methods:{
-    getUsers:async function(){
-        let ref = this;
-        let jq = ref.jq();
-        ref.wait_me(".user-list");
-
-        try {
-            // let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list'));
-            // this.notify(res.msg)
-            // console.log(res.data);
-            // localStorage.setItem('api_token', res.data.api_token);
-
-            // this.$router.replace(sessionStorage.getItem('redirectPath') || '/')
-            // sessionStorage.removeItem('redirectPath')
-
-            // ref.$router.push('/')
-
-        } catch (err) {
-            this.notify(this.err_msg(err), 'negative')
-            // $q.notify({ type: 'negative', message: ref.err_msg(err) })
-        } finally{
-            ref.wait_me(".user-list", "hide");
-        }
+  computed: {
+    tableRow: function () {
+      if (this.listData.length) {
+        return this.listData.map((item, i) => {
+          item.sl = i+1
+          item.name = item.name
+          item.title = item.title
+          item.address = item.address
+          item.logo = item.logo ? item.logo : 'NA'
+          item.total_emp = item.number_of_employees
+          return Object.assign(item)
+        })
+      } else {
+        return []
+      }
     }
-  
-    
-  }
-});
+  },
+  mounted() {
+    this.getListData();
+    // this.getCompanytList();
+  },
+  methods: {
+    openAddNewDialog: function() {
+      this.editItem = ''
+      this.showAddNewDialog = true
+    },
+    getListData: async function () {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_company_list'));
+        this.listData = res.data.data
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
+    getCompanyList: async function () {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_company_list'));
+        this.companies = res.data.data
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      }
+    },
+    editData: async function (item) {
+      this.editItem = this.clone_object(item)
+      this.showAddNewDialog = true
+    },
+    deleteData: async function (item) {
+      Dialog.create({
+        componentProps: {
+          title: 'something',
+          message: 'something',
+          // position: 'standard',
+        },
+        component: DialogConfirmationComponent,
+      }).onOk(() => {
+        this.deleteDataConfirmed(item)
+      })
+    },
+    deleteDataConfirmed: async function (item) {
+      let ref = this;
+      let jq = ref.jq();
+      ref.wait_me(".wait_me");
+
+      try {
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_company_data'), item);
+        this.notify(res.msg)
+        this.getListData()
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        ref.wait_me(".wait_me", "hide");
+      }
+    }
+  },
+};
 </script>
 
 <style scoped>
+.swal2-confirm {
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    background-color: #28a745 !important;
+    color: #fff;
+    font-size: 1em;
+    padding: 6px 21px !important;
+}
+.swal2-cancel {
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    /* background-color: #dc3741; */
+    background-color: rgb(244 67 54);
+    color: #fff;
+    font-size: 1em;
+    padding: 6px 21px !important;
+}
 </style>
 

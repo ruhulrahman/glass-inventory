@@ -500,4 +500,17 @@ export default defineComponent({
   }
 }
 
+.waitMe{
+  position: absolute !important;
+    top: 0px !important;
+    width: 100% !important;
+    height: 100% !important;
+    /* text-align: center; */
+}
+
+.waitMe_text{
+   margin-top: 30% !important;
+    text-align: center;
+}
+
 </style>
