@@ -74,6 +74,11 @@ class AjaxController extends Controller
 
 			$list = model('Supplier')::get();
 
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
@@ -87,6 +92,11 @@ class AjaxController extends Controller
 		} else if ($name == 'get_product_list') {
 
 			$list = model('Product')::with('supplier', 'category')->get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -102,6 +112,11 @@ class AjaxController extends Controller
 
 			$list = model('User')::get();
 
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
@@ -112,9 +127,40 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
-		} else if ($name == 'get_product_category_list') {
+		} else if($name == 'get_product_category_list'){
 
-			$list = model('ProductCategory')::get();
+            $list = model('ProductCategory')::with('parent')->get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
+		} else if($name == 'get_product_unit_list'){
+
+            $list = model('ProductUnit')::get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
+		} else if($name == 'get_product_color_list'){
+
+            $list = model('ProductColor')::get();
+
+            foreach($list as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -523,11 +569,13 @@ class AjaxController extends Controller
 			$user->delete();
 
 			return res_msg('User deleted successfully!', 200);
-		} else if ($name == 'store_product_category_data') {
+		} else if($name == 'store_product_category_data'){
 
-			$validator = Validator::make($req->all(), [
+			$validator= Validator::make($req->all(), [
 				'name' => 'required',
-			]);
+			], [
+				'name.required' => 'Category name is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -535,17 +583,20 @@ class AjaxController extends Controller
 			}
 
 			model('ProductCategory')::create([
-				'category_name' => $req->category_name,
+				'name' => $req->name,
 				'company_id' => $user->company_id,
+				'active' => $req->active == 'true' ? 1 : 0,
 				'creator_id' => $user->id,
 			]);
 
 			return res_msg('Product category inserted successfully!', 200);
-		} else if ($name == 'update_product_category_data') {
+		} else if($name == 'update_product_category_data'){
 
-			$validator = Validator::make($req->all(), [
-				'name' => 'required',
-			]);
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			], [
+				'name.required' => 'Category name is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -554,7 +605,8 @@ class AjaxController extends Controller
 
 			$ProductCategory = model('ProductCategory')::find($req->id);
 			$ProductCategory->update([
-				'category_name' => $req->category_name,
+				'name' => $req->name,
+				'active' => $req->active == 'true' ? 1 : 0,
 				'editor_id' => $user->id,
 				'updated_at' => $carbon,
 			]);
@@ -720,6 +772,113 @@ class AjaxController extends Controller
 			$company = model('CompanyBankInfo')::find($req->id);
 			$company->delete();
 			return res_msg('Company bank deleted successfully!', 200);
+
+		} else if($name == 'store_product_unit_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			], [
+				'name.required' => 'Unit name is required',
+            ]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			model('ProductUnit')::create([
+				'name' => $req->name,
+				'company_id' => $user->company_id,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'creator_id' => $user->id,
+			]);
+
+			return res_msg('Product unit inserted successfully!', 200);
+
+		} else if($name == 'update_product_unit_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			], [
+				'name.required' => 'Unit name is required',
+            ]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			$ProductUnit = model('ProductUnit')::find($req->id);
+			$ProductUnit->update([
+				'name' => $req->name,
+				'company_id' => $user->company_id,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'editor_id' => $user->id,
+				'updated_at' => $carbon,
+			]);
+
+			return res_msg('Product unit updated successfully!', 200);
+
+		} else if($name == 'delete_product_unit_data'){
+
+			$ProductUnit = model('ProductUnit')::find($req->id);
+
+			$ProductUnit->delete();
+
+			return res_msg('Product unit deleted successfully!', 200);
+
+		} else if($name == 'store_product_color_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			], [
+				'name.required' => 'Color name is required',
+            ]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			model('ProductColor')::create([
+				'name' => $req->name,
+				'company_id' => $user->company_id,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'creator_id' => $user->id,
+			]);
+
+			return res_msg('Product color inserted successfully!', 200);
+
+		} else if($name == 'update_product_color_data'){
+
+			$validator= Validator::make($req->all(), [
+				'name'=>'required',
+			], [
+				'name.required' => 'Color name is required',
+            ]);
+
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			$ProductColor = model('ProductColor')::find($req->id);
+			$ProductColor->update([
+				'name' => $req->name,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'editor_id' => $user->id,
+				'updated_at' => $carbon,
+			]);
+
+			return res_msg('Product color updated successfully!', 200);
+
+		} else if($name == 'delete_product_color_data'){
+
+			$ProductColor = model('ProductColor')::find($req->id);
+
+			$ProductColor->delete();
+
+			return res_msg('Product color deleted successfully!', 200);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

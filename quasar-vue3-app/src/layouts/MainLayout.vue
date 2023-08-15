@@ -136,6 +136,42 @@
           </q-list>
         </q-expansion-item>
 
+
+        <q-expansion-item
+          icon="inventory"
+          label="Product Management"
+        >
+          <q-list class="q-pl-lg">
+            <q-item to="/color-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="palette" color="warning"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Color List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/unit-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="straighten" color="positive"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Unit List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/category-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="category" color="pink"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Category List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+          </q-list>
+        </q-expansion-item>
+
         <!-- <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
