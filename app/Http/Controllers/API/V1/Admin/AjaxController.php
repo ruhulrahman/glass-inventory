@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\Random;
 
 class AjaxController extends Controller
 {
@@ -488,10 +489,9 @@ class AjaxController extends Controller
 				if ($req->file('photo')) {
 					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
 
-					$req->photo->move(public_path('uploads/photo'), $fileName);
 				}
-
-				model('User')::create([
+				
+				$data = model('User')::create([
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
@@ -500,9 +500,19 @@ class AjaxController extends Controller
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => $carbon,
 				]);
+
+				model('Employee')::create([
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($data->id, 3, "0", STR_PAD_LEFT),
+					'company_id' => $user->company_id,
+					'first_name' => $req->name,
+					'user_id' => $data->id,
+					'email' => $req->email,
+					'created_at' => $carbon
+				]);
 	
 				
 				DB::commit();
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
@@ -541,7 +551,6 @@ class AjaxController extends Controller
 				if ($req->file('photo')) {
 					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
 
-					$req->photo->move(public_path('uploads/photo'), $fileName);
 				}
 
 				model('User')::where('id', $req->id)->update([
@@ -554,7 +563,16 @@ class AjaxController extends Controller
 					'created_at' => Carbon::now()
 					
 				]);
+				
+				model('Employee')::where('user_id', $req->id)->update([
+					'first_name' => $req->name,
+					'email' => $req->email,
+					'updated_at' => $carbon
+				]);
+				
+				
 				DB::commit();
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User updated successfully!', 200);
 
 			} catch (\Throwable $e) {
