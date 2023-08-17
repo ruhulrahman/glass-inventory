@@ -88,7 +88,7 @@
         <create-user
           :title="editItem.id ? 'Update User' : 'Create User'"
           :companies="companies" :editItem="editItem"
-          @reloadtListData="getListData" @closeModal="showAddNewDialog = false" 
+          @reloadtListData="getListData" @closeModal="showAddNewDialog = false"
         />
       </q-dialog>
   </q-page>
