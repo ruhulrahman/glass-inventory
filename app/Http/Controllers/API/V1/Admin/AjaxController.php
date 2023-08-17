@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\Random;
 
 class AjaxController extends Controller
 {
@@ -488,10 +489,9 @@ class AjaxController extends Controller
 				if ($req->file('photo')) {
 					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
 
-					$req->photo->move(public_path('uploads/photo'), $fileName);
 				}
-
-				model('User')::create([
+				
+				$data = model('User')::create([
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
@@ -500,9 +500,23 @@ class AjaxController extends Controller
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => $carbon,
 				]);
+
+				if($req->is_employee == 'true'){
+
+				model('Employee')::create([
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($data->id, 3, "0", STR_PAD_LEFT),
+					'company_id' => $user->company_id,
+					'first_name' => $req->name,
+					'user_id' => $data->id,
+					'email' => $req->email,
+					'created_at' => $carbon
+				]);
+
+			 }
 	
 				
 				DB::commit();
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
@@ -530,10 +544,10 @@ class AjaxController extends Controller
 			DB::beginTransaction();
 			
 			try {
-				$user = model('User')::find($req->id);
+				$user_data = model('User')::find($req->id);
 
-				if ($user->photo != NULL && file_exists(public_path('uploads/photo/'.$user->photo)) && $req->file('photo')) {
-					unlink(public_path('uploads/photo/'.$user->photo));
+				if ($user_data->photo != NULL && file_exists(public_path('uploads/photo/'.$user_data->photo)) && $req->file('photo')) {
+					unlink(public_path('uploads/photo/'.$user_data->photo));
 				}
 
 				$fileName = NULL;
@@ -541,20 +555,47 @@ class AjaxController extends Controller
 				if ($req->file('photo')) {
 					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
 
-					$req->photo->move(public_path('uploads/photo'), $fileName);
 				}
 
 				model('User')::where('id', $req->id)->update([
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
-					'photo' => $fileName ? $fileName : $user->photo,
+					'photo' => $fileName ? $fileName : $user_data->photo,
 					'user_type' => $req->user_type,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
 					
 				]);
+
+				if($req->is_employee == 'true'){
+
+					$employee = model('Employee')::where('user_id', $req->id)->first();
+
+					if($employee){
+
+						model('Employee')::where('user_id', $req->id)->update([
+							'first_name' => $req->name,
+							'email' => $req->email,
+							'updated_at' => $carbon
+						]);
+					}else{
+
+						model('Employee')::create([
+							'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($req->id, 3, "0", STR_PAD_LEFT),
+							'company_id' => $user->company_id,
+							'first_name' => $req->name,
+							'user_id' => $req->id,
+							'email' => $req->email,
+							'created_at' => $carbon
+						]);
+					}
+				
+			    }
+				
+				
 				DB::commit();
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User updated successfully!', 200);
 
 			} catch (\Throwable $e) {
