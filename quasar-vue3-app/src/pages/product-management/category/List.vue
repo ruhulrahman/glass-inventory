@@ -6,7 +6,7 @@
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
       <q-breadcrumbs-el label="Category" />
     </q-breadcrumbs>
 
@@ -58,6 +58,9 @@
           </template>
           <template v-slot:body="props">
             <q-tr :props="props">
+              <q-td key="sl" :props="props">
+                {{ props.pageIndex + 1 }}
+              </q-td>
               <q-td key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
@@ -81,8 +84,8 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :title="'Create Category'" :categories="listData" :editItem="editItem"
-        @reloadtListData="getListData" @closeModal="showAddNewDialog = false" />
+      <add-or-update :categories="listData" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -98,6 +101,7 @@ import AddOrUpdate from "./AddOrUpdate.vue";
 const metaData = { title: 'Category List' }
 
 const columns = [
+  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
   {
     name: "name",
     required: true,
@@ -114,7 +118,7 @@ const columns = [
     field: "parent",
     sortable: true,
   },
-  { name: "status", label: "Status", field: "status", sortable: true },
+  { name: "status", label: "Status", field: "status", sortable: true, align: "left" },
   {
     name: "action",
     label: "Action",

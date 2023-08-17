@@ -88,7 +88,7 @@
         <create-company
           :title="editItem.id ? 'Update Company' : 'Create Company'"
           :companies="companies" :editItem="editItem"
-          @reloadtListData="getListData" @closeModal="showAddNewDialog = false" 
+          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
         />
       </q-dialog>
   </q-page>

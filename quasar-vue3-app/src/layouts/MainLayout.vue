@@ -65,15 +65,7 @@
             <q-item-label class="text-h6 text-green-13">Glass Inventory</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item to="/product-category" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-icon name="category"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Category</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item to="/dashboard" active-class="q-item-no-link-highlighting">
+        <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
           </q-item-section>
@@ -166,6 +158,24 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>Category List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="airport_shuttle" color="light-blue"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Supplier List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/product-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="inventory" color="accent"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Product List</q-item-label>
               </q-item-section>
             </q-item>
 

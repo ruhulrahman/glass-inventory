@@ -81,8 +81,8 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update ref="department_modal" :title="'Create Department'" :departments="listData" :editItem="editItem"
-        @reloadtListData="getListData" @closeModal="showAddNewDialog = false" />
+      <add-or-update ref="department_modal" :departments="listData" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
   </q-page>

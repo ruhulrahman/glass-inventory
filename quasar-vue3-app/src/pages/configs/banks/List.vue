@@ -93,7 +93,7 @@
         <create-bank
           :title="editItem.id ? 'Update Bank' : 'Create Bank'"
           :companies="companies" :editItem="editItem"
-          @reloadtListData="getListData" @closeModal="showAddNewDialog = false" 
+          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
         />
       </q-dialog>
   </q-page>

@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }} Unit</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }} Product</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -16,9 +16,26 @@
         <q-list class="row">
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <q-item-section
+            style="margin-top: -20px !important; font-size: 12px !important"
+          >
+            <q-select
+              dark
+              color="white"
+              v-model="submitForm.parent_id"
+              label="Parent Product"
+              :options="categories"
+              emit-value
+              map-options
+            >
+            </q-select>
+          </q-item-section>
+        </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="submitForm.name" label="Unit Name"
-                :rules="[val => val && val.length > 0 || 'Please enter unit name']" />
+              <q-input dark color="white" dense v-model="submitForm.name" label="Product Name"
+                :rules="[val => val && val.length > 0 || 'Please enter category name']" />
             </q-item-section>
           </q-item>
 
@@ -40,12 +57,13 @@
 import helperMixin from 'src/mixins/helper_mixin.js'
 
 export default {
-  props: ['title', 'editItem'],
+  props: ['title', 'editItem', 'categories'],
   mixins: [helperMixin],
   data() {
     return {
       submitForm: {
         id: '',
+        parent_id: null,
         name: '',
         active: true,
       }
@@ -67,9 +85,9 @@ export default {
         ref.wait_me(".wait_me");
         let res = ''
         if (this.submitForm.id) {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_unit_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_data'), this.submitForm);
         } else {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_unit_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_data'), this.submitForm);
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)

@@ -192,7 +192,7 @@ export default {
         success: function(res) {
            ref.notify(res.msg)
            ref.$emit('closeModal', true)
-           ref.$emit('reloadtListData', true)
+           ref.$emit('reloadListData', true)
         },
         error: function(err) {
            ref.notify(ref.err_msg(err), 'negative')

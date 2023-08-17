@@ -45,7 +45,7 @@
             />
           </q-item-section>
         </q-item>
-        
+
         <q-item
           class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
           style="margin-top: -18px"
@@ -60,7 +60,7 @@
             />
           </q-item-section>
         </q-item>
-        
+
         <q-item
           class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
           style="margin-top: -18px"
@@ -219,7 +219,7 @@ export default {
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)
-        this.$emit('reloadtListData', true)
+        this.$emit('reloadListData', true)
 
       } catch (err) {
         this.notify(this.err_msg(err), "negative");

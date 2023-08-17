@@ -35,14 +35,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_department_list_with_pagination') {
 
-			$list = model('Department')::with('parent')->paginate($default_per_page);
+			$list = model('Department')::with('parent')->where('company_id', $user->company_id)->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if ($name == 'get_department_list') {
 
-			$list = model('Department')::with('parent')->get();
+			$list = model('Department')::with('parent')->where('company_id', $user->company_id)->get();
 
 			foreach ($list as $item) {
 				$item->value = $item->id;
@@ -54,7 +54,7 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_designation_list') {
 
-			$list = model('Designation')::with('department')->get();
+			$list = model('Designation')::with('department')->where('company_id', $user->company_id)->get();
 
 			foreach ($list as $item) {
 				$item->value = $item->id;
@@ -66,14 +66,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_supplier_list_with_pagination') {
 
-			$list = model('Supplier')::paginate($default_per_page);
+			$list = model('Supplier')::where('company_id', $user->company_id)->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if ($name == 'get_supplier_list') {
 
-			$list = model('Supplier')::get();
+			$list = model('Supplier')::where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -85,14 +85,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_product_list_with_pagination') {
 
-			$list = model('Product')::with('supplier', 'category')->paginate($default_per_page);
+			$list = model('Product')::with('supplier', 'category')->where('company_id', $user->company_id)->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if ($name == 'get_product_list') {
 
-			$list = model('Product')::with('supplier', 'category')->get();
+			$list = model('Product')::with('supplier', 'category')->where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -104,14 +104,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_user_list_with_pagination') {
 
-			$list = model('User')::paginate($default_per_page);
+			$list = model('User')::where('company_id', $user->company_id)->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if ($name == 'get_user_list') {
 
-			$list = model('User')::get();
+			$list = model('User')::where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -123,14 +123,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_product_category_list_with_pagination') {
 
-			$list = model('ProductCategory')::paginate($default_per_page);
+			$list = model('ProductCategory')::where('company_id', $user->company_id)->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if($name == 'get_product_category_list'){
 
-            $list = model('ProductCategory')::with('parent')->get();
+            $list = model('ProductCategory')::with('parent')->where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -143,7 +143,7 @@ class AjaxController extends Controller
 
 		} else if($name == 'get_product_unit_list'){
 
-            $list = model('ProductUnit')::get();
+            $list = model('ProductUnit')::where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -156,7 +156,7 @@ class AjaxController extends Controller
 
 		} else if($name == 'get_product_color_list'){
 
-            $list = model('ProductColor')::get();
+            $list = model('ProductColor')::where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -171,8 +171,8 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $companies
 			]);
-		 }else if ($name == 'get_company_bank_list') {
-			$banks = model('CompanyBankInfo')::query()->orderBy('id','desc')->get();
+		} else if ($name == 'get_company_bank_list') {
+			$banks = model('CompanyBankInfo')::where('company_id', $user->company_id)->orderBy('id','desc')->get();
 			return res_msg('list Data', 200, [
 				'data' => $banks
 			]);
@@ -319,8 +319,8 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'name' => 'required',
-				'email' => 'required|email|unique:suppliers,email',
-				'address' => 'required',
+				// 'email' => 'required|email|unique:suppliers,email',
+				// 'address' => 'required',
 				'phone1' => 'required|numeric',
 			], [
 				'phone1.required' => 'The Phone field is required',
@@ -341,12 +341,15 @@ class AjaxController extends Controller
 			}
 
 			model('Supplier')::create([
+				'company_id' => $user->company_id,
 				'name' => $req->name,
 				'email' => $req->email,
 				'address' => $req->address,
 				'phone1' => $req->phone1,
 				'phone2' => $req->phone2,
 				'note' => $req->note,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'creator_id' => $user->company_id,
 			]);
 
 			return res_msg('Supplier inserted successfully!', 200);
@@ -354,8 +357,8 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'name' => 'required',
-				'email' => 'required|email|unique:suppliers,email,' . $req->id,
-				'address' => 'required',
+				// 'email' => 'required|email|unique:suppliers,email,' . $req->id,
+				// 'address' => 'required',
 				'phone1' => 'required|numeric',
 			], [
 				'phone1.required' => 'The Phone field is required',
@@ -384,9 +387,13 @@ class AjaxController extends Controller
 				'phone1' => $req->phone1,
 				'phone2' => $req->phone2,
 				'note' => $req->note,
+				'active' => $req->active == 'true' ? 1 : 0,
+				'editor_id' => $user->company_id,
+				'updated_at' => Carbon::now(),
 			]);
 
 			return res_msg('Supplier updated successfully!', 200);
+
 		} else if ($name == 'delete_supplier_data') {
 
 			$supplier = model('Supplier')::find($req->id);
@@ -394,6 +401,7 @@ class AjaxController extends Controller
 			$supplier->delete();
 
 			return res_msg('Supplier deleted successfully!', 200);
+
 		} else if ($name == 'store_product_data') {
 
 			$validator = Validator::make($req->all(), [
@@ -490,7 +498,7 @@ class AjaxController extends Controller
 					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
 
 				}
-				
+
 				$data = model('User')::create([
 					'name' => $req->name,
 					'username' => $req->username,
@@ -513,8 +521,8 @@ class AjaxController extends Controller
 				]);
 
 			 }
-	
-				
+
+
 				DB::commit();
 				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User inserted successfully!', 200);
@@ -540,9 +548,9 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			
+
 			DB::beginTransaction();
-			
+
 			try {
 				$user_data = model('User')::find($req->id);
 
@@ -565,7 +573,7 @@ class AjaxController extends Controller
 					'user_type' => $req->user_type,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
-					
+
 				]);
 
 				if($req->is_employee == 'true'){
@@ -590,10 +598,10 @@ class AjaxController extends Controller
 							'created_at' => $carbon
 						]);
 					}
-				
+
 			    }
-				
-				
+
+
 				DB::commit();
 				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User updated successfully!', 200);
@@ -779,7 +787,7 @@ class AjaxController extends Controller
 			]);
 
 			return res_msg('Company created successfully!', 200);
-			
+
 		} else if ($name == 'update_company_bank_data') {
 
 			$validator = Validator::make($req->all(), [

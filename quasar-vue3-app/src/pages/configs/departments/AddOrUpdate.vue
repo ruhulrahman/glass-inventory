@@ -91,7 +91,7 @@ export default {
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)
-        this.$emit('reloadtListData', true)
+        this.$emit('reloadListData', true)
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {

@@ -19,6 +19,8 @@ const routes = [
       {path: '/color-list', component: () => import('pages/product-management/color/List.vue')},
       {path: '/unit-list', component: () => import('pages/product-management/unit/List.vue')},
       {path: '/category-list', component: () => import('pages/product-management/category/List.vue')},
+      {path: '/supplier-list', component: () => import('pages/product-management/supplier/List.vue')},
+      {path: '/product-list', component: () => import('pages/product-management/product/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},
@@ -36,7 +38,6 @@ const routes = [
       {path: '/Directory', component: () => import('pages/Directory.vue')},
       {path: '/Footer', component: () => import('pages/Footer.vue')},
       {path: '/CardHeader', component: () => import('pages/CardHeader.vue')},
-      {path: '/product-category', component: () => import('pages/Category.vue')},
 
       // Not completed yet
       // {path: '/Taskboard', component: () => import('pages/TaskBoard.vue')},

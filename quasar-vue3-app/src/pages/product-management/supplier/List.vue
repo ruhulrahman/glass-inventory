@@ -1,22 +1,24 @@
 <template>
   <q-page class="q-pa-sm">
+
     <q-breadcrumbs class="text-grey q-mb-sm q-mt-sm" active-color="green">
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="User" />
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
+      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Supplier" />
     </q-breadcrumbs>
+
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">User List</div>
+          <div class="text-h6 col-10 text-grey-8">Supplier List</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New User
+              Add New Supplier
             </q-btn>
           </div>
         </div>
@@ -57,23 +59,31 @@
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="sl" :props="props">
-                {{ props.row.sl }}
+                {{ props.pageIndex + 1 }}
               </q-td>
               <q-td key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="username" :props="props">
-                {{ props.row.username }}
+              <q-td key="phone1" :props="props">
+                {{ props.row.phone1 }}<br/>
+                {{ props.row.phone2 }}
+              </q-td>
+              <q-td key="phone2" :props="props">
+                {{ props.row.phone2 }}
               </q-td>
               <q-td key="email" :props="props">
                 {{ props.row.email }}
               </q-td>
-              <q-td key="user_type" :props="props">
-                  {{ props.row.user_type }}
+              <q-td key="address" :props="props">
+                {{ props.row.address }}
               </q-td>
-              <q-td key="photo" :props="props">
-                  <img v-if="props.row.photo != 'NA'" style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/photo/'+props.row.photo)">
-                  <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+              <q-td key="note" :props="props">
+                {{ props.row.note }}
+              </q-td>
+              <q-td key="status" :props="props">
+                <q-badge :color="props.row.status_color" class="center">
+                  {{ props.row.status }}
+                </q-badge>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -83,71 +93,56 @@
           </template>
         </q-table>
       </q-card-section>
+
     </q-card>
-      <q-dialog v-model="showAddNewDialog" position="right">
-        <create-user
-          :title="editItem.id ? 'Update User' : 'Create User'"
-          :companies="companies" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
-      </q-dialog>
+
+    <q-dialog v-model="showAddNewDialog" position="right">
+      <add-or-update :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
+
   </q-page>
 </template>
 
 <script>
-import { useMeta, Dialog } from "quasar";
-import helperMixin from "../../../mixins/helper_mixin.js";
+import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
+import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
-import { ref } from "vue";
-const metaData = {
-  title: "User List",
-  titleTemplate: (title) => `${title} - Inventory App`,
-};
-import createUser from "./AddOrUpdate.vue";
+import { ref } from 'vue'
+import AddOrUpdate from "./AddOrUpdate.vue";
+
+const metaData = { title: 'Supplier List' }
 
 const columns = [
-    {
-    name: "sl",
-    required: true,
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
+  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
   {
     name: "name",
     required: true,
-    label: "Company Name",
+    label: "Supplier Name",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
-  {
-    name: "username",
-    required: true,
-    align: "center",
-    label: "Username",
-    field: "username"
-  },
-  { name: "email", label: "Email", field: "email"},
-  { name: "user_type", label: "User Type", field: "user_type" },
-  { name: "photo", label: "Photo", field: "photo" },
+  { name: "phone1", label: "Phone", field: "phone1", sortable: true, align: "left" },
+  { name: "email", label: "Email", field: "email", sortable: true, align: "left" },
+  { name: "address", label: "Address", field: "address", sortable: true, align: "left" },
+  { name: "note", label: "Note", field: "note", sortable: true , align: "left"},
+  { name: "status", label: "Status", field: "status", sortable: true, align: "left" },
   {
     name: "action",
     label: "Action",
-    field: "action",
+    field: "Action",
     sortable: false,
     align: "center",
   },
 ];
 
-export default {
-  name: "CompanyList",
+export default ({
+  // name: "SupplierList",
   mixins: [helperMixin],
   components: {
-    createUser,
+    AddOrUpdate,
   },
   setup() {
     useMeta(metaData);
@@ -164,7 +159,6 @@ export default {
       opened: false,
       showAddNewDialog: false,
       loading: false,
-      departments: [],
       listData: [],
       editItem: '',
     };
@@ -172,13 +166,10 @@ export default {
   computed: {
     tableRow: function () {
       if (this.listData.length) {
-        return this.listData.map((item, i) => {
-          item.sl = i+1
-          item.name = item.name
-          item.username = item.username
-          item.emaill = item.emaill
-          item.photo = item.photo ? item.photo : 'NA'
-          item.user_type = item.user_type
+        return this.listData.map(item => {
+          item.active = item.active ? true : false
+          item.status = item.active ? 'Active' : 'Inactive'
+          item.status_color = item.active ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {
@@ -188,7 +179,6 @@ export default {
   },
   mounted() {
     this.getListData();
-    // this.getCompanytList();
   },
   methods: {
     openAddNewDialog: function() {
@@ -200,7 +190,7 @@ export default {
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_supplier_list'));
         this.listData = res.data.data
 
       } catch (err) {
@@ -231,7 +221,7 @@ export default {
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_user_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_supplier_data'), item);
         this.notify(res.msg)
         this.getListData()
 
@@ -241,8 +231,8 @@ export default {
         ref.wait_me(".wait_me", "hide");
       }
     }
-  },
-};
+  }
+});
 </script>
 
 <style scoped>
