@@ -176,6 +176,11 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $banks
 			]);
+		} else if ($name == 'get_employee_list') {
+			$employees = model('Employee')::with('designation')->orderBy('id','desc')->get();
+			return res_msg('list Data', 200, [
+				'data' => $employees
+			]);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -528,7 +533,7 @@ class AjaxController extends Controller
 				return res_msg('User inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => str_ireplace("Method Illuminate\Http\Request::", "", $e->getMessage())], 422);
+				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
 			}
 
@@ -607,7 +612,7 @@ class AjaxController extends Controller
 				return res_msg('User updated successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => str_ireplace("Method Illuminate\Http\Request::", "", $e->getMessage())], 422);
+				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
 			}
 
@@ -615,6 +620,10 @@ class AjaxController extends Controller
 
 			$user = model('User')::find($req->id);
 
+			$employee = model('Employee')::where('user_id',$req->id)->first();
+			model('EmployeeSalaryHistory')::where('employee_id',$employee->id)->delete();
+
+			$employee->delete();
 			$user->delete();
 
 			return res_msg('User deleted successfully!', 200);
@@ -705,7 +714,7 @@ class AjaxController extends Controller
 				DB::commit();
 				return res_msg('Company created successfully!', 200);
 			} catch (\Throwable $e) {
-				return response(['msg' => str_ireplace("Method Illuminate\Http\Request::", "", $e->getMessage())], 422);
+				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
 			}
 		} else if ($name == 'update_company_data') {
@@ -752,7 +761,7 @@ class AjaxController extends Controller
 
 				return res_msg('Company updated successfully!', 200);
 			} catch (\Throwable $e) {
-				return response(['msg' => str_ireplace("Method Illuminate\Http\Request::", "", $e->getMessage())], 422);
+				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
 			}
 		} else if($name == 'delete_company_data'){
@@ -928,6 +937,102 @@ class AjaxController extends Controller
 			$ProductColor->delete();
 
 			return res_msg('Product color deleted successfully!', 200);
+		}else if($name == "store_employee_data"){
+            $validator = Validator::make($req->all(), [
+				'name' => 'required'
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			DB::beginTransaction();
+
+			try {
+				$data = model('Employee')::create([
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($req->id, 3, "0", STR_PAD_LEFT),
+					'company_id' => $user->company_id,
+					'name' => $req->name,
+					'email' => $req->email,
+					'phone1' => $req->phone1,
+					'phone2' => $req->phone2,
+					'present_address' => $req->present_address,
+					'permanent_address' => $req->permanent_address,
+					'dob' => $req->dob,
+					'nid' => $req->nid,
+					'gender' => $req->gender,
+					'religion' => $req->religion,
+					'current_salary' => $req->current_salary,
+					'designation_id' => $req->designation_id,
+					'joining_date'=>$req->joining_date,
+					'active' => $req->active == 'false' ? 0 : 1,
+					'created_at' => Carbon::now()
+				]);
+
+				model('EmployeeSalaryHistory')::create([
+					'company_id' => $user->company_id,
+					'employee_id' => $data->id,
+					'salary' => $req->current_salary,
+					'start_date'=>$req->joining_date,
+					'active' => $req->active == 'false' ? 0 : 1,
+					'created_at' => Carbon::now()
+				]);
+
+				DB::commit();
+
+				return res_msg('Employee created successfully!', 200);
+			} catch (\Throwable $e) {
+				return response(['msg' => 'Wrong data entry'], 422);
+				DB::rollback();
+			}
+		}else if($name == "update_employee_data"){
+            $validator = Validator::make($req->all(), [
+				'id' => 'required',
+				'name' => 'required'
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			DB::beginTransaction();
+
+			try {
+				$data = model('Employee')::where('id', $req->id)->update([
+					'name' => $req->name,
+					'email' => $req->email,
+					'phone1' => $req->phone1,
+					'phone2' => $req->phone2,
+					'present_address' => $req->present_address,
+					'permanent_address' => $req->permanent_address,
+					'dob' => $req->dob,
+					'nid' => $req->nid,
+					'gender' => $req->gender,
+					'religion' => $req->religion,
+					'designation_id' => $req->designation_id,
+					'joining_date'=>$req->joining_date,
+					'active' => $req->active == 'false' ? 0 : 1,
+					'updated_at' => Carbon::now()
+				]);
+
+				DB::commit();
+
+				return res_msg('Employee updated successfully!', 200);
+			} catch (\Throwable $e) {
+				return response(['msg' => 'Wrong data entry'], 422);
+				DB::rollback();
+			}
+		} else if($name == 'delete_employee_data'){
+
+			$employee = model('Employee')::find($req->id);
+
+			model('EmployeeSalaryHistory')::where('employee_id',$req->id)->delete();
+
+			$employee->delete();
+
+			return res_msg('Employee deleted successfully!', 200);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

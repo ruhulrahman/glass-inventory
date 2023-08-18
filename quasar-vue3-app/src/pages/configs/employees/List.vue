@@ -115,11 +115,11 @@ const columns = [
     sortable: true,
   },
   {
-    name: "first_name",
+    name: "name",
     required: true,
     label: "Employee Name",
     align: "left",
-    field: (row) => row.first_name,
+    field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
@@ -177,7 +177,7 @@ export default {
           item.employee_code = item.employee_code
           item.email = item.email
           item.designation = item.designation ? item.designation.name : 'N/A'
-          item.status = item.status
+          item.status = item.active == 1 ? 'Active' : 'Inactive'
           return Object.assign(item)
         })
       } else {

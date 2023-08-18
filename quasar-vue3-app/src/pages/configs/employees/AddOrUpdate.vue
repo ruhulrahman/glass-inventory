@@ -1,6 +1,6 @@
 <template>
   <q-card
-    class="bg-primary text-white no-shadow wait_me"
+    class="bg-primary text-white no-shadow wait_me1"
     style="margin-top: 25px"
     bordered
   >
@@ -31,69 +31,192 @@
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-sm row">
-        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
           <q-item-section>
             <q-input
               type="text"
               dark
               color="white"
-              round
-              v-model="user.name"
-              label="Full Name *"
-              :rules="[(val) => (val && val != '') || 'Please enter your name']"
+              v-model="employee.name"
+              label="Full Name"
             />
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <q-item-section>
-            <q-input dark
-              color="white"
-              round v-model="date" type="date" label="Date Of Birth" />
-          </q-item-section>
-        </q-item>
-
-        <q-item class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
-          <q-item-section>
-            <q-input
-              type="text"
-              dark
-              color="white"
-              round
-              v-model="user.username"
-              label="Username *"
-              :rules="[(val) => (val && val != '') || 'Please enter your username']"
-            />
-          </q-item-section>
-        </q-item>
-
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
           <q-item-section>
             <q-input
               type="email"
               dark
               color="white"
-              v-model="user.email"
-              label="Email *"
-              :rules="[(val) => (val && val != '') || 'Please enter your email']"
+              v-model="employee.email"
+              label="Email"
             />
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-          <q-file
-            class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-            v-model="files"
-            label="Choose Photo"
-            dark
-            color="white"
-            clearable
-            accept=".jpg,.png,.gif"
-            max-files="10"
-            max-file-size="5120000"
-          >
-            <q-icon dark color="white" name="attach_file" />
-          </q-file>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <q-input
+              type="number"
+              dark
+              color="white"
+              v-model="employee.phone1"
+              label="Phone Number"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <q-input
+              type="number"
+              dark
+              color="white"
+              v-model="employee.phone2"
+              label="Secondary Phone Number"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: 0px"
+        >
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              v-model="employee.nid"
+              label="NID"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: 0px"
+        >
+          <q-item-section>
+            <label style="margin-bottom: -18px;">Date Of Birth</label>
+            <q-input
+              type="date"
+              dark
+              color="white"
+              v-model="employee.dob"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              v-model="employee.religion"
+              label="Religion"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <div class="q-pa-md q-gutter-sm">
+              <div class="q-gutter-sm">
+                <q-radio dark
+              color="white" v-model="employee.gender" val="Male" label="Male" />
+                <q-radio
+                  dark
+              color="white"
+                  v-model="employee.gender"
+                  val="Female"
+                  label="Female"
+                />
+              </div>
+            </div>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              v-model="employee.present_address"
+              label="Present Address"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              v-model="employee.permanent_address"
+              label="Permanent Address"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: -18px"
+        >
+          <q-item-section>
+            <label style="margin-bottom: -18px;
+    margin-top: 15px;">Joining Date</label>
+            <q-input
+              type="date"
+              dark
+              color="white"
+              v-model="employee.joining_date"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item v-if="employee.id == null"
+          class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+          style="margin-top: 0px"
+        >
+          <q-item-section>
+            <q-input
+              type="number"
+              dark
+              color="white"
+              v-model="employee.current_salary"
+              label="Salary"
+            />
+          </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -103,9 +226,9 @@
             <q-select
               dark
               color="white"
-              v-model="user.user_type"
-              label="User Type"
-              :options="userTypes"
+              v-model="employee.designation_id"
+              label="Designation"
+              :options="designations"
               emit-value
               map-options
             >
@@ -113,106 +236,119 @@
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-toggle color="green" size="md" v-model="user.is_employee" val="md" label="Is Employee" />
-            </q-item-section>
-          </q-item>
-      </q-card-section>
-      <q-card-actions align="right">
-        <q-btn
-          glossy
-          type="submit"
-          class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
-          >
-          {{editItem.id ? 'Update' : 'Save'}}
-          </q-btn
+        <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-toggle
+              color="green"
+              size="md"
+              v-model="employee.active"
+              val="md"
+              label="Is Active"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          class="col-lg-8 col-md-12 col-sm-12 col-xs-12"
+          style="float: right"
         >
-      </q-card-actions>
+          <q-item-section>
+            <q-btn
+              type="submit"
+              color="green"
+              style="width: 10%; margin-left: 90%"
+            >
+              {{ editItem.id ? "Update" : "Save" }}
+            </q-btn>
+          </q-item-section>
+        </q-item>
+      </q-card-section>
     </q-form>
   </q-card>
 </template>
 
 <script>
 import helperMixin from "src/mixins/helper_mixin.js";
-import { ref } from 'vue'
+
 export default {
   props: ["title", "editItem", "company"],
   mixins: [helperMixin],
   data() {
     return {
-      user: {
-        id:null,
-        name: '',
-        username: '',
-        photo: '',
-        email: '',
-        user_type: '',
-        is_employee: false
+      employee: {
+        id: null,
+        name: "",
+        email: "",
+        phone1: null,
+        phone2: null,
+        dob: null,
+        gender: null,
+        religion: "",
+        nid: null,
+        present_address: '',
+        permanent_address: '',
+        designation_id: null,
+        joining_date: null,
+        current_salary: null,
+        active: null,
       },
-      files: [],
-      userTypes:[
-        'Admin',
-        'System Admin',
-        'Super Admin',
-        'User'
-      ],
-      date: null
+      designations:[]
     };
   },
   created() {
-  var ref = this;
-  if (ref.editItem) {
-        ref.user = ref.editItem;
-        ref.user.is_employee = ref.editItem.is_employee == 1 ? true : false;
+    var ref = this;
+    if (ref.editItem) {
+      ref.employee = ref.editItem;
+      ref.employee.active = ref.editItem.active == 1 ? true : false;
     }
   },
-  mounted() {},
+  mounted() {
+    this.get_designations()
+  },
   methods: {
     saveData: async function () {
       let ref = this;
       let jq = ref.jq();
-    //   console.log(ref.files);
-      const formData = new FormData()
-      formData.append('id',ref.user.id);
-      formData.append('name',ref.user.name);
-      formData.append('username',ref.user.username);
-      formData.append('email',ref.user.email);
-      formData.append('photo',ref.files);
-      formData.append('user_type',ref.user.user_type);
-      formData.append('is_employee',ref.user.is_employee);
-        ref.wait_me(".wait_me");
+      ref.wait_me(".wait_me1");
 
       try {
-        let url = '';
-        if (ref.user.id) {
-          url = ref.apiUrl('api/v1/admin/ajax/update_user_data');
+        let res = "";
+        if (this.employee.id) {
+          res = await jq.post(
+            ref.apiUrl("api/v1/admin/ajax/update_employee_data"),
+            this.employee
+          );
         } else {
-          url = ref.apiUrl('api/v1/admin/ajax/store_user_data');
+          res = await jq.post(
+            ref.apiUrl("api/v1/admin/ajax/store_employee_data"),
+            this.employee
+          );
         }
-
-      jq.ajax({
-        type: "POST",
-        url: url,
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: "json",
-        success: function(res) {
-           ref.notify(res.msg)
-           ref.$emit('closeModal', true)
-           ref.$emit('reloadListData', true)
-        },
-        error: function(err) {
-           ref.notify(ref.err_msg(err), 'negative')
-        },
-      });
-     } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
+        this.notify(res.msg);
+        this.$emit("closeModal", true);
+        this.$emit("reloadListData", true);
+      } catch (err) {
+        this.notify(this.err_msg(err), "negative");
       } finally {
-        ref.wait_me(".wait_me", "hide");
+        ref.wait_me(".wait_me1", "hide");
       }
     },
+    get_designations: async function(){
+      let ref = this;
+      let jq = ref.jq();
+      ref.wait_me(".wait_me1");
+
+      try {
+        let res = "";
+        res = await jq.get(ref.apiUrl("api/v1/admin/ajax/get_designation_list"));
+        ref.designations = res.data.data
+        // console.log(ref.designations);
+      } catch (err) {
+        this.notify(this.err_msg(err), "negative");
+      } finally {
+        ref.wait_me(".wait_me1", "hide");
+      }
+    }
   },
 };
 </script>
@@ -221,15 +357,7 @@ export default {
 .card-bg {
   background-color: #162b4d;
 }
-
-.q-field--dark:not(.q-field--highlighted) .q-field__label {
-  margin-top: 12px !important;
-  color: rgba(255, 255, 255, 0.7);
-}
-/* .q-anchor--skip .q-field__native .q-placeholder {
-    margin-top: 20px !important;
-} */
-.q-btn__content {
-  width: 60px !important;
+.q-dialog__inner--minimized > div {
+  max-width: 800px !important;
 }
 </style>
