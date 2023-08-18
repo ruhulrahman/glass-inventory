@@ -176,6 +176,54 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $banks
 			]);
+		} else if ($name == 'get_product_initial_dropdown_list') {
+
+			$categories = model('ProductCategory')::where([
+                'company_id' => $user->company_id,
+                'active' => 1,
+            ])->get();
+
+            foreach($categories as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			$suppliers = model('Supplier')::where([
+                'company_id' => $user->company_id,
+                'active' => 1,
+            ])->get();
+
+            foreach($suppliers as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			$productUnits = model('ProductUnit')::where([
+                'company_id' => $user->company_id,
+                'active' => 1,
+            ])->get();
+
+            foreach($productUnits as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			$productColors = model('ProductColor')::where([
+                'company_id' => $user->company_id,
+                'active' => 1,
+            ])->get();
+
+            foreach($productColors as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
+			return res_msg('list Data', 200, [
+				'categories' => $categories,
+				'suppliers' => $suppliers,
+				'productUnits' => $productUnits,
+				'productColors' => $productColors,
+			]);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

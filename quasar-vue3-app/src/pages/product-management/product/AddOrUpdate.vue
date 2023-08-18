@@ -21,12 +21,16 @@
           >
             <q-select
               dark
+              clearable
               color="white"
-              v-model="submitForm.parent_id"
-              label="Parent Product"
-              :options="categories"
+              v-model="submitForm.category_id"
+              label="Category"
+              :options="options"
+              use-input
+              @filter="filterFn"
               emit-value
               map-options
+              :rules="[val => val && val.length > 0 || 'Please select category']"
             >
             </q-select>
           </q-item-section>
@@ -55,16 +59,57 @@
 
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
+import { ref } from 'vue'
+// import Vue from "vue";
+// import vSelect from "vue-select-3";
+// import "vue-select-3/dist/vue-select.css";
+
+// Vue.component("v-select", vSelect);
 
 export default {
-  props: ['title', 'editItem', 'categories'],
+  props: ['title', 'editItem', 'dropdownList'],
   mixins: [helperMixin],
+  setup (props) {
+    const stringOptions = props.dropdownList.categories
+    console.log('stringOptions', stringOptions)
+    const options = ref(stringOptions)
+
+    return {
+      model: ref(null),
+      stringOptions,
+      options,
+
+      filterFn (val, update) {
+        if (val === '') {
+          update(() => {
+            options.value = stringOptions
+          })
+          return
+        }
+
+        update(() => {
+          const needle = val.toLowerCase()
+          options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
+        })
+      }
+    }
+  },
   data() {
     return {
+      // stringOptions: [],
+      // options: [],
       submitForm: {
         id: '',
-        parent_id: null,
         name: '',
+        price: 0,
+        cost: 0,
+        in_stock: 0,
+        min_stock: 0,
+        category_id: null,
+        unit_id: null,
+        color_id: null,
+        supplier_id: null,
+        product_code: null,
         active: true,
       }
     }
@@ -73,6 +118,8 @@ export default {
     if (this.editItem) {
       this.submitForm = this.editItem
     }
+    this.stringOptions = this.dropdownList.categories
+    this.options = this.stringOptions
   },
   mounted () {
   },
@@ -97,7 +144,21 @@ export default {
       } finally {
         ref.wait_me(".wait_me", "hide");
       }
-    }
+    },
+    // filterFn (val, update) {
+    //   console.log('val', val)
+    //   if (val === '') {
+    //     update(() => {
+    //       this.options.value = this.stringOptions
+    //     })
+    //     return
+    //   }
+
+    //   update(() => {
+    //     const needle = val.toLowerCase()
+    //     this.options.value = this.stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    //   })
+    // }
   },
 }
 </script>

@@ -84,7 +84,7 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :categories="listData" :editItem="editItem"
+      <add-or-update :dropdownList="dropdowns" :editItem="editItem"
         @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
@@ -146,7 +146,12 @@ export default ({
   },
   data() {
     return {
-      opened: false,
+      dropdowns: {
+        categories: [],
+        suppliers: [],
+        productUnits: [],
+        productColors: [],
+      },
       showAddNewDialog: false,
       loading: false,
       listData: [],
@@ -171,11 +176,26 @@ export default ({
   },
   mounted() {
     this.getListData();
+    this.getInitialData();
   },
   methods: {
     openAddNewDialog: function() {
       this.editItem = ''
       this.showAddNewDialog = true
+    },
+    getInitialData: async function () {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
+        this.dropdowns = res.data
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
     },
     getListData: async function () {
       let ref = this;
