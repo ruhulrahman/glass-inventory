@@ -12,6 +12,7 @@ const routes = [
       {path: '', component: () => import('pages/Dashboard.vue')},
       {path: '/logout', component: () => import('pages/Logout.vue')},
       {path: '/user-list', component: () => import('pages/configs/users/List.vue')},
+      {path: '/employee-list', component: () => import('pages/configs/employees/List.vue')},
       {path: '/company-list', component: () => import('pages/configs/companies/List.vue')},
       {path: '/company-bank-list', component: () => import('pages/configs/banks/List.vue')},
       {path: '/department-list', component: () => import('pages/configs/departments/List.vue')},

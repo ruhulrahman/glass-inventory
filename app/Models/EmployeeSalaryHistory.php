@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class EmployeeSalaryHistory extends Model
 {
     protected $guarded=['id'];
-
-    public function designation(){
-        return $this->belongsTo(Designation::class, 'designation_id');
-    }
 }

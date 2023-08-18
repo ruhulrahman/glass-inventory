@@ -1,24 +1,22 @@
 <template>
   <q-page class="q-pa-sm">
-
     <q-breadcrumbs class="text-grey q-mb-sm q-mt-sm" active-color="green">
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Product" />
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
+      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Employee" />
     </q-breadcrumbs>
-
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Product List</div>
+          <div class="text-h6 col-10 text-grey-8">Employee List</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Product
+              Add New Employee
             </q-btn>
           </div>
         </div>
@@ -32,7 +30,7 @@
           :pagination="initialPagination"
           :filter="filter">
           <template v-slot:top-right>
-            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -59,36 +57,22 @@
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="sl" :props="props">
-                {{ props.pageIndex + 1 }}
+                {{ props.row.sl }}
               </q-td>
-              <q-td key="type_name" :props="props">
-                {{ props.row.type_name }}
+              <q-td key="name" :props="props">
+                {{ props.row.name }}
               </q-td>
-              <q-td key="category_name" :props="props">
-                {{ props.row.category_name }}
+              <q-td key="employee_code" :props="props">
+                {{ props.row.employee_code }}
               </q-td>
-              <q-td key="color_name" :props="props">
-                {{ props.row.color_name }}
+              <q-td key="email" :props="props">
+                {{ props.row.email }}
               </q-td>
-              <q-td key="unit_name" :props="props">
-                {{ props.row.unit_name }}
-              </q-td>
-              <q-td key="price" :props="props">
-                {{ props.row.price }}
-              </q-td>
-              <q-td key="quantity" :props="props">
-                {{ props.row.quantity + ' ' + props.row.unit_name }}
-              </q-td>
-              <q-td key="cost" :props="props">
-                {{ props.row.cost }}
-              </q-td>
-              <q-td key="selling_price" :props="props">
-                {{ props.row.selling_price }}
+              <q-td key="designation" :props="props">
+                  {{ props.row.designation }}
               </q-td>
               <q-td key="status" :props="props">
-                <q-badge :color="props.row.status_color">
-                  {{ props.row.status }}
-                </q-badge>
+                   {{props.row.status}}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -98,51 +82,71 @@
           </template>
         </q-table>
       </q-card-section>
-
     </q-card>
-
-    <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :dropdownList="dropdowns" :editItem="editItem"
-        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
-    </q-dialog>
-
+      <q-dialog v-model="showAddNewDialog" position="right">
+        <create-employee
+          :title="editItem.id ? 'Update Employee' : 'Create Employee'"
+          :companies="companies" :editItem="editItem"
+          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
+        />
+      </q-dialog>
   </q-page>
 </template>
 
 <script>
-import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
-import helperMixin from 'src/mixins/helper_mixin.js'
+import { useMeta, Dialog } from "quasar";
+import helperMixin from "../../../mixins/helper_mixin.js";
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
-import { ref } from 'vue'
-import AddOrUpdate from "./AddOrUpdate.vue";
-
-const metaData = { title: 'Product List' }
+import { ref } from "vue";
+const metaData = {
+  title: "Employee List",
+  titleTemplate: (title) => `${title} - Inventory App`,
+};
+import createEmployee from "./AddOrUpdate.vue";
 
 const columns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  { name: "type_name", field: "type_name", label: "Product Type", sortable: true, align: "left" },
-  { name: "category_name", align: "center", label: "Category", field: "category_name", sortable: true, align: "left" },
-  { name: "color_name", label: "Color", field: "color_name", sortable: true, align: "left" },
-  // { name: "unit_name", label: "unit", field: "unit_name", sortable: true, align: "center" },
-  { name: "price", label: "Unit price", field: "price", sortable: true, align: "right" },
-  { name: "quantity", label: "Quantity", field: "quantity", sortable: true, align: "left" },
-  { name: "cost", label: "Cost", field: "cost", sortable: true, align: "right" },
-  { name: "selling_price", label: "Selling price", field: "selling_price", sortable: true, align: "right" },
-  { name: "status", label: "Status", field: "status", sortable: true, align: "center" },
+    {
+    name: "sl",
+    required: true,
+    label: "#SL",
+    align: "left",
+    field: (row) => row.sl,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "name",
+    required: true,
+    label: "Employee Name",
+    align: "left",
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "employee_code",
+    required: true,
+    align: "center",
+    label: "Employee Code",
+    field: "employee_code"
+  },
+  { name: "email", label: "Email", field: "email"},
+  { name: "designation", label: "Designation", field: "designation" },
+  { name: "status", label: "Status", field: "status" },
   {
     name: "action",
     label: "Action",
-    field: "Action",
+    field: "action",
     sortable: false,
     align: "center",
   },
 ];
 
-export default ({
-  name: "ProductList",
+export default {
+  name: "EmployeeList",
   mixins: [helperMixin],
   components: {
-    AddOrUpdate,
+    createEmployee,
   },
   setup() {
     useMeta(metaData);
@@ -156,15 +160,10 @@ export default ({
   },
   data() {
     return {
-      dropdowns: {
-        categories: [],
-        suppliers: [],
-        productUnits: [],
-        productColors: [],
-        productTypes: [],
-      },
+      opened: false,
       showAddNewDialog: false,
       loading: false,
+      departments: [],
       listData: [],
       editItem: '',
     };
@@ -172,16 +171,13 @@ export default ({
   computed: {
     tableRow: function () {
       if (this.listData.length) {
-        return this.listData.map(item => {
-          item.type_name = item.type ? item.type.name : ''
-          item.color_name = item.color ? item.color.name : ''
-          item.unit_name = item.unit ? item.unit.name : ''
-          item.unit_price = `${item.price} ${item.unit_name}`
-          item.category_name = item.category ? item.category.name : ''
-          item.supplier_name = item.supplier ? item.supplier.name : ''
-          item.active = item.active ? true : false
-          item.status = item.active ? 'Active' : 'Inactive'
-          item.status_color = item.active ? 'green' : 'red'
+        return this.listData.map((item, i) => {
+          item.sl = i+1
+          item.name = item.name
+          item.employee_code = item.employee_code
+          item.email = item.email
+          item.designation = item.designation ? item.designation.name : 'N/A'
+          item.status = item.active == 1 ? 'Active' : 'Inactive'
           return Object.assign(item)
         })
       } else {
@@ -191,33 +187,19 @@ export default ({
   },
   mounted() {
     this.getListData();
-    this.getInitialData();
+    // this.getCompanytList();
   },
   methods: {
     openAddNewDialog: function() {
       this.editItem = ''
       this.showAddNewDialog = true
     },
-    getInitialData: async function () {
-      let ref = this;
-      let jq = ref.jq();
-      try {
-        this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
-        this.dropdowns = res.data
-
-      } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
-      } finally {
-        this.loading = false
-      }
-    },
     getListData: async function () {
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_employee_list'));
         this.listData = res.data.data
 
       } catch (err) {
@@ -248,7 +230,7 @@ export default ({
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_employee_data'), item);
         this.notify(res.msg)
         this.getListData()
 
@@ -258,8 +240,8 @@ export default ({
         ref.wait_me(".wait_me", "hide");
       }
     }
-  }
-});
+  },
+};
 </script>
 
 <style scoped>

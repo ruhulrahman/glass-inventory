@@ -53,7 +53,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" label="Product Price"
+              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" label="Unit Price"
                 :rules="[val => val > 0 || 'Please enter price']" />
             </q-item-section>
           </q-item>
