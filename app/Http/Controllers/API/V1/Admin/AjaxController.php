@@ -85,7 +85,7 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_product_list_with_pagination') {
 
-			$list = model('Product')::with('type', 'unit', 'color', 'supplier', 'category')
+			$list = model('Product')::with('type', 'unit', 'color', 'supplier', 'category', 'histories')
                     ->where('company_id', $user->company_id)
                     ->paginate($default_per_page);
 
@@ -95,7 +95,15 @@ class AjaxController extends Controller
 
 		} else if ($name == 'get_product_list') {
 
-			$list = model('Product')::with('type', 'unit', 'color', 'supplier', 'category')->where('company_id', $user->company_id)->get();
+			$list = model('Product')::with(
+                'type',
+                'unit',
+                'color',
+                'supplier',
+                'category',
+                'histories.supplier',
+                'histories.creator',
+                )->where('company_id', $user->company_id)->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -500,20 +508,49 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			model('Product')::create([
-				// 'name' => $req->name,
+			$product = model('Product')::where([
+				'company_id' => $user->company_id,
+				'category_id' => $req->category_id,
+				'color_id' => $req->color_id,
+				'unit_id' => $req->unit_id,
+				'product_type_id' => $req->product_type_id,
+            ])->first();
+
+            if ($product) {
+
+                $product->price = $req->price;
+                $product->quantity = $req->quantity;
+                $product->product_in_stock = $product->product_in_stock + $req->quantity;
+                $product->cost = $req->cost;
+                $product->selling_price = $req->selling_price;
+                $product->supplier_id = $req->supplier_id;
+                $product->save();
+
+            } else {
+                $product = model('Product')::create([
+                    'price' => $req->price,
+                    'quantity' => $req->quantity,
+                    'cost' => $req->cost,
+                    'product_in_stock' => $req->quantity,
+                    'selling_price' => $req->selling_price,
+                    'category_id' => $req->category_id,
+                    'supplier_id' => $req->supplier_id,
+                    'color_id' => $req->color_id,
+                    'unit_id' => $req->unit_id,
+                    'product_type_id' => $req->product_type_id,
+                    'company_id' => $user->company_id,
+                    'creator_id' => $user->id,
+                ]);
+            }
+
+			model('ProductHistory')::create([
+                'company_id' => $user->company_id,
+				'product_id' => $product->id,
 				'price' => $req->price,
 				'quantity' => $req->quantity,
 				'cost' => $req->cost,
 				'selling_price' => $req->selling_price,
-				'category_id' => $req->category_id,
-				'supplier_id' => $req->supplier_id,
-				'color_id' => $req->color_id,
-				'unit_id' => $req->unit_id,
 				'product_type_id' => $req->product_type_id,
-				// 'product_code' => $req->product_code,
-				// 'last_sale' => $carbon,
-				'company_id' => $user->company_id,
 				'creator_id' => $user->id,
 			]);
 
@@ -553,6 +590,29 @@ class AjaxController extends Controller
 				// 'last_sale' => $carbon,
 				'editor_id' => $user->id,
 			]);
+
+            $ProductHistory = model('ProductHistory')::where([
+                'company_id' => $user->company_id,
+				'product_id' => $product->id,
+				'supplier_id' => $req->supplier_id,
+				'price' => $req->price,
+            ])->first();
+
+            if (!$ProductHistory) {
+
+                model('ProductHistory')::create([
+                    'company_id' => $user->company_id,
+                    'product_id' => $product->id,
+                    'price' => $req->price,
+                    'quantity' => $req->quantity,
+                    'cost' => $req->cost,
+                    'selling_price' => $req->selling_price,
+                    'supplier_id' => $req->supplier_id,
+                    'product_type_id' => $req->product_type_id,
+                    'creator_id' => $user->id,
+                ]);
+
+            }
 
 			return res_msg('Product updated successfully!', 200);
 

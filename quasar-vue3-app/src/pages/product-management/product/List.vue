@@ -82,6 +82,12 @@
               <q-td key="cost" :props="props">
                 {{ props.row.cost }}
               </q-td>
+              <q-td key="stock" :props="props">
+                <q-badge rounded color="red">
+                  {{ props.row.product_in_stock }}
+                </q-badge>
+                {{ props.row.unit_name }}
+              </q-td>
               <q-td key="selling_price" :props="props">
                 {{ props.row.selling_price }}
               </q-td>
@@ -91,8 +97,13 @@
                 </q-badge>
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
-                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
+                <q-btn @click="viewDetails(props.row)" icon="visibility" size="sm" class="text-blue" flat dense>
+                  <!-- <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                    View History
+                  </q-tooltip> -->
+                </q-btn>
+                <q-btn @click="editData(props.row)" icon="edit" size="sm" class="text-teal" flat dense></q-btn>
+                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="text-red" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -106,6 +117,10 @@
         @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
+    <q-dialog fullWidth v-model="showDetailDialog">
+        <detail-dialog :listData="detailItems" @reloadListData="getListData" @closeModal="showDetailDialog = false" />
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -114,7 +129,8 @@ import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
-import AddOrUpdate from "./AddOrUpdate.vue";
+import AddOrUpdate from "./AddOrUpdate.vue"
+import DetailDialog from "./DetailDialog.vue"
 
 const metaData = { title: 'Product List' }
 
@@ -127,6 +143,7 @@ const columns = [
   { name: "price", label: "Unit price", field: "price", sortable: true, align: "right" },
   { name: "quantity", label: "Quantity", field: "quantity", sortable: true, align: "left" },
   { name: "cost", label: "Cost", field: "cost", sortable: true, align: "right" },
+  { name: "stock", label: "Stock", field: "stock", sortable: true, align: "left" },
   { name: "selling_price", label: "Selling price", field: "selling_price", sortable: true, align: "right" },
   { name: "status", label: "Status", field: "status", sortable: true, align: "center" },
   {
@@ -142,7 +159,7 @@ export default ({
   name: "ProductList",
   mixins: [helperMixin],
   components: {
-    AddOrUpdate,
+    AddOrUpdate, DetailDialog
   },
   setup() {
     useMeta(metaData);
@@ -164,8 +181,10 @@ export default ({
         productTypes: [],
       },
       showAddNewDialog: false,
+      showDetailDialog: false,
       loading: false,
       listData: [],
+      detailItems: [],
       editItem: '',
     };
   },
@@ -225,6 +244,11 @@ export default ({
       } finally {
         this.loading = false
       }
+    },
+    viewDetails: async function (item) {
+      console.log('item', item)
+      this.detailItems = item.histories
+      this.showDetailDialog = true
     },
     editData: async function (item) {
       this.editItem = this.clone_object(item)

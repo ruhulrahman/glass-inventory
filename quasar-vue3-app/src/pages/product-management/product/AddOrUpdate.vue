@@ -60,7 +60,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.quantity"
+              <q-input type="number" :disable="submitForm.id ? true : false" min="0" dark color="white" dense v-model="submitForm.quantity"
                 label="Product quantity" :rules="[val => val > 0 || 'Please enter quantity']" />
             </q-item-section>
           </q-item>
@@ -104,11 +104,6 @@
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
 import { ref } from 'vue'
-// import Vue from "vue";
-// import vSelect from "vue-select-3";
-// import "vue-select-3/dist/vue-select.css";
-
-// Vue.component("v-select", vSelect);
 
 export default {
   props: ['title', 'editItem', 'dropdownList'],

@@ -28,4 +28,11 @@ class Product extends Model
 		return $this->belongsTo(Supplier::class, 'supplier_id');
 	}
 
+	public function histories(){
+		return $this->hasMany(ProductHistory::class, 'product_id');
+	}
+
+	public function creator(){
+		return $this->belongsTo(User::class, 'creator_id');
+	}
 }
