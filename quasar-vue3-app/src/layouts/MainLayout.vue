@@ -133,6 +133,16 @@
           icon="inventory"
           label="Product Management"
         >
+
+          <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
+            <q-item-section avatar>
+              <q-icon name="airport_shuttle" color="light-blue"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Supplier List</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-list class="q-pl-lg">
             <q-item to="/color-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
@@ -161,12 +171,12 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
+            <q-item to="/type-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="airport_shuttle" color="light-blue"/>
+                <q-icon name="keyboard_alt" color="teal"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label>Supplier List</q-item-label>
+                <q-item-label>Product Type List</q-item-label>
               </q-item-section>
             </q-item>
 

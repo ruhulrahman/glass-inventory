@@ -1,10 +1,11 @@
 <template>
   <q-card class="bg-primary text-white no-shadow wait_me" bordered>
-    <q-form @submit="saveData">
+    <q-form :loading="loadingState" @submit="saveData">
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }} Product</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }}
+              Product</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -16,30 +17,73 @@
         <q-list class="row">
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-          <q-item-section
-            style="margin-top: -20px !important; font-size: 12px !important"
-          >
-            <q-select
-              dark
-              clearable
-              color="white"
-              v-model="submitForm.category_id"
-              label="Category"
-              :options="options"
-              use-input
-              @filter="filterFn"
-              emit-value
-              map-options
-              :rules="[val => val && val.length > 0 || 'Please select category']"
-            >
-            </q-select>
-          </q-item-section>
-        </q-item>
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select dark clearable color="white" v-model="submitForm.product_type_id" label="Product Type"
+                :options="dropdownList.productTypes" emit-value map-options
+                :rules="[val => val > 0 || 'Please select type']">
+              </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select dark clearable color="white" v-model="submitForm.category_id" label="Category" :options="options"
+                use-input @filter="filterFn" emit-value map-options :rules="[val => val > 0 || 'Please select category']">
+              </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select dark clearable color="white" v-model="submitForm.color_id" label="Color"
+                :options="dropdownList.productColors" emit-value map-options
+                :rules="[val => val > 0 || 'Please select color']">
+              </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select dark clearable color="white" v-model="submitForm.unit_id" label="Unit"
+                :options="dropdownList.productUnits" emit-value map-options
+                :rules="[val => val > 0 || 'Please select unit']">
+              </q-select>
+            </q-item-section>
+          </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="submitForm.name" label="Product Name"
-                :rules="[val => val && val.length > 0 || 'Please enter category name']" />
+              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" label="Product Price"
+                :rules="[val => val > 0 || 'Please enter price']" />
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.quantity"
+                label="Product quantity" :rules="[val => val > 0 || 'Please enter quantity']" />
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-item-label caption class="text-green">Total Cost</q-item-label>
+              <q-item-label>{{ totalCost }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input type="number" min="0" dark color="blue" dense v-model="submitForm.selling_price"
+                label="Product selling price" :rules="[val => val > 0 || 'Please enter selling price']" />
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select dark clearable color="white" v-model="submitForm.supplier_id" label="Supplier"
+                :options="dropdownList.suppliers" emit-value map-options>
+              </q-select>
             </q-item-section>
           </q-item>
 
@@ -69,7 +113,7 @@ import { ref } from 'vue'
 export default {
   props: ['title', 'editItem', 'dropdownList'],
   mixins: [helperMixin],
-  setup (props) {
+  setup(props) {
     const stringOptions = props.dropdownList.categories
     console.log('stringOptions', stringOptions)
     const options = ref(stringOptions)
@@ -79,7 +123,7 @@ export default {
       stringOptions,
       options,
 
-      filterFn (val, update) {
+      filterFn(val, update) {
         if (val === '') {
           update(() => {
             options.value = stringOptions
@@ -98,11 +142,14 @@ export default {
     return {
       // stringOptions: [],
       // options: [],
+      loadingState: false,
       submitForm: {
         id: '',
-        name: '',
+        product_type_id: null,
         price: 0,
+        quantity: 0,
         cost: 0,
+        selling_price: 0,
         in_stock: 0,
         min_stock: 0,
         category_id: null,
@@ -114,22 +161,34 @@ export default {
       }
     }
   },
-  created () {
+  computed: {
+    totalCost: function () {
+      let totalCostValue = 0
+      if (this.submitForm.price) {
+        totalCostValue = this.submitForm.price * this.submitForm.quantity
+      }
+
+      return totalCostValue
+    }
+  },
+  created() {
     if (this.editItem) {
       this.submitForm = this.editItem
     }
     this.stringOptions = this.dropdownList.categories
     this.options = this.stringOptions
   },
-  mounted () {
+  mounted() {
   },
   methods: {
     saveData: async function () {
       let ref = this;
       let jq = ref.jq();
+      this.submitForm.cost = this.totalCost
 
       try {
-        ref.wait_me(".wait_me");
+        // ref.wait_me(".wait_me");
+        this.loadingState = true
         let res = ''
         if (this.submitForm.id) {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_data'), this.submitForm);
@@ -142,7 +201,8 @@ export default {
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        ref.wait_me(".wait_me", "hide");
+        // ref.wait_me(".wait_me", "hide");
+        this.loadingState = false
       }
     },
     // filterFn (val, update) {
@@ -166,5 +226,4 @@ export default {
 <style scoped>
 .card-bg {
   background-color: #162b4d;
-}
-</style>
+}</style>

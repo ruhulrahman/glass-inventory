@@ -19,6 +19,7 @@ const routes = [
       {path: '/color-list', component: () => import('pages/product-management/color/List.vue')},
       {path: '/unit-list', component: () => import('pages/product-management/unit/List.vue')},
       {path: '/category-list', component: () => import('pages/product-management/category/List.vue')},
+      {path: '/type-list', component: () => import('pages/product-management/type/List.vue')},
       {path: '/supplier-list', component: () => import('pages/product-management/supplier/List.vue')},
       {path: '/product-list', component: () => import('pages/product-management/product/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},

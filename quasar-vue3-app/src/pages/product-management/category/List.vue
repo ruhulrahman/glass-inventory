@@ -32,7 +32,7 @@
           :pagination="initialPagination"
           :filter="filter">
           <template v-slot:top-right>
-            <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>

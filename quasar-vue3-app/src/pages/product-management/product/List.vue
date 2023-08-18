@@ -32,7 +32,7 @@
           :pagination="initialPagination"
           :filter="filter">
           <template v-slot:top-right>
-            <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -61,11 +61,29 @@
               <q-td key="sl" :props="props">
                 {{ props.pageIndex + 1 }}
               </q-td>
-              <q-td key="name" :props="props">
-                {{ props.row.name }}
+              <q-td key="type_name" :props="props">
+                {{ props.row.type_name }}
               </q-td>
-              <q-td key="parent" :props="props">
-                {{ props.row.parent }}
+              <q-td key="category_name" :props="props">
+                {{ props.row.category_name }}
+              </q-td>
+              <q-td key="color_name" :props="props">
+                {{ props.row.color_name }}
+              </q-td>
+              <q-td key="unit_name" :props="props">
+                {{ props.row.unit_name }}
+              </q-td>
+              <q-td key="price" :props="props">
+                {{ props.row.price }}
+              </q-td>
+              <q-td key="quantity" :props="props">
+                {{ props.row.quantity }}
+              </q-td>
+              <q-td key="cost" :props="props">
+                {{ props.row.cost }}
+              </q-td>
+              <q-td key="selling_price" :props="props">
+                {{ props.row.selling_price }}
               </q-td>
               <q-td key="status" :props="props">
                 <q-badge :color="props.row.status_color">
@@ -103,21 +121,25 @@ const metaData = { title: 'Product List' }
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
   {
-    name: "name",
-    required: true,
-    label: "Product Name",
+    name: "type_name",
+    field: "type_name",
+    label: "Product Type",
     align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
     sortable: true,
   },
   {
-    name: "parent",
+    name: "category_name",
     align: "center",
-    label: "Parent",
-    field: "parent",
+    label: "Category",
+    field: "category_name",
     sortable: true,
   },
+  { name: "color_name", label: "Color", field: "color_name", sortable: true, align: "center" },
+  { name: "unit_name", label: "unit", field: "unit_name", sortable: true, align: "center" },
+  { name: "price", label: "price", field: "price", sortable: true, align: "center" },
+  { name: "quantity", label: "Quantity", field: "quantity", sortable: true, align: "center" },
+  { name: "cost", label: "Cost", field: "cost", sortable: true, align: "center" },
+  { name: "selling_price", label: "Selling price", field: "selling_price", sortable: true, align: "center" },
   { name: "status", label: "Status", field: "status", sortable: true, align: "center" },
   {
     name: "action",
@@ -151,6 +173,7 @@ export default ({
         suppliers: [],
         productUnits: [],
         productColors: [],
+        productTypes: [],
       },
       showAddNewDialog: false,
       loading: false,
@@ -162,8 +185,11 @@ export default ({
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map(item => {
-          item.name = item.name
-          item.parent = item.parent ? item.parent.name : ''
+          item.type_name = item.type ? item.type.name : ''
+          item.color_name = item.color ? item.color.name : ''
+          item.unit_name = item.unit ? item.unit.name : ''
+          item.category_name = item.category ? item.category.name : ''
+          item.supplier_name = item.supplier ? item.supplier.name : ''
           item.active = item.active ? true : false
           item.status = item.active ? 'Active' : 'Inactive'
           item.status_color = item.active ? 'green' : 'red'

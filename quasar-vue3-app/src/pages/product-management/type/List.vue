@@ -7,18 +7,18 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
       <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Unit" />
+      <q-breadcrumbs-el label="Product Type" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Unit List</div>
+          <div class="text-h6 col-10 text-grey-8">Product Type List</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Unit
+              Add New Product Type
             </q-btn>
           </div>
         </div>
@@ -95,20 +95,20 @@ import DialogConfirmationComponent from 'src/components/DialogConfirmationCompon
 import { ref } from 'vue'
 import AddOrUpdate from "./AddOrUpdate.vue";
 
-const metaData = { title: 'Unit List' }
+const metaData = { title: 'Type List' }
 
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
   {
     name: "name",
     required: true,
-    label: "Unit Name",
+    label: "Product Type Name",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
-  { name: "status", label: "Status", field: "status", sortable: true, align: "left" },
+  { name: "status", label: "Status", field: "status", sortable: true },
   {
     name: "action",
     label: "Action",
@@ -119,7 +119,7 @@ const columns = [
 ];
 
 export default ({
-  name: "DepartmentList",
+  name: "TypeList",
   mixins: [helperMixin],
   components: {
     AddOrUpdate,
@@ -171,7 +171,7 @@ export default ({
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_unit_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_type_list'));
         this.listData = res.data.data
 
       } catch (err) {
@@ -202,7 +202,7 @@ export default ({
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_unit_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_type_data'), item);
         this.notify(res.msg)
         this.getListData()
 
