@@ -30,6 +30,34 @@
         </q-item>
       </q-card-section>
       <q-separator></q-separator>
+      <q-card-section>
+        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section side>
+            <q-avatar size="100px">
+              <img v-if="view_file != null || editItem.photo != null" :src="view_file != null ? view_file : apiUrl('uploads/photo/'+editItem.photo)" />
+              <img v-else :src="apiUrl('uploads/demo.jpg')" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <q-file
+                class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                v-model="file"
+                label="Choose Photo"
+                dark
+                color="white"
+                clearable
+                accept=".jpg,.png,.gif"
+                max-files="10"
+                max-file-size="5120000"
+                @update:model-value="selectImg()"
+              >
+                <q-icon dark color="white" name="attach_file" />
+              </q-file>
+            </q-item>
+          </q-item-section>
+        </q-item>
+      </q-card-section>
       <q-card-section class="q-pa-sm row">
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
@@ -72,7 +100,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <!-- <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-file
             class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
             v-model="files"
@@ -86,7 +114,7 @@
           >
             <q-icon dark color="white" name="attach_file" />
           </q-file>
-        </q-item>
+        </q-item> -->
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-item-section
@@ -142,13 +170,14 @@ export default {
         user_type: '',
         is_employee: false
       },
-      files: [],
       userTypes:[
         'Admin',
         'System Admin',
         'Super Admin',
         'User'
-      ]
+      ],
+      file: null,
+      view_file: null,
     };
   },
   created() {
@@ -169,7 +198,7 @@ export default {
       formData.append('name',ref.user.name);
       formData.append('username',ref.user.username);
       formData.append('email',ref.user.email);
-      formData.append('photo',ref.files);
+      formData.append('photo',ref.file);
       formData.append('user_type',ref.user.user_type);
       formData.append('is_employee',ref.user.is_employee);
         ref.wait_me(".wait_me");
@@ -202,6 +231,12 @@ export default {
         this.notify(this.err_msg(err), 'negative')
       } finally {
         ref.wait_me(".wait_me", "hide");
+      }
+    },
+    selectImg() {
+      if (this.file) {
+        // console.log(this.file);
+        this.view_file = URL.createObjectURL(this.file);
       }
     },
   },

@@ -115,14 +115,14 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_user_list_with_pagination') {
 
-			$list = model('User')::where('company_id', $user->company_id)->paginate($default_per_page);
+			$list = model('User')::where('company_id', $user->company_id)->orderBy('id', 'desc')->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
 		} else if ($name == 'get_user_list') {
 
-			$list = model('User')::where('company_id', $user->company_id)->get();
+			$list = model('User')::where('company_id', $user->company_id)->orderBy('id', 'desc')->get();
 
             foreach($list as $item) {
                 $item->value = $item->id;
@@ -652,6 +652,7 @@ class AjaxController extends Controller
 				}
 
 				$data = model('User')::create([
+					'company_id' => $user->company_id,
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
@@ -735,7 +736,7 @@ class AjaxController extends Controller
 					if($employee){
 
 						model('Employee')::where('user_id', $req->id)->update([
-							'first_name' => $req->name,
+							'name' => $req->name,
 							'email' => $req->email,
 							'updated_at' => $carbon
 						]);
@@ -744,7 +745,7 @@ class AjaxController extends Controller
 						model('Employee')::create([
 							'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($req->id, 3, "0", STR_PAD_LEFT),
 							'company_id' => $user->company_id,
-							'first_name' => $req->name,
+							'name' => $req->name,
 							'user_id' => $req->id,
 							'email' => $req->email,
 							'created_at' => $carbon
@@ -1150,8 +1151,14 @@ class AjaxController extends Controller
 			DB::beginTransaction();
 
 			try {
+
+				$fileName = NULL;
+
+				if ($req->file('photo')) {
+					$fileName = 'emp-' . time() . '.' . $req->photo->extension();
+				}
+
 				$data = model('Employee')::create([
-					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($req->id, 3, "0", STR_PAD_LEFT),
 					'company_id' => $user->company_id,
 					'name' => $req->name,
 					'email' => $req->email,
@@ -1166,8 +1173,13 @@ class AjaxController extends Controller
 					'current_salary' => $req->current_salary,
 					'designation_id' => $req->designation_id,
 					'joining_date'=>$req->joining_date,
+					'photo'=>$fileName ? $fileName : NULL,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
+				]);
+
+				model('Employee')::where('id', $data->id)->update([
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($data->id, 3, "0", STR_PAD_LEFT)
 				]);
 
 				model('EmployeeSalaryHistory')::create([
@@ -1181,10 +1193,12 @@ class AjaxController extends Controller
 
 				DB::commit();
 
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
+
 				return res_msg('Employee created successfully!', 200);
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
+				return response(['msg' => 'Wrong data entry'], 422);
 			}
 		}else if($name == "update_employee_data"){
             $validator = Validator::make($req->all(), [
@@ -1200,6 +1214,18 @@ class AjaxController extends Controller
 			DB::beginTransaction();
 
 			try {
+				$Employee = model('Employee')::find($req->id);
+
+				if ($Employee->photo != NULL && file_exists(public_path('uploads/photo/'.$Employee->photo)) && $req->file('photo')) {
+					unlink(public_path('uploads/photo/'.$Employee->photo));
+				}
+
+				$fileName = NULL;
+
+				if ($req->file('photo')) {
+					$fileName = 'emp-' . time() . '.' . $req->photo->extension();
+				}
+
 				$data = model('Employee')::where('id', $req->id)->update([
 					'name' => $req->name,
 					'email' => $req->email,
@@ -1213,11 +1239,14 @@ class AjaxController extends Controller
 					'religion' => $req->religion,
 					'designation_id' => $req->designation_id,
 					'joining_date'=>$req->joining_date,
+					'photo'=>$fileName ? $fileName : NULL,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'updated_at' => Carbon::now()
 				]);
 
 				DB::commit();
+
+				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 
 				return res_msg('Employee updated successfully!', 200);
 			} catch (\Throwable $e) {

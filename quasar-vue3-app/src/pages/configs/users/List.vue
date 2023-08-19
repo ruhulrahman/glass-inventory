@@ -200,8 +200,8 @@ export default {
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list'));
-        this.listData = res.data.data
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list_with_pagination'));
+        this.listData = res.data.data.data
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
