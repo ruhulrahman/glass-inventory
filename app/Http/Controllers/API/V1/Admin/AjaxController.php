@@ -1346,6 +1346,35 @@ class AjaxController extends Controller
 			$customer->delete();
 
 			return res_msg('Customer deleted successfully!', 200);
+		} else if($name == 'store_or_update_attendance'){
+
+			$data = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', Carbon::now())->first();
+			
+			if($data){
+				model('Employee')::where('id', $req->id)->update([
+					'attendance_status' => $req->present == 'Present' ? 'Yes' : 'No'
+				]);
+				
+                $data->present = $req->present == 'Present' ? 'Yes' : 'No';
+                $data->editor_id = $user->id;
+                $data->updated_at = Carbon::now();
+				$data->update();
+			}else{
+				model('EmployeeAttendance')::create([
+					'company_id' => $user->company_id,
+					'employee_id' => $req->id,
+					'date' => Carbon::now(),
+					'present' => $req->present == 'Present' ? 'Yes' : 'No',
+					'creator_id' => $user->id,
+					'created_at' => Carbon::now()
+				]);
+
+				model('Employee')::where('id', $req->id)->update([
+					'attendance_status' => $req->present == 'Present' ? 'Yes' : 'No'
+				]);
+			}
+
+			return res_msg('Attendance updated successfully!', 200);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
