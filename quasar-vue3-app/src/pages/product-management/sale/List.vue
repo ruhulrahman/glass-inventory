@@ -7,18 +7,18 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
       <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Products" />
+      <q-breadcrumbs-el label="Sales" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Product List</div>
+          <div class="text-h6 col-10 text-grey-8">Sales</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Product
+              Add New Sale
             </q-btn>
           </div>
         </div>
@@ -112,7 +112,7 @@
 
     </q-card>
 
-    <q-dialog v-model="showAddNewDialog" position="right">
+    <q-dialog fullWidth v-model="showAddNewDialog">
       <add-or-update :dropdownList="dropdowns" :editItem="editItem"
         @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>

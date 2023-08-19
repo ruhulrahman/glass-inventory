@@ -195,7 +195,16 @@
                 <q-icon name="inventory" color="accent"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label>Product List</q-item-label>
+                <q-item-label>Products</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/sale-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="point_of_sale" color="light-green-14"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Sales</q-item-label>
               </q-item-section>
             </q-item>
 
