@@ -264,6 +264,11 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $employees
 			]);
+		} else if($name == 'get_customer_list'){
+			$customers = model('Customer')::orderBy('id','desc')->get();
+			return res_msg('list Data', 200, [
+				'data' => $customers
+			]);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -1262,6 +1267,85 @@ class AjaxController extends Controller
 			$employee->delete();
 
 			return res_msg('Employee deleted successfully!', 200);
+		} else if ($name == 'store_customer_data') {
+
+			$validator = Validator::make($req->all(), [
+				'name' => 'required',
+				'email' => 'required|email|unique:customers,email'
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			DB::beginTransaction();
+
+			try {
+
+				$data = model('Customer')::create([
+					'company_id' => $user->company_id,
+					'name' => $req->name,
+					'email' => $req->email,
+					'phone' => $req->phone,
+					'address' => $req->address,
+					'website' => $req->website,
+					'is_active' => $req->is_active == 'false' ? 0 : 1,
+					'creator_id' => $user->company_id,
+					'created_at' => $carbon,
+				]);
+
+				DB::commit();
+
+				return res_msg('Customer inserted successfully!', 200);
+
+			} catch (\Throwable $e) {
+				return response(['msg' => 'Wrong data entry'], 422);
+				DB::rollback();
+			}
+
+		} else if ($name == 'update_customer_data') {
+
+			$validator = Validator::make($req->all(), [
+				'name' => 'required',
+				'email' => 'required|email|unique:customers,email,' . $req->id,
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+
+			DB::beginTransaction();
+
+			try {
+
+				model('Customer')::where('id', $req->id)->update([
+					'name' => $req->name,
+					'email' => $req->email,
+					'phone' => $req->phone,
+					'address' => $req->address,
+					'website' => $req->website,
+					'is_active' => $req->is_active == 'false' ? 0 : 1,
+					'updated_at' => Carbon::now()
+				]);
+
+				DB::commit();
+
+				return res_msg('Customer updated successfully!', 200);
+
+			} catch (\Throwable $e) {
+				return response(['msg' => 'Wrong data entry'], 422);
+				DB::rollback();
+			}
+
+		} else if ($name == 'delete_customer_data') {
+
+			$customer = model('Customer')::find($req->id);
+			$customer->delete();
+
+			return res_msg('Customer deleted successfully!', 200);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

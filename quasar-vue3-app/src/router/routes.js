@@ -24,6 +24,7 @@ const routes = [
       {path: '/supplier-list', component: () => import('pages/product-management/supplier/List.vue')},
       {path: '/product-list', component: () => import('pages/product-management/product/List.vue')},
       {path: '/sale-list', component: () => import('pages/product-management/sale/List.vue')},
+      {path: '/customer-list', component: () => import('pages/configs/customers/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},
