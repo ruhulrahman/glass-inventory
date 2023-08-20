@@ -6,7 +6,7 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
       <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Customer" />
+      <q-breadcrumbs-el label="Customers" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>

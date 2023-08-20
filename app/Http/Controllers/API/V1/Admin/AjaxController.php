@@ -1206,6 +1206,7 @@ class AjaxController extends Controller
 				return response(['msg' => 'Wrong data entry'], 422);
 			}
 		}else if($name == "update_employee_data"){
+
             $validator = Validator::make($req->all(), [
 				'id' => 'required',
 				'name' => 'required'
@@ -1216,10 +1217,13 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
+            // info($req->all());
+
 			DB::beginTransaction();
 
 			try {
-				$Employee = model('Employee')::find($req->id);
+                $Employee = model('Employee')::find($req->id);
+                info($Employee);
 
 				if ($Employee->photo != NULL && file_exists(public_path('uploads/photo/'.$Employee->photo)) && $req->file('photo')) {
 					unlink(public_path('uploads/photo/'.$Employee->photo));
@@ -1231,23 +1235,24 @@ class AjaxController extends Controller
 					$fileName = 'emp-' . time() . '.' . $req->photo->extension();
 				}
 
-				$data = model('Employee')::where('id', $req->id)->update([
+				$data = $Employee->update([
 					'name' => $req->name,
 					'email' => $req->email,
 					'phone1' => $req->phone1,
 					'phone2' => $req->phone2,
 					'present_address' => $req->present_address,
 					'permanent_address' => $req->permanent_address,
-					'dob' => $req->dob,
+					'dob' => $req->dob == 'null' ? NULL : new Carbon($req->dob),
 					'nid' => $req->nid,
 					'gender' => $req->gender,
 					'religion' => $req->religion,
-					'designation_id' => $req->designation_id,
-					'joining_date'=>$req->joining_date,
-					'photo'=>$fileName ? $fileName : NULL,
+					'designation_id' => $req->designation_id == 'null' ? NULL : $req->designation_id,
+					'joining_date' => $req->joining_date == 'null' ? NULL : new Carbon($req->joining_date),
+					// 'photo'=>$fileName ? $fileName : NULL,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'updated_at' => Carbon::now()
 				]);
+
 
 				DB::commit();
 
@@ -1255,7 +1260,8 @@ class AjaxController extends Controller
 
 				return res_msg('Employee updated successfully!', 200);
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
+				// return response(['msg' => 'Wrong data entry'], 422);
+				return response(['msg' => $e->errorInfo], 422);
 				DB::rollback();
 			}
 		} else if($name == 'delete_employee_data'){
@@ -1271,8 +1277,14 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'name' => 'required',
-				'email' => 'required|email|unique:customers,email'
+				'phone' => 'required',
 			]);
+
+            if ($req->email) {
+                $validator = Validator::make($req->all(), [
+                    'email' => 'email|unique:customers,email'
+                ]);
+            }
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -1306,10 +1318,16 @@ class AjaxController extends Controller
 
 		} else if ($name == 'update_customer_data') {
 
-			$validator = Validator::make($req->all(), [
+            $validator = Validator::make($req->all(), [
 				'name' => 'required',
-				'email' => 'required|email|unique:customers,email,' . $req->id,
+				'phone' => 'required',
 			]);
+
+            if ($req->email) {
+                $validator = Validator::make($req->all(), [
+                    'email' => 'email|unique:customers,email,' . $req->id,
+                ]);
+            }
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -1349,12 +1367,12 @@ class AjaxController extends Controller
 		} else if($name == 'store_or_update_attendance'){
 
 			$data = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', Carbon::now())->first();
-			
+
 			if($data){
 				model('Employee')::where('id', $req->id)->update([
 					'attendance_status' => $req->present == 'Present' ? 'Yes' : 'No'
 				]);
-				
+
                 $data->present = $req->present == 'Present' ? 'Yes' : 'No';
                 $data->editor_id = $user->id;
                 $data->updated_at = Carbon::now();

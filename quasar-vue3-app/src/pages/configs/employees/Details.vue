@@ -6,6 +6,7 @@
               <img v-else :src="apiUrl('/uploads/demo.jpg')">
             </q-avatar>
             <div class="text-h6 q-mt-md">{{editItem.name}}</div>
+            <div class="text-h6 q-mt-md">{{editItem.phone1}}</div>
           </q-card-section>
           <q-card-section style="min-width: 600px !important;overflow-x: hidden;">
             <div class="text-body2 text-justify row">

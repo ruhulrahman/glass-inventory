@@ -54,7 +54,6 @@
               round
               v-model="customer.email"
               label="Email"
-              :rules="[(val) => (val && val != '') || 'Please enter your email']"
             />
           </q-item-section>
         </q-item>
@@ -66,7 +65,7 @@
               dark
               color="white"
               v-model="customer.phone"
-              label="Phone"
+              label="Phone *"
               :rules="[(val) => (val && val != '') || 'Please enter your phone']"
             />
           </q-item-section>
@@ -75,12 +74,11 @@
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
-              type="text"
+              type="url"
               dark
               color="white"
               v-model="customer.website"
               label="Website"
-              :rules="[(val) => (val && val != '') || 'Please enter your website']"
             />
           </q-item-section>
         </q-item>

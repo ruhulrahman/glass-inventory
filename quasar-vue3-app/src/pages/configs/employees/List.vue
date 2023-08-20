@@ -79,7 +79,7 @@
                   <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="detailsData(props.row)" icon="details" size="sm" flat dense></q-btn>
+                <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
                 <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
@@ -97,7 +97,7 @@
       </q-dialog>
 
       <div class="q-pa-md q-gutter-sm">
-        <q-dialog v-model="showDetailsDialog"> 
+        <q-dialog v-model="showDetailsDialog">
 
         <details-component
           :title="editItem.name+' Details'"
