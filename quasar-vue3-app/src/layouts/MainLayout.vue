@@ -208,12 +208,12 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/product-list" active-class="q-item-no-link-highlighting">
+            <q-item to="/product-stock-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="inventory" color="accent"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label>Products</q-item-label>
+                <q-item-label>Products Stock</q-item-label>
               </q-item-section>
             </q-item>
 

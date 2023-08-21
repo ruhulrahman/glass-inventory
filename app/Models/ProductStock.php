@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class ProductStock extends Model
 {
+    protected $table= 'product_stocks';
     protected $guarded=['id'];
 
 	public function type(){

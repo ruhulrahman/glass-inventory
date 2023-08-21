@@ -95,7 +95,7 @@ class AjaxController extends Controller
 
 		} else if ($name == 'get_product_list') {
 
-			$list = model('Product')::with(
+			$list = model('ProductStock')::with(
                 'type',
                 'unit',
                 'color',
@@ -251,12 +251,23 @@ class AjaxController extends Controller
                 $item->label = $item->name;
             }
 
+			$customers = model('Customer')::where([
+                'company_id' => $user->company_id,
+                'is_active' => 1,
+            ])->get();
+
+            foreach($customers as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
 			return res_msg('list Data', 200, [
 				'categories' => $categories,
 				'suppliers' => $suppliers,
 				'productUnits' => $productUnits,
 				'productColors' => $productColors,
 				'productTypes' => $productTypes,
+				'customers' => $customers,
             ]);
 
 		} else if ($name == 'get_employee_list') {
@@ -269,6 +280,14 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $customers
 			]);
+		} else if ($name == 'get_product_invoice_list') {
+
+			$list = model('ProductInvoice')::with('customer', 'details')->orderBy('id','desc')->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -513,7 +532,7 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			$product = model('Product')::where([
+			$product = model('ProductStock')::where([
 				'company_id' => $user->company_id,
 				'category_id' => $req->category_id,
 				'color_id' => $req->color_id,
@@ -532,7 +551,7 @@ class AjaxController extends Controller
                 $product->save();
 
             } else {
-                $product = model('Product')::create([
+                $product = model('ProductStock')::create([
                     'price' => $req->price,
                     'quantity' => $req->quantity,
                     'cost' => $req->cost,
@@ -578,7 +597,7 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			$product = model('Product')::find($req->id);
+			$product = model('ProductStock')::find($req->id);
 
 			$product->update([
 				// 'name' => $req->name,
@@ -627,7 +646,7 @@ class AjaxController extends Controller
 
 			$product->delete();
 
-			return res_msg('Product deleted successfully!', 200);
+			return res_msg('Product Stock deleted successfully!', 200);
 
 		} else if ($name == 'store_user_data') {
 
@@ -1223,7 +1242,6 @@ class AjaxController extends Controller
 
 			try {
                 $Employee = model('Employee')::find($req->id);
-                info($Employee);
 
 				if ($Employee->photo != NULL && file_exists(public_path('uploads/photo/'.$Employee->photo)) && $req->file('photo')) {
 					unlink(public_path('uploads/photo/'.$Employee->photo));
@@ -1393,6 +1411,72 @@ class AjaxController extends Controller
 			}
 
 			return res_msg('Attendance updated successfully!', 200);
+		} else if ($name == 'store_product_invoice_data') {
+
+			$validator = Validator::make($req->all(), [
+				// 'name' => 'required',
+				'price' => 'required|numeric',
+				'quantity' => 'required|numeric',
+				'cost' => 'required|numeric',
+				'category_id' => 'required',
+				// 'supplier_id' => 'required',
+				'product_type_id' => 'required',
+				// 'product_code' => 'required',
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			$product = model('ProductStock')::where([
+				'company_id' => $user->company_id,
+				'category_id' => $req->category_id,
+				'color_id' => $req->color_id,
+				'unit_id' => $req->unit_id,
+				'product_type_id' => $req->product_type_id,
+            ])->first();
+
+            if ($product) {
+
+                $product->price = $req->price;
+                $product->quantity = $req->quantity;
+                $product->product_in_stock = $product->product_in_stock + $req->quantity;
+                $product->cost = $req->cost;
+                $product->selling_price = $req->selling_price;
+                $product->supplier_id = $req->supplier_id;
+                $product->save();
+
+            } else {
+                $product = model('ProductStock')::create([
+                    'price' => $req->price,
+                    'quantity' => $req->quantity,
+                    'cost' => $req->cost,
+                    'product_in_stock' => $req->quantity,
+                    'selling_price' => $req->selling_price,
+                    'category_id' => $req->category_id,
+                    'supplier_id' => $req->supplier_id,
+                    'color_id' => $req->color_id,
+                    'unit_id' => $req->unit_id,
+                    'product_type_id' => $req->product_type_id,
+                    'company_id' => $user->company_id,
+                    'creator_id' => $user->id,
+                ]);
+            }
+
+			model('ProductHistory')::create([
+                'company_id' => $user->company_id,
+				'product_id' => $product->id,
+				'price' => $req->price,
+				'quantity' => $req->quantity,
+				'cost' => $req->cost,
+				'selling_price' => $req->selling_price,
+				'product_type_id' => $req->product_type_id,
+				'creator_id' => $user->id,
+			]);
+
+			return res_msg('Product inserted successfully!', 200);
+
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

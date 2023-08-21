@@ -5,7 +5,7 @@ import waitMe from "./waitMe.min.js";
 import moment from "moment";
 import Hashids from "hashids";
 
-import { Notify } from 'quasar'
+import { Notify, Loading } from 'quasar'
 
 waitMe($);
 
@@ -293,6 +293,13 @@ export default {
           }
 
           Notify.create({ color: responseColor, message: msg, position: responsePosition, icon: responseIcon })
+        },
+        loading: function (loading = true, message = "Please wait....", group = null) {
+          if (loading) {
+            Loading.show({ message: message, html: true })
+          } else {
+            Loading.hide()
+          }
         },
         alert: function (
             msg = "No message specified",

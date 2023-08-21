@@ -1,104 +1,49 @@
 <template>
-  <q-card class="bg-primary text-white no-shadow wait_me" bordered>
-    <q-form :loading="loadingState" @submit="saveData">
-      <q-card-section class="row q-pa-sm">
-        <q-item class="full-width">
-          <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }}
-              Sale</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
-              @click="(() => { $emit('closeModal', true) })"></q-icon>
-          </q-item-section>
-        </q-item>
+  <q-page class="q-pa-sm">
+
+    <q-breadcrumbs class="text-grey q-mb-sm q-mt-sm" active-color="green">
+      <template v-slot:separator>
+        <q-icon size="1.2em" name="arrow_forward" color="green" />
+      </template>
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
+      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Sales" icon="widgets" to="/sale-list" />
+      <q-breadcrumbs-el label="Add New Sale" />
+    </q-breadcrumbs>
+
+    <q-card class="no-shadow" bordered>
+      <q-card-section>
+        <div class="row">
+          <div class="text-h6 col-10 text-grey-8">Add New Sale</div>
+          <div class="col-2 text-right">
+            <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
+              style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
+              <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
+              Add New Sale
+            </q-btn> -->
+          </div>
+        </div>
       </q-card-section>
-      <q-card-section class="q-pa-sm ">
-        <q-list class="row">
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.product_type_id" label="Product Type"
-                :options="dropdownList.productTypes" emit-value map-options
-                :rules="[val => val > 0 || 'Please select type']">
-              </q-select>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.category_id" label="Category" :options="options"
-                use-input @filter="filterFn" emit-value map-options :rules="[val => val > 0 || 'Please select category']">
-              </q-select>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.color_id" label="Color"
-                :options="dropdownList.productColors" emit-value map-options
-                :rules="[val => val > 0 || 'Please select color']">
-              </q-select>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.unit_id" label="Unit"
-                :options="dropdownList.productUnits" emit-value map-options
-                :rules="[val => val > 0 || 'Please select unit']">
-              </q-select>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" label="Unit Price"
-                :rules="[val => val > 0 || 'Please enter price']" />
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-input type="number" :disable="submitForm.id ? true : false" min="0" dark color="white" dense v-model="submitForm.quantity"
-                label="Product quantity" :rules="[val => val > 0 || 'Please enter quantity']" />
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-item-label caption class="text-green">Total Cost</q-item-label>
-              <q-item-label>{{ totalCost }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-input type="number" min="0" dark color="blue" dense v-model="submitForm.selling_price"
-                label="Product selling price" :rules="[val => val > 0 || 'Please enter selling price']" />
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.supplier_id" label="Supplier"
-                :options="dropdownList.suppliers" emit-value map-options>
-              </q-select>
-            </q-item-section>
-          </q-item>
-
-          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" label="Is Active" />
-            </q-item-section>
-          </q-item>
-        </q-list>
+      <q-separator></q-separator>
+      <q-card-section class="q-pa-none">
+        <q-table flat bordered class="no-shadow">
+            <q-tr class="bg-blue-grey-2 text-primary">
+              <q-th>SL.</q-th>
+              <q-th>Product Type</q-th>
+            </q-tr>
+            <q-tr>
+              <q-td>01</q-td>
+              <q-td>
+                <q-btn icon="edit" size="sm" class="text-teal" flat dense></q-btn>
+                <q-btn icon="delete" size="sm" class="text-red" flat dense />
+              </q-td>
+            </q-tr>
+        </q-table>
       </q-card-section>
-      <q-card-actions align="right">
-        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
-      </q-card-actions>
-    </q-form>
-  </q-card>
+
+    </q-card>
+
+  </q-page>
 </template>
 
 <script>
@@ -106,37 +51,38 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import { ref } from 'vue'
 
 export default {
-  props: ['title', 'editItem', 'dropdownList'],
+  props: ['editItem'],
   mixins: [helperMixin],
-  setup(props) {
-    const stringOptions = props.dropdownList.categories
-    console.log('stringOptions', stringOptions)
-    const options = ref(stringOptions)
+  // setup(props) {
+  //   const stringOptions = props.dropdownList.categories
+  //   console.log('stringOptions', stringOptions)
+  //   const options = ref(stringOptions)
 
-    return {
-      model: ref(null),
-      stringOptions,
-      options,
+  //   return {
+  //     model: ref(null),
+  //     stringOptions,
+  //     options,
 
-      filterFn(val, update) {
-        if (val === '') {
-          update(() => {
-            options.value = stringOptions
-          })
-          return
-        }
+  //     filterFn(val, update) {
+  //       if (val === '') {
+  //         update(() => {
+  //           options.value = stringOptions
+  //         })
+  //         return
+  //       }
 
-        update(() => {
-          const needle = val.toLowerCase()
-          options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
-        })
-      }
-    }
-  },
+  //       update(() => {
+  //         const needle = val.toLowerCase()
+  //         options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
+  //       })
+  //     }
+  //   }
+  // },
   data() {
     return {
       // stringOptions: [],
       // options: [],
+      dropdowns: [],
       loadingState: false,
       submitForm: {
         id: '',
@@ -157,38 +103,52 @@ export default {
     }
   },
   computed: {
-    totalCost: function () {
-      let totalCostValue = 0
-      if (this.submitForm.price) {
-        totalCostValue = this.submitForm.price * this.submitForm.quantity
-      }
+    // totalCost: function () {
+    //   let totalCostValue = 0
+    //   if (this.submitForm.price) {
+    //     totalCostValue = this.submitForm.price * this.submitForm.quantity
+    //   }
 
-      return totalCostValue
-    }
+    //   return totalCostValue
+    // }
   },
   created() {
     if (this.editItem) {
       this.submitForm = this.editItem
     }
-    this.stringOptions = this.dropdownList.categories
-    this.options = this.stringOptions
+    // this.stringOptions = this.dropdownList.categories
+    // this.options = this.stringOptions
   },
   mounted() {
+    this.getInitialData()
   },
   methods: {
+    getInitialData: async function () {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
+        this.dropdowns = res.data
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
     saveData: async function () {
       let ref = this;
       let jq = ref.jq();
       this.submitForm.cost = this.totalCost
 
       try {
-        // ref.wait_me(".wait_me");
-        this.loadingState = true
+        this.loading(true)
         let res = ''
         if (this.submitForm.id) {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);
         } else {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_invoice_data'), this.submitForm);
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)
@@ -196,8 +156,7 @@ export default {
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        // ref.wait_me(".wait_me", "hide");
-        this.loadingState = false
+        this.loading(false)
       }
     },
     // filterFn (val, update) {
@@ -221,4 +180,5 @@ export default {
 <style scoped>
 .card-bg {
   background-color: #162b4d;
-}</style>
+}
+</style>

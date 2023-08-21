@@ -15,8 +15,8 @@
         <div class="row">
           <div class="text-h6 col-10 text-grey-8">Sales</div>
           <div class="col-2 text-right">
-            <q-btn glossy flat color="white" class="bg-green-7 d-block"
-              style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
+            <q-btn glossy to="/add-or-update-invoice" flat color="white" class="bg-green-7 d-block"
+              style="text-transform: capitalize; padding: 0px 10px 0 19px">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
               Add New Sale
             </q-btn>
@@ -31,6 +31,9 @@
           :loading="loading"
           :pagination="initialPagination"
           :filter="filter">
+          <template v-slot:loading>
+            <q-inner-loading showing color="primary" />
+          </template>
           <template v-slot:top-right>
             <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
@@ -210,33 +213,19 @@ export default ({
   },
   mounted() {
     this.getListData();
-    this.getInitialData();
+    // this.getInitialData();
   },
   methods: {
     openAddNewDialog: function() {
       this.editItem = ''
       this.showAddNewDialog = true
     },
-    getInitialData: async function () {
-      let ref = this;
-      let jq = ref.jq();
-      try {
-        this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
-        this.dropdowns = res.data
-
-      } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
-      } finally {
-        this.loading = false
-      }
-    },
     getListData: async function () {
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_list'));
         this.listData = res.data.data
 
       } catch (err) {

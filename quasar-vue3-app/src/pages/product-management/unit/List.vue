@@ -31,6 +31,9 @@
           :loading="loading"
           :pagination="initialPagination"
           :filter="filter">
+          <template v-slot:loading>
+            <q-inner-loading showing color="primary" />
+          </template>
           <template v-slot:top-right>
             <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>

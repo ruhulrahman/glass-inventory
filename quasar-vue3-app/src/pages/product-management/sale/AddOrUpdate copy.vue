@@ -5,7 +5,7 @@
         <q-item class="full-width">
           <q-item-section>
             <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }}
-              Product</q-item-label>
+              Sale</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -182,13 +182,12 @@ export default {
       this.submitForm.cost = this.totalCost
 
       try {
-        // ref.wait_me(".wait_me");
-        this.loadingState = true
+        this.loading(true)
         let res = ''
         if (this.submitForm.id) {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);
         } else {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_invoice_data'), this.submitForm);
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)
@@ -196,8 +195,7 @@ export default {
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        // ref.wait_me(".wait_me", "hide");
-        this.loadingState = false
+        this.loading(false)
       }
     },
     // filterFn (val, update) {
