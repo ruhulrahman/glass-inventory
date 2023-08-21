@@ -26,18 +26,48 @@
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-none">
+        <!-- <div class="row q-pa-md">
+          <div class="col-3">two thirds</div>
+          <div class="col-3">two thirds</div>
+          <div class="col-3">two thirds</div>
+        </div> -->
+        <q-list class="row q-mt-md">
+
+          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+              <q-select filled dense clearable v-model="submitForm.customer_id" label="Customer"
+                :options="dropdowns.customers" emit-value map-options>
+              </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input filled dense v-model="submitForm.invoice_code" label="Invoice Code"
+                :rules="[val => val && val.length > 0 || 'Please enter invoice code']" />
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input filled dense v-model="submitForm.invoice_date" label="Invoice Date"
+                :rules="[val => val && val.length > 0 || 'Please enter invoice date']" />
+            </q-item-section>
+          </q-item>
+
+        </q-list>
         <q-table flat bordered class="no-shadow">
-            <q-tr class="bg-blue-grey-2 text-primary">
-              <q-th>SL.</q-th>
-              <q-th>Product Type</q-th>
-            </q-tr>
-            <q-tr>
-              <q-td>01</q-td>
-              <q-td>
-                <q-btn icon="edit" size="sm" class="text-teal" flat dense></q-btn>
-                <q-btn icon="delete" size="sm" class="text-red" flat dense />
-              </q-td>
-            </q-tr>
+          <q-tr class="bg-blue-grey-2 text-primary">
+            <q-th>SL.</q-th>
+            <q-th>Product Type</q-th>
+          </q-tr>
+          <q-tr>
+            <q-td>01</q-td>
+            <q-td>
+              <q-btn icon="edit" size="sm" class="text-teal" flat dense></q-btn>
+              <q-btn icon="delete" size="sm" class="text-red" flat dense />
+            </q-td>
+          </q-tr>
         </q-table>
       </q-card-section>
 
@@ -86,19 +116,39 @@ export default {
       loadingState: false,
       submitForm: {
         id: '',
-        product_type_id: null,
-        price: 0,
-        quantity: 0,
-        cost: 0,
-        selling_price: 0,
-        in_stock: 0,
-        min_stock: 0,
+        invoice_code: null,
+        customer_id: null,
+        invoice_date: null,
+        due_date: null,
+        note: null,
+        po_no: null,
+        payment_status_id: null,
+        sub_total: 0,
+        discount_percentage: 0,
+        discount_amount: 0,
+        vat_percentage: 0,
+        vat_amount: 0,
+        tax_percentage: 0,
+        tax_amount: 0,
+        paid_amount: 0,
+        sending_email_to_customer_count: 0,
+        discount_amount: 0,
         category_id: null,
         unit_id: null,
         color_id: null,
         supplier_id: null,
         product_code: null,
         active: true,
+        details: [
+          {
+            id: '',
+            product_invoice_id: null,
+            product_stock_id: null,
+            quantity: 0,
+            price: 0,
+            amount: 0,
+          }
+        ]
       }
     }
   },

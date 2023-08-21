@@ -74,8 +74,13 @@
               <q-td key="address" :props="props">
                   {{ props.row.address }}
               </q-td>
+              <q-td key="website" :props="props">
+                  {{ props.row.website }}
+              </q-td>
               <q-td key="status" :props="props">
-                  {{ props.row.status }}
+                  <q-badge :color="props.row.status_color">
+                    {{ props.row.status }}
+                  </q-badge>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -135,6 +140,7 @@ const columns = [
   },
   { name: "phone", label: "Phone", field: "phone" },
   { name: "address", label: "Address", field: "address" },
+  { name: "website", label: "Website", field: "website" },
   { name: "status", label: "Status", field: "status" },
   {
     name: "action",
@@ -181,6 +187,7 @@ export default {
           item.phone = item.phone
           item.address = item.address
           item.status = item.is_active == 1 ? 'Active' : 'Inactive'
+          item.status_color = item.is_active ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {

@@ -18,7 +18,7 @@
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
               <q-input dark color="white" dense v-model="submitForm.name" label="Color Name"
-                :rules="[val => val && val.length > 0 || 'Please enter submitForm name']" />
+                :rules="[val => val && val.length > 0 || 'Please enter color name']" />
             </q-item-section>
           </q-item>
 
