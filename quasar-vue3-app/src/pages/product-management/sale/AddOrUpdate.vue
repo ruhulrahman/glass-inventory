@@ -50,8 +50,19 @@
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input filled dense v-model="submitForm.invoice_date" label="Invoice Date"
-                :rules="[val => val && val.length > 0 || 'Please enter invoice date']" />
+              <q-input filled dense v-model="submitForm.invoice_date" label="Invoice Date" :rules="['date']">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="submitForm.invoice_date">
+                        <div class="row items-center justify-end" v-close-popup>
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
             </q-item-section>
           </q-item>
 
@@ -79,10 +90,15 @@
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
 import { ref } from 'vue'
+// import flatPickr from 'vue-flatpickr-component';
+// import 'flatpickr/dist/flatpickr.css';
 
 export default {
   props: ['editItem'],
   mixins: [helperMixin],
+  components: {
+    flatPickr
+  },
   // setup(props) {
   //   const stringOptions = props.dropdownList.categories
   //   console.log('stringOptions', stringOptions)
@@ -114,6 +130,10 @@ export default {
       // options: [],
       dropdowns: [],
       loadingState: false,
+      datePickerShow: true,
+      config: {
+        dateFormat: 'Y-m-d',
+      },
       submitForm: {
         id: '',
         invoice_code: null,
