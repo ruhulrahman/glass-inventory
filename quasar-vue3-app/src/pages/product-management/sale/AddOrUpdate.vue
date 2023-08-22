@@ -97,7 +97,7 @@ export default {
   props: ['editItem'],
   mixins: [helperMixin],
   components: {
-    flatPickr
+    // flatPickr
   },
   // setup(props) {
   //   const stringOptions = props.dropdownList.categories
