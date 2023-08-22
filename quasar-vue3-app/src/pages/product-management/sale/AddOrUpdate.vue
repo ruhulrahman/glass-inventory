@@ -36,7 +36,7 @@
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
               <q-select filled dense clearable v-model="submitForm.customer_id" label="Customer"
-                :options="dropdowns.customers" emit-value map-options>
+                :options="dropdownList.customers" emit-value map-options>
               </q-select>
             </q-item-section>
           </q-item>
@@ -67,18 +67,61 @@
           </q-item>
 
         </q-list>
-        <q-table flat bordered class="no-shadow">
-          <q-tr class="bg-blue-grey-2 text-primary">
-            <q-th>SL.</q-th>
-            <q-th>Product Type</q-th>
-          </q-tr>
-          <q-tr>
-            <q-td>01</q-td>
-            <q-td>
-              <q-btn icon="edit" size="sm" class="text-teal" flat dense></q-btn>
-              <q-btn icon="delete" size="sm" class="text-red" flat dense />
-            </q-td>
-          </q-tr>
+        <q-table flat bordered class="no-shadow" :dense="$q.screen.lt.md" :rows="submitForm.details" :columns="columns" row-key="name">
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-blue-grey-2 text-primary">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" class="q-mt-md">
+              <!-- <q-td key="sl" :props="props">
+                {{ props.pageIndex + 1 }}
+              </q-td> -->
+              <q-td key="product_type" :props="props" class="q-mt-md">
+                    <q-select filled dense v-model="props.row.product_type_id" label="Product Type" style="max-width: 150px"
+                      :options="dropdownList.productTypes" emit-value map-options
+                      :rules="[val => val > 0 || 'Please select product type']">
+                    </q-select>
+              </q-td>
+              <q-td key="category" :props="props" class="q-mt-md">
+                    <q-select filled dense v-model="props.row.category_id" label="Product Category" style="max-width: 150px"
+                      :options="dropdownList.categories" emit-value map-options
+                      :rules="[val => val > 0 || 'Please select category']">
+                    </q-select>
+              </q-td>
+              <q-td key="color" :props="props" class="q-mt-md">
+                    <q-select clickable @input="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.color_id" label="Product color" style="max-width: 150px"
+                      :options="dropdownList.productColors" emit-value map-options
+                      :rules="[val => val > 0 || 'Please select color']">
+                    </q-select>
+              </q-td>
+              <q-td key="unit" :props="props" class="q-mt-md">
+                    <q-select clickable @change="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.unit_id" label="Product unit" style="max-width: 150px"
+                      :options="dropdownList.productUnits" emit-value map-options
+                      :rules="[val => val > 0 || 'Please select unit']">
+                    </q-select>
+              </q-td>
+              <q-td key="price" :props="props" class="q-mt-md">
+                <q-input type="number" filled dense v-model="props.row.price" label="Price" style="max-width: 130px"
+                :rules="[val => val && val.length > 0 || 'Please enter price']" />
+              </q-td>
+              <q-td key="quantity" :props="props" class="q-mt-md">
+                <q-input type="number" filled dense v-model="props.row.quantity" label="Quantity" style="max-width: 130px"
+                :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
+              </q-td>
+              <q-td key="amount" :props="props" class="q-mt-md">
+                <q-input type="number" filled dense v-model="props.row.amount" label="Amount" style="max-width: 130px"
+                :rules="[val => val && val.length > 0 || 'Please enter amount']" />
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md" class="text-red" flat dense></q-btn>
+                <q-btn @click="addNewRow(props.row)" icon="add_circle" size="md" class="text-green" flat dense />
+              </q-td>
+            </q-tr>
+          </template>
         </q-table>
       </q-card-section>
 
@@ -92,6 +135,18 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import { ref } from 'vue'
 // import flatPickr from 'vue-flatpickr-component';
 // import 'flatpickr/dist/flatpickr.css';
+// import 'bootstrap/dist/css/bootstrap.css';
+
+const columns = [
+  { name: "product_type", field: "product_type", label: "Product Type", align: "left" },
+  { name: "category", align: "center", label: "Category", field: "category", align: "left" },
+  { name: "color", label: "Color", field: "color", align: "left" },
+  { name: "unit", label: "Unit", field: "unit", align: "left" },
+  { name: "price", label: "Unit price", field: "price", align: "left" },
+  { name: "quantity", label: "Quantity", field: "quantity", align: "left" },
+  { name: "amount", label: "Amount", field: "amount", align: "left" },
+  { name: "action", label: "Action", field: "Action", align: "right"},
+];
 
 export default {
   props: ['editItem'],
@@ -99,36 +154,37 @@ export default {
   components: {
     // flatPickr
   },
-  // setup(props) {
-  //   const stringOptions = props.dropdownList.categories
-  //   console.log('stringOptions', stringOptions)
-  //   const options = ref(stringOptions)
+  setup(props) {
+    // const stringOptions = props.dropdownList.categories
+    // console.log('stringOptions', stringOptions)
+    // const options = ref(stringOptions)
 
-  //   return {
-  //     model: ref(null),
-  //     stringOptions,
-  //     options,
+    return {
+      // model: ref(null),
+      // stringOptions,
+      // options,
 
-  //     filterFn(val, update) {
-  //       if (val === '') {
-  //         update(() => {
-  //           options.value = stringOptions
-  //         })
-  //         return
-  //       }
+      // filterFn(val, update) {
+      //   if (val === '') {
+      //     update(() => {
+      //       options.value = stringOptions
+      //     })
+      //     return
+      //   }
 
-  //       update(() => {
-  //         const needle = val.toLowerCase()
-  //         options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
-  //       })
-  //     }
-  //   }
-  // },
+      //   update(() => {
+      //     const needle = val.toLowerCase()
+      //     options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
+      //   })
+      // },
+      columns
+    }
+  },
   data() {
     return {
       // stringOptions: [],
       // options: [],
-      dropdowns: [],
+      dropdownList: [],
       loadingState: false,
       datePickerShow: true,
       config: {
@@ -162,9 +218,13 @@ export default {
         details: [
           {
             id: '',
+            product_type_id: null,
+            category_id: null,
+            color_id: null,
+            unit_id: null,
             product_invoice_id: null,
             product_stock_id: null,
-            quantity: 0,
+            quantity: 1,
             price: 0,
             amount: 0,
           }
@@ -193,13 +253,44 @@ export default {
     this.getInitialData()
   },
   methods: {
+    removeRow: async function (index) {
+      this.submitForm.details.splice(index, 1)
+    },
+    addNewRow: async function () {
+      this.submitForm.details.push({
+        id: '',
+        product_type_id: null,
+        color_id: 10,
+        category_id: null,
+        product_invoice_id: null,
+        product_stock_id: null,
+        quantity: 0,
+        price: 0,
+        amount: 0,
+      })
+    },
+    getProductPrice: async function (item, index) {
+      // console.log('item', item)
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'));
+        console.log('res.data.data', res.data.data)
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
     getInitialData: async function () {
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
-        this.dropdowns = res.data
+        this.dropdownList = res.data
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')

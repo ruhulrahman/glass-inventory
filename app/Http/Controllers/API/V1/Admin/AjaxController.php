@@ -83,9 +83,9 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
-		} else if ($name == 'get_product_list_with_pagination') {
+		} else if ($name == 'get_product_stock_list_with_pagination') {
 
-			$list = model('Product')::with('type', 'unit', 'color', 'supplier', 'category', 'histories')
+			$list = model('ProductStock')::with('type', 'unit', 'color', 'supplier', 'category', 'histories')
                     ->where('company_id', $user->company_id)
                     ->paginate($default_per_page);
 
@@ -93,7 +93,7 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
-		} else if ($name == 'get_product_list') {
+		} else if ($name == 'get_product_stock_list') {
 
 			$list = model('ProductStock')::with(
                 'type',
@@ -288,6 +288,33 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
+		} else if ($name == 'get_product_price_by_filter') {
+
+			$query = model('ProductStock')::where([
+                'company_id' => $user->company_id,
+            ]);
+
+            if ($req->product_type_id) {
+                $query->where('product_type_id', $req->product_type_id);
+            }
+
+            if ($req->color_id) {
+                $query->where('color_id', $req->color_id);
+            }
+
+            if ($req->unit_id) {
+                $query->where('unit_id', $req->unit_id);
+            }
+
+            if ($req->category_id) {
+                $query->where('category_id', $req->category_id);
+            }
+
+            $productStock = $query->first();
+
+			return res_msg('list Data', 200, [
+				'data' => $productStock
+			]);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -514,7 +541,7 @@ class AjaxController extends Controller
 
 			return res_msg('Supplier deleted successfully!', 200);
 
-		} else if ($name == 'store_product_data') {
+		} else if ($name == 'store_product_stock_data') {
 
 			$validator = Validator::make($req->all(), [
 				// 'name' => 'required',
@@ -578,9 +605,9 @@ class AjaxController extends Controller
 				'creator_id' => $user->id,
 			]);
 
-			return res_msg('Product inserted successfully!', 200);
+			return res_msg('Product stock added successfully!', 200);
 
-		} else if ($name == 'update_product_data') {
+		} else if ($name == 'update_product_stock_data') {
 
 			$validator = Validator::make($req->all(), [
 				// 'name' => 'required',
@@ -638,11 +665,11 @@ class AjaxController extends Controller
 
             }
 
-			return res_msg('Product updated successfully!', 200);
+			return res_msg('Product stock updated successfully!', 200);
 
-		} else if ($name == 'delete_product_data') {
+		} else if ($name == 'delete_product_stock_data') {
 
-			$product = model('Product')::find($req->id);
+			$product = model('ProductStock')::find($req->id);
 
 			$product->delete();
 
