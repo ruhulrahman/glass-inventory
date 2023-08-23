@@ -67,7 +67,7 @@
           </q-item>
 
         </q-list>
-        <q-table flat bordered class="no-shadow" :dense="$q.screen.lt.md" :rows="submitForm.details" :columns="columns" row-key="name">
+        <q-table flat bordered class="no-shadow" :rows="submitForm.details" :columns="columns" row-key="name">
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-blue-grey-2 text-primary">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -81,44 +81,57 @@
                 {{ props.pageIndex + 1 }}
               </q-td> -->
               <q-td key="product_type" :props="props" class="q-mt-md">
-                    <q-select filled dense v-model="props.row.product_type_id" label="Product Type" style="max-width: 150px"
-                      :options="dropdownList.productTypes" emit-value map-options
-                      :rules="[val => val > 0 || 'Please select product type']">
-                    </q-select>
+                <q-select filled dense v-model="props.row.product_type_id" label="Product Type" style="max-width: 150px"
+                  :options="dropdownList.productTypes" emit-value map-options
+                  :rules="[val => val > 0 || 'Please select product type']">
+                </q-select>
               </q-td>
               <q-td key="category" :props="props" class="q-mt-md">
-                    <q-select filled dense v-model="props.row.category_id" label="Product Category" style="max-width: 150px"
-                      :options="dropdownList.categories" emit-value map-options
-                      :rules="[val => val > 0 || 'Please select category']">
-                    </q-select>
+                <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
+                  v-model="props.row.category_id" label="Product Category" style="max-width: 150px"
+                  :options="dropdownList.categories" emit-value map-options
+                  :rules="[val => val > 0 || 'Please select category']">
+                </q-select>
               </q-td>
               <q-td key="color" :props="props" class="q-mt-md">
-                    <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.color_id" label="Product color" style="max-width: 150px"
-                      :options="dropdownList.productColors" emit-value map-options
-                      :rules="[val => val > 0 || 'Please select color']">
-                    </q-select>
+                <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
+                  v-model="props.row.color_id" label="Product color" style="max-width: 150px"
+                  :options="dropdownList.productColors" emit-value map-options
+                  :rules="[val => val > 0 || 'Please select color']">
+                </q-select>
               </q-td>
               <q-td key="unit" :props="props" class="q-mt-md">
-                    <q-select use-chips @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.unit_id" label="Product unit" style="max-width: 150px"
-                      :options="dropdownList.productUnits" emit-value map-options
-                      :rules="[val => val > 0 || 'Please select unit']">
-                    </q-select>
+                <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
+                  v-model="props.row.unit_id" label="Product unit" style="max-width: 150px"
+                  :options="dropdownList.productUnits" emit-value map-options
+                  :rules="[val => val > 0 || 'Please select unit']">
+                </q-select>
               </q-td>
               <q-td key="price" :props="props" class="q-mt-md">
-                <q-input type="number" filled dense v-model="props.row.price" label="Price" style="max-width: 130px"
-                :rules="[val => val && val.length > 0 || 'Please enter price']" />
+                <q-input type="number" filled dense v-model="props.row.price" label="Price" input-class="text-right" style="max-width: 130px"
+                  :rules="[val => val && val.length > 0 || 'Please enter price']" />
               </q-td>
               <q-td key="quantity" :props="props" class="q-mt-md">
-                <q-input type="number" filled dense v-model="props.row.quantity" label="Quantity" style="max-width: 130px"
-                :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
+                <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)" @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense v-model="props.row.quantity" label="Quantity" input-class="text-right" style="max-width: 130px"
+                  :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
               </q-td>
               <q-td key="amount" :props="props" class="q-mt-md">
-                <q-input type="number" filled dense v-model="props.row.amount" label="Amount" style="max-width: 130px"
-                :rules="[val => val && val.length > 0 || 'Please enter amount']" />
+                <q-input :disable="true" type="number" filled dense v-model="props.row.amount" label="Amount" input-class="text-right" style="max-width: 130px" />
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md" class="text-red" flat dense></q-btn>
+                <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md"
+                  class="text-red" flat dense></q-btn>
                 <q-btn @click="addNewRow(props.row)" icon="add_circle" size="md" class="text-green" flat dense />
+              </q-td>
+            </q-tr>
+          </template>
+          <template v-slot:bottom-row>
+            <q-tr>
+              <q-td colspan="6" class="text-right">
+                <b>Sub-Total</b>
+              </q-td>
+              <q-td class="text-right">
+                {{ subTotalAmount }}
               </q-td>
             </q-tr>
           </template>
@@ -142,10 +155,10 @@ const columns = [
   { name: "category", align: "center", label: "Category", field: "category", align: "left" },
   { name: "color", label: "Color", field: "color", align: "left" },
   { name: "unit", label: "Unit", field: "unit", align: "left" },
-  { name: "price", label: "Unit price", field: "price", align: "left" },
-  { name: "quantity", label: "Quantity", field: "quantity", align: "left" },
-  { name: "amount", label: "Amount", field: "amount", align: "left" },
-  { name: "action", label: "Action", field: "Action", align: "right"},
+  { name: "price", label: "Unit price", field: "price", align: "center" },
+  { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
+  { name: "amount", label: "Amount", field: "amount", align: "center" },
+  { name: "action", label: "Action", field: "Action", align: "right" },
 ];
 
 export default {
@@ -224,7 +237,7 @@ export default {
             unit_id: null,
             product_invoice_id: null,
             product_stock_id: null,
-            quantity: 1,
+            quantity: 0,
             price: 0,
             amount: 0,
           }
@@ -233,14 +246,37 @@ export default {
     }
   },
   computed: {
-    // totalCost: function () {
-    //   let totalCostValue = 0
-    //   if (this.submitForm.price) {
-    //     totalCostValue = this.submitForm.price * this.submitForm.quantity
-    //   }
+    subTotalAmount: function () {
 
-    //   return totalCostValue
-    // }
+      let payable_amount = 0.00
+
+      this.submitForm.details.forEach(function (row) {
+        if (row.amount && row.amount > 0) {
+          payable_amount += parseFloat(row.amount)
+        }
+      })
+
+      if (this.submitForm.discount_percentage > 0) {
+        const discountAmount = parseFloat((this.submitForm.discount_percentage * payable_amount) / 100).toFixed(2)
+        this.submitForm.discount_amount = discountAmount
+      }
+
+      if (this.submitForm.vat_percentage > 0.1 && payable_amount > 0) {
+        this.submitForm.vat_amount = parseFloat((this.submitForm.vat_percentage / 100) * payable_amount).toFixed(2)
+      } else {
+        this.submitForm.vat_amount = 0
+      }
+
+      if (this.submitForm.tax_percentage > 0.1 && payable_amount > 0) {
+        this.submitForm.tax_amount = parseFloat((this.submitForm.tax_percentage / 100) * payable_amount).toFixed(2)
+      } else {
+        this.submitForm.tax_amount = 0
+      }
+
+      this.submitForm.total_payable_amount = parseFloat(payable_amount + parseFloat(this.submitForm.vat_amount) + parseFloat(this.submitForm.tax_amount)) - (parseFloat(this.submitForm.discount_amount)).toFixed(2)
+
+      return parseFloat(payable_amount).toFixed(2)
+    },
   },
   created() {
     if (this.editItem) {
@@ -253,6 +289,22 @@ export default {
     this.getInitialData()
   },
   methods: {
+    calculateUnitWisePrice: function (index) {
+      var quantity = 0;
+      var unit_price = 0;
+
+      if (this.submitForm.details[index].quantity) {
+        quantity = this.submitForm.details[index].quantity;
+      }
+
+      if (this.submitForm.details[index].price) {
+        unit_price = this.submitForm.details[index].price;
+      }
+
+      if (quantity >= 0 && unit_price >= 0) {
+        this.submitForm.details[index].amount = parseFloat(quantity) * parseFloat(unit_price);
+      }
+    },
     removeRow: async function (index) {
       this.submitForm.details.splice(index, 1)
     },
@@ -269,17 +321,21 @@ export default {
         amount: 0,
       })
     },
-    getProductPrice: async function (event) {
+    getProductPrice: async function (item, rowIndex) {
 
-      console.log('event', event)
       console.log('this.submitForm', this.submitForm)
 
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'), item);
         console.log('res.data.data', res.data.data)
+        // const importedListCopy = this.submitForm.details.map(item => item.index === this.editItem.index ? {...this.importedList, ...this.editItem} : item );
+        // this.submitForm.details = importedListCopy
+        const objIndex = this.submitForm.details.findIndex((item, index) => index == rowIndex)
+
+        this.submitForm.details[objIndex].price = res.data.data ? res.data.data.selling_price : ''
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
