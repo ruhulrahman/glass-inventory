@@ -93,13 +93,13 @@
                     </q-select>
               </q-td>
               <q-td key="color" :props="props" class="q-mt-md">
-                    <q-select clickable @input="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.color_id" label="Product color" style="max-width: 150px"
+                    <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.color_id" label="Product color" style="max-width: 150px"
                       :options="dropdownList.productColors" emit-value map-options
                       :rules="[val => val > 0 || 'Please select color']">
                     </q-select>
               </q-td>
               <q-td key="unit" :props="props" class="q-mt-md">
-                    <q-select clickable @change="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.unit_id" label="Product unit" style="max-width: 150px"
+                    <q-select use-chips @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense v-model="props.row.unit_id" label="Product unit" style="max-width: 150px"
                       :options="dropdownList.productUnits" emit-value map-options
                       :rules="[val => val > 0 || 'Please select unit']">
                     </q-select>
@@ -269,8 +269,11 @@ export default {
         amount: 0,
       })
     },
-    getProductPrice: async function (item, index) {
-      // console.log('item', item)
+    getProductPrice: async function (event) {
+
+      console.log('event', event)
+      console.log('this.submitForm', this.submitForm)
+
       let ref = this;
       let jq = ref.jq();
       try {
