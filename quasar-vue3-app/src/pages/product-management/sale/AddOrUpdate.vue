@@ -116,7 +116,7 @@
                   :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
               </q-td>
               <q-td key="amount" :props="props" class="q-mt-md">
-                <q-input :disable="true" type="number" filled dense v-model="props.row.amount" label="Amount" input-class="text-right" style="max-width: 130px" />
+                {{ props.row.amount }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md"
@@ -126,13 +126,85 @@
             </q-tr>
           </template>
           <template v-slot:bottom-row>
-            <q-tr>
+            <q-tr class="bg-blue-grey-1">
               <q-td colspan="6" class="text-right">
                 <b>Sub-Total</b>
               </q-td>
               <q-td class="text-right">
                 {{ subTotalAmount }}
+                <!-- <q-input :disable="true" bg-color="green-2" type="number" filled dense v-model="subTotalAmount" label="Sub-Total" input-class="text-right" /> -->
               </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="6" class="text-right">
+                <b>Discount</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount" input-class="text-right" />
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="5" class="text-right">
+                <b>Vat</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-input type="number" suffix="%" filled dense v-model="submitForm.vat_percentage" label="Percentage" input-class="text-right" style="max-width: 100px"/>
+              </q-td>
+              <q-td class="text-right">
+                {{ submitForm.vat_amount }}
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="5" class="text-right">
+                <b>Tax</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-input type="number" suffix="%" filled dense v-model="submitForm.tax_percentage" label="Percentage" input-class="text-right" style="max-width: 100px"/>
+              </q-td>
+              <q-td class="text-right">
+                {{ submitForm.tax_amount }}
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr class="bg-blue-grey-1">
+              <q-td colspan="6" class="text-right">
+                <b>Total Payable Amount</b>
+              </q-td>
+              <q-td class="text-right">
+                {{ submitForm.total_payable_amount }}
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="6" class="text-right">
+                <b>Paid Amount</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-input bg-color="green-1" type="number" filled dense v-model="submitForm.paid_amount" label="Paid Amount" input-class="text-right" />
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="6" class="text-right">
+                <b>Due Amount</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-input :bg-color="submitForm.due_amount > 0 ? 'red-1' : ''" :disable="true" type="number" filled dense v-model="submitForm.due_amount" label="Due Amount" input-class="text-right" />
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="7" class="text-right">
+
+            <q-btn glossy @click="saveInvoiceData()" flat color="white" class="bg-green-7 d-block"
+              style="text-transform: capitalize; padding: 0px 10px 0 19px">
+              Save Invoice
+            </q-btn>
+              </q-td>
+              <q-td></q-td>
             </q-tr>
           </template>
         </q-table>
@@ -157,7 +229,7 @@ const columns = [
   { name: "unit", label: "Unit", field: "unit", align: "left" },
   { name: "price", label: "Unit price", field: "price", align: "center" },
   { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
-  { name: "amount", label: "Amount", field: "amount", align: "center" },
+  { name: "amount", label: "Amount", field: "amount", align: "right" },
   { name: "action", label: "Action", field: "Action", align: "right" },
 ];
 
@@ -214,14 +286,15 @@ export default {
         payment_status_id: null,
         sub_total: 0,
         discount_percentage: 0,
-        discount_amount: 0,
+        discount_amount: 0.00,
         vat_percentage: 0,
-        vat_amount: 0,
+        vat_amount: 0.00,
         tax_percentage: 0,
-        tax_amount: 0,
-        paid_amount: 0,
+        tax_amount: 0.00,
+        total_payable_amount: 0.00,
+        paid_amount: 0.00,
+        due_amount: 0.00,
         sending_email_to_customer_count: 0,
-        discount_amount: 0,
         category_id: null,
         unit_id: null,
         color_id: null,
@@ -238,8 +311,8 @@ export default {
             product_invoice_id: null,
             product_stock_id: null,
             quantity: 0,
-            price: 0,
-            amount: 0,
+            price: 0.00,
+            amount: 0.00,
           }
         ]
       }
@@ -273,7 +346,9 @@ export default {
         this.submitForm.tax_amount = 0
       }
 
-      this.submitForm.total_payable_amount = parseFloat(payable_amount + parseFloat(this.submitForm.vat_amount) + parseFloat(this.submitForm.tax_amount)) - (parseFloat(this.submitForm.discount_amount)).toFixed(2)
+      // this.submitForm.total_payable_amount = ((payable_amount + this.submitForm.vat_amount + this.submitForm.tax_amount) - this.submitForm.discount_amount)
+      this.submitForm.total_payable_amount = parseFloat(parseFloat(payable_amount + parseFloat(this.submitForm.vat_amount) + parseFloat(this.submitForm.tax_amount)) - parseFloat(this.submitForm.discount_amount)).toFixed(2)
+      this.submitForm.due_amount = parseFloat(this.submitForm.total_payable_amount - this.submitForm.paid_amount).toFixed(2)
 
       return parseFloat(payable_amount).toFixed(2)
     },
@@ -336,6 +411,7 @@ export default {
         const objIndex = this.submitForm.details.findIndex((item, index) => index == rowIndex)
 
         this.submitForm.details[objIndex].price = res.data.data ? res.data.data.selling_price : ''
+        this.submitForm.details[objIndex].product_stock_id = res.data.data ? res.data.data.id : ''
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -357,10 +433,9 @@ export default {
         this.loading = false
       }
     },
-    saveData: async function () {
+    saveInvoiceData: async function () {
       let ref = this;
       let jq = ref.jq();
-      this.submitForm.cost = this.totalCost
 
       try {
         this.loading(true)
