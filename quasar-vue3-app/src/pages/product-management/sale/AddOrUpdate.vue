@@ -8,13 +8,13 @@
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
       <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
       <q-breadcrumbs-el label="Sales" icon="widgets" to="/sale-list" />
-      <q-breadcrumbs-el label="Add New Sale" />
+      <q-breadcrumbs-el>{{ submitForm.id ? 'Update' : 'Add New' }} Sale</q-breadcrumbs-el>
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Add New Sale</div>
+          <div class="text-h6 col-10 text-grey-8">{{ submitForm.id ? 'Update' : 'Add New' }} Sale</div>
           <div class="col-2 text-right">
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
@@ -33,17 +33,40 @@
         </div> -->
         <q-list class="row q-mt-md">
 
-          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <q-item v-if="!showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
               <q-select filled dense clearable v-model="submitForm.customer_id" label="Customer"
-                :options="dropdownList.customers" emit-value map-options>
+                :options="dropdownList.customerList" emit-value map-options use-input @filter="filterFn">
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                      <q-btn glossy @click="showCustomerAddField = true" flat color="white" size="sm" class="bg-red-12 d-block">
+                        Add New customer
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                </template>
               </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input filled dense v-model="submitForm.customer_name" label="Customer name" />
+            </q-item-section>
+          </q-item>
+
+          <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input filled dense v-model="submitForm.customer_phone" label="Customer phone"
+                :rules="[val => val && val.length > 0 && showCustomerAddField==true || 'Please enter customer phone']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input filled dense v-model="submitForm.invoice_code" label="Invoice Code"
+              <q-input :disable="submitForm.id && submitForm.invoice_code ? true : false" filled dense v-model="submitForm.invoice_code" label="Invoice Code"
                 :rules="[val => val && val.length > 0 || 'Please enter invoice code']" />
             </q-item-section>
           </q-item>
@@ -108,11 +131,13 @@
                 </q-select>
               </q-td>
               <q-td key="price" :props="props" class="q-mt-md">
-                <q-input type="number" filled dense v-model="props.row.price" label="Price" input-class="text-right" style="max-width: 130px"
-                  :rules="[val => val && val.length > 0 || 'Please enter price']" />
+                <q-input type="number" filled dense v-model="props.row.price" label="Price" input-class="text-right"
+                  style="max-width: 130px" :rules="[val => val && val.length > 0 || 'Please enter price']" />
               </q-td>
               <q-td key="quantity" :props="props" class="q-mt-md">
-                <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)" @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense v-model="props.row.quantity" label="Quantity" input-class="text-right" style="max-width: 130px"
+                <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)"
+                  @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense
+                  v-model="props.row.quantity" label="Quantity" input-class="text-right" style="max-width: 130px"
                   :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
               </q-td>
               <q-td key="amount" :props="props" class="q-mt-md">
@@ -141,7 +166,8 @@
                 <b>Discount</b>
               </q-td>
               <q-td class="text-right">
-                <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount" input-class="text-right" />
+                <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount"
+                  input-class="text-right" />
               </q-td>
               <q-td></q-td>
             </q-tr>
@@ -150,7 +176,8 @@
                 <b>Vat</b>
               </q-td>
               <q-td class="text-right">
-                <q-input type="number" suffix="%" filled dense v-model="submitForm.vat_percentage" label="Percentage" input-class="text-right" style="max-width: 100px"/>
+                <q-input type="number" suffix="%" filled dense v-model="submitForm.vat_percentage" label="Percentage"
+                  input-class="text-right" style="max-width: 100px" />
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.vat_amount }}
@@ -162,7 +189,8 @@
                 <b>Tax</b>
               </q-td>
               <q-td class="text-right">
-                <q-input type="number" suffix="%" filled dense v-model="submitForm.tax_percentage" label="Percentage" input-class="text-right" style="max-width: 100px"/>
+                <q-input type="number" suffix="%" filled dense v-model="submitForm.tax_percentage" label="Percentage"
+                  input-class="text-right" style="max-width: 100px" />
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.tax_amount }}
@@ -183,7 +211,8 @@
                 <b>Paid Amount</b>
               </q-td>
               <q-td class="text-right">
-                <q-input bg-color="green-1" type="number" filled dense v-model="submitForm.paid_amount" label="Paid Amount" input-class="text-right" />
+                <q-input bg-color="green-1" type="number" filled dense v-model="submitForm.paid_amount"
+                  label="Paid Amount" input-class="text-right" />
               </q-td>
               <q-td></q-td>
             </q-tr>
@@ -192,17 +221,29 @@
                 <b>Due Amount</b>
               </q-td>
               <q-td class="text-right">
-                <q-input :bg-color="submitForm.due_amount > 0 ? 'red-1' : ''" :disable="true" type="number" filled dense v-model="submitForm.due_amount" label="Due Amount" input-class="text-right" />
+                <q-input :bg-color="submitForm.due_amount > 0 ? 'red-1' : ''" :disable="true" type="number" filled dense
+                  v-model="submitForm.due_amount" label="Due Amount" input-class="text-right" />
+              </q-td>
+              <q-td></q-td>
+            </q-tr>
+            <q-tr>
+              <q-td colspan="6" class="text-right">
+                <b>Payment Status</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-select filled dense v-model="submitForm.payment_status_id" label="Status"
+                  :options="dropdownList.paymentStatuses" emit-value map-options>
+                </q-select>
               </q-td>
               <q-td></q-td>
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
 
-            <q-btn glossy @click="saveInvoiceData()" flat color="white" class="bg-green-7 d-block"
-              style="text-transform: capitalize; padding: 0px 10px 0 19px">
-              Save Invoice
-            </q-btn>
+                <q-btn glossy @click="saveInvoiceData()" flat color="white" class="bg-green-7 d-block"
+                  style="text-transform: capitalize; padding: 0px 10px 0 19px">
+                  {{ submitForm.id ? 'Update Invoice' : 'Save Invoice' }}
+                </q-btn>
               </q-td>
               <q-td></q-td>
             </q-tr>
@@ -217,21 +258,12 @@
 
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
-import { ref } from 'vue'
+// import { ref } from 'vue'
 // import flatPickr from 'vue-flatpickr-component';
 // import 'flatpickr/dist/flatpickr.css';
 // import 'bootstrap/dist/css/bootstrap.css';
 
-const columns = [
-  { name: "product_type", field: "product_type", label: "Product Type", align: "left" },
-  { name: "category", align: "center", label: "Category", field: "category", align: "left" },
-  { name: "color", label: "Color", field: "color", align: "left" },
-  { name: "unit", label: "Unit", field: "unit", align: "left" },
-  { name: "price", label: "Unit price", field: "price", align: "center" },
-  { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
-  { name: "amount", label: "Amount", field: "amount", align: "right" },
-  { name: "action", label: "Action", field: "Action", align: "right" },
-];
+// const columns = ;
 
 export default {
   props: ['editItem'],
@@ -239,37 +271,12 @@ export default {
   components: {
     // flatPickr
   },
-  setup(props) {
-    // const stringOptions = props.dropdownList.categories
-    // console.log('stringOptions', stringOptions)
-    // const options = ref(stringOptions)
-
-    return {
-      // model: ref(null),
-      // stringOptions,
-      // options,
-
-      // filterFn(val, update) {
-      //   if (val === '') {
-      //     update(() => {
-      //       options.value = stringOptions
-      //     })
-      //     return
-      //   }
-
-      //   update(() => {
-      //     const needle = val.toLowerCase()
-      //     options.value = stringOptions.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
-      //   })
-      // },
-      columns
-    }
-  },
   data() {
     return {
       // stringOptions: [],
       // options: [],
       dropdownList: [],
+      showCustomerAddField: false,
       loadingState: false,
       datePickerShow: true,
       config: {
@@ -277,13 +284,15 @@ export default {
       },
       submitForm: {
         id: '',
-        invoice_code: null,
-        customer_id: null,
-        invoice_date: null,
-        due_date: null,
-        note: null,
-        po_no: null,
-        payment_status_id: null,
+        invoice_code: '',
+        customer_id: '',
+        customer_name: '',
+        customer_phone: '',
+        invoice_date: '',
+        due_date: '',
+        note: '',
+        po_no: '',
+        payment_status_id: '',
         sub_total: 0,
         discount_percentage: 0,
         discount_amount: 0.00,
@@ -295,21 +304,21 @@ export default {
         paid_amount: 0.00,
         due_amount: 0.00,
         sending_email_to_customer_count: 0,
-        category_id: null,
-        unit_id: null,
-        color_id: null,
-        supplier_id: null,
-        product_code: null,
+        category_id: '',
+        unit_id: '',
+        color_id: '',
+        supplier_id: '',
+        product_code: '',
         active: true,
         details: [
           {
             id: '',
-            product_type_id: null,
-            category_id: null,
-            color_id: null,
-            unit_id: null,
-            product_invoice_id: null,
-            product_stock_id: null,
+            product_type_id: '',
+            category_id: '',
+            color_id: '',
+            unit_id: '',
+            product_invoice_id: '',
+            product_stock_id: '',
             quantity: 0,
             price: 0.00,
             amount: 0.00,
@@ -319,6 +328,18 @@ export default {
     }
   },
   computed: {
+    columns: function () {
+      return [
+        { name: "product_type", field: "product_type", label: "Product Type", align: "left" },
+        { name: "category", align: "center", label: "Category", field: "category", align: "left" },
+        { name: "color", label: "Color", field: "color", align: "left" },
+        { name: "unit", label: "Unit", field: "unit", align: "left" },
+        { name: "price", label: "Unit price", field: "price", align: "center" },
+        { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
+        { name: "amount", label: "Amount", field: "amount", align: "right" },
+        { name: "action", label: "Action", field: "Action", align: "right" },
+      ]
+    },
     subTotalAmount: function () {
 
       let payable_amount = 0.00
@@ -350,18 +371,30 @@ export default {
       this.submitForm.total_payable_amount = parseFloat(parseFloat(payable_amount + parseFloat(this.submitForm.vat_amount) + parseFloat(this.submitForm.tax_amount)) - parseFloat(this.submitForm.discount_amount)).toFixed(2)
       this.submitForm.due_amount = parseFloat(this.submitForm.total_payable_amount - this.submitForm.paid_amount).toFixed(2)
 
+      if (this.submitForm.due_amount == this.submitForm.total_payable_amount) {
+        this.submitForm.payment_status_id = 15
+      } else if (this.submitForm.due_amount > 0) {
+        this.submitForm.payment_status_id = 17
+      } else {
+        this.submitForm.payment_status_id = 16
+      }
+
       return parseFloat(payable_amount).toFixed(2)
     },
   },
   created() {
-    if (this.editItem) {
-      this.submitForm = this.editItem
+    this.getInitialData()
+    console.log('this.$route.params.id', this.$route.params.id)
+    const productInvoiceId = this.hash_id(this.$route.params.id, false)[0]
+    if (productInvoiceId) {
+      this.getProductInvoiceDataById(productInvoiceId)
+    } else {
+      this.$router.push('/sale-list')
     }
     // this.stringOptions = this.dropdownList.categories
     // this.options = this.stringOptions
   },
   mounted() {
-    this.getInitialData()
   },
   methods: {
     calculateUnitWisePrice: function (index) {
@@ -379,6 +412,12 @@ export default {
       if (quantity >= 0 && unit_price >= 0) {
         this.submitForm.details[index].amount = parseFloat(quantity) * parseFloat(unit_price);
       }
+    },
+    filterFn(val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.dropdownList.customerList = this.dropdownList.customers.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
+      })
     },
     removeRow: async function (index) {
       this.submitForm.details.splice(index, 1)
@@ -419,6 +458,20 @@ export default {
         this.loading = false
       }
     },
+    getProductInvoiceDataById: async function (productInvoiceId) {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
+        this.submitForm = res.data.productInvoice
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
     getInitialData: async function () {
       let ref = this;
       let jq = ref.jq();
@@ -438,7 +491,7 @@ export default {
       let jq = ref.jq();
 
       try {
-        this.loading(true)
+        // this.loading(true)
         let res = ''
         if (this.submitForm.id) {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);
@@ -446,28 +499,13 @@ export default {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_invoice_data'), this.submitForm);
         }
         this.notify(res.msg)
-        this.$emit('closeModal', true)
-        this.$emit('reloadListData', true)
+        this.$router.push('/sale-list')
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        this.loading(false)
+        // this.loading(false)
       }
     },
-    // filterFn (val, update) {
-    //   console.log('val', val)
-    //   if (val === '') {
-    //     update(() => {
-    //       this.options.value = this.stringOptions
-    //     })
-    //     return
-    //   }
-
-    //   update(() => {
-    //     const needle = val.toLowerCase()
-    //     this.options.value = this.stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-    //   })
-    // }
   },
 }
 </script>

@@ -17,8 +17,12 @@ class ProductInvoice extends Model
 		return $this->belongsTo(Customer::class, 'customer_id');
 	}
 
+	public function payment_status(){
+		return $this->belongsTo(Status::class, 'payment_status_id');
+	}
+
 	public function details(){
-		return $this->hasMany(ProductInvoiceDetail::class, 'product_stock_id');
+		return $this->hasMany(ProductInvoiceDetail::class, 'product_invoice_id');
 	}
 
 	public function creator(){

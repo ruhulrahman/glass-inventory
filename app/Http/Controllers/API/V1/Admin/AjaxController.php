@@ -261,6 +261,13 @@ class AjaxController extends Controller
                 $item->label = $item->name;
             }
 
+			$paymentStatuses = get_statuses('payment_statuses');
+
+            foreach($paymentStatuses as $item) {
+                $item->value = $item->id;
+                $item->label = $item->name;
+            }
+
 			return res_msg('list Data', 200, [
 				'categories' => $categories,
 				'suppliers' => $suppliers,
@@ -268,6 +275,8 @@ class AjaxController extends Controller
 				'productColors' => $productColors,
 				'productTypes' => $productTypes,
 				'customers' => $customers,
+				'customerList' => $customers,
+				'paymentStatuses' => $paymentStatuses,
             ]);
 
 		} else if ($name == 'get_employee_list') {
@@ -280,14 +289,6 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $customers
 			]);
-		} else if ($name == 'get_product_invoice_list') {
-
-			$list = model('ProductInvoice')::with('customer', 'details')->orderBy('id','desc')->get();
-
-			return res_msg('list Data', 200, [
-				'data' => $list
-			]);
-
 		} else if ($name == 'get_product_price_by_filter') {
 
 			$query = model('ProductStock')::where([
@@ -315,6 +316,34 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $productStock
 			]);
+		} else if ($name == 'get_product_invoice_list') {
+
+			$list = model('ProductInvoice')::with('customer', 'payment_status', 'details')->orderBy('id','desc')->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
+		} else if ($name == 'get_product_invoice_data_by_id') {
+
+			$productInvoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
+
+            if ($productInvoice) {
+                foreach($productInvoice->details as $item) {
+                   $productStock = model('ProductStock')::find($item->product_stock_id);
+                   if ($productStock) {
+                    $item->product_type_id = $productStock->product_type_id;
+                    $item->category_id = $productStock->category_id;
+                    $item->color_id = $productStock->color_id;
+                    $item->unit_id = $productStock->unit_id;
+                   }
+                }
+            }
+
+			return res_msg('list Data', 200, [
+				'productInvoice' => $productInvoice
+			]);
+
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -488,7 +517,7 @@ class AjaxController extends Controller
 				'phone2' => $req->phone2,
 				'note' => $req->note,
 				'active' => $req->active == 'true' ? 1 : 0,
-				'creator_id' => $user->company_id,
+				'creator_id' => $user->id,
 			]);
 
 			return res_msg('Supplier inserted successfully!', 200);
@@ -1348,7 +1377,7 @@ class AjaxController extends Controller
 					'address' => $req->address,
 					'website' => $req->website,
 					'is_active' => $req->is_active == 'false' ? 0 : 1,
-					'creator_id' => $user->company_id,
+					'creator_id' => $user->id,
 					'created_at' => $carbon,
 				]);
 
@@ -1441,14 +1470,16 @@ class AjaxController extends Controller
 		} else if ($name == 'store_product_invoice_data') {
 
 			$validator = Validator::make($req->all(), [
-				// 'name' => 'required',
-				'price' => 'required|numeric',
-				'quantity' => 'required|numeric',
-				'cost' => 'required|numeric',
-				'category_id' => 'required',
-				// 'supplier_id' => 'required',
-				'product_type_id' => 'required',
-				// 'product_code' => 'required',
+				'invoice_date' => 'required',
+				// 'due_date' => 'required',
+				'payment_status_id' => 'required',
+				'sub_total' => 'required',
+				'total_payable_amount' => 'required',
+				'details.*' => 'array',
+				'details.*product_stock_id' => 'required',
+				'details.*price' => 'required',
+				'details.*quantity' => 'required',
+				'details.*amount' => 'required',
 			]);
 
 			if ($validator->fails()) {
@@ -1456,53 +1487,152 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			$product = model('ProductStock')::where([
+            $customer_id = $req->customer_id;
+
+            if (empty($req->customer_id)) {
+
+                $customer = model('Customer')::create([
+					'company_id' => $user->company_id,
+					'name' => $req->customer_name,
+					'email' => $req->email,
+					'phone' => $req->phone,
+					'is_active' => 1,
+					'creator_id' => $user->id,
+					'created_at' => $carbon,
+				]);
+
+                $customer_id = $customer->id;
+            }
+
+			$productInvoice = model('ProductInvoice')::create([
 				'company_id' => $user->company_id,
-				'category_id' => $req->category_id,
-				'color_id' => $req->color_id,
-				'unit_id' => $req->unit_id,
-				'product_type_id' => $req->product_type_id,
-            ])->first();
+				'invoice_code' => $req->invoice_code ? $req->invoice_code : rand(10000,1000000),
+				'customer_id' => $customer_id,
+				'invoice_date' => new Carbon($req->invoice_date),
+				'due_date' => new Carbon($req->due_date),
+				'notes' => $req->notes,
+				'po_no' => $req->po_no,
+				'payment_status_id' => $req->payment_status_id,
+				'sub_total' => $req->sub_total,
+				'discount_percentage' => $req->discount_percentage,
+				'discount_amount' => $req->discount_amount,
+				'vat_percentage' => $req->vat_percentage,
+				'vat_amount' => $req->vat_amount,
+				'tax_percentage' => $req->tax_percentage,
+				'tax_amount' => $req->tax_amount,
+				'total_payable_amount' => $req->total_payable_amount,
+				'paid_amount' => $req->paid_amount,
+				'due_amount' => $req->due_amount,
+				'creator_id' => $user->id,
+            ]);
 
-            if ($product) {
+            foreach($req->details as $item) {
 
-                $product->price = $req->price;
-                $product->quantity = $req->quantity;
-                $product->product_in_stock = $product->product_in_stock + $req->quantity;
-                $product->cost = $req->cost;
-                $product->selling_price = $req->selling_price;
-                $product->supplier_id = $req->supplier_id;
-                $product->save();
-
-            } else {
-                $product = model('ProductStock')::create([
-                    'price' => $req->price,
-                    'quantity' => $req->quantity,
-                    'cost' => $req->cost,
-                    'product_in_stock' => $req->quantity,
-                    'selling_price' => $req->selling_price,
-                    'category_id' => $req->category_id,
-                    'supplier_id' => $req->supplier_id,
-                    'color_id' => $req->color_id,
-                    'unit_id' => $req->unit_id,
-                    'product_type_id' => $req->product_type_id,
-                    'company_id' => $user->company_id,
-                    'creator_id' => $user->id,
+                model('ProductInvoiceDetail')::create([
+                    'product_invoice_id' => $productInvoice->id,
+                    'product_stock_id' => $item['product_stock_id'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'amount' => $item['amount'],
                 ]);
             }
 
-			model('ProductHistory')::create([
-                'company_id' => $user->company_id,
-				'product_id' => $product->id,
-				'price' => $req->price,
-				'quantity' => $req->quantity,
-				'cost' => $req->cost,
-				'selling_price' => $req->selling_price,
-				'product_type_id' => $req->product_type_id,
-				'creator_id' => $user->id,
+			return res_msg('Product invoice saved successfully!', 200);
+
+		} else if ($name == 'update_product_invoice_data') {
+
+			$validator = Validator::make($req->all(), [
+				'invoice_date' => 'required',
+				// 'due_date' => 'required',
+				'payment_status_id' => 'required',
+				'sub_total' => 'required',
+				'total_payable_amount' => 'required',
+				'details.*' => 'array',
+				'details.*product_stock_id' => 'required',
+				'details.*price' => 'required',
+				'details.*quantity' => 'required',
+				'details.*amount' => 'required',
 			]);
 
-			return res_msg('Product inserted successfully!', 200);
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+            $customer_id = $req->customer_id;
+
+            if (empty($req->customer_id)) {
+
+                $customer = model('Customer')::create([
+					'company_id' => $user->company_id,
+					'name' => $req->customer_name,
+					'email' => $req->email,
+					'phone' => $req->phone,
+					'is_active' => 1,
+					'creator_id' => $user->id,
+					'created_at' => $carbon,
+				]);
+
+                $customer_id = $customer->id;
+            }
+
+			$productInvoice = model('ProductInvoice')::find($req->id);
+
+            if ($productInvoice) {
+
+                $productInvoice->update([
+                    'customer_id' => $customer_id,
+                    'invoice_date' => new Carbon($req->invoice_date),
+                    'due_date' => new Carbon($req->due_date),
+                    'notes' => $req->notes,
+                    'po_no' => $req->po_no,
+                    'payment_status_id' => $req->payment_status_id,
+                    'sub_total' => $req->sub_total,
+                    'discount_percentage' => $req->discount_percentage,
+                    'discount_amount' => $req->discount_amount,
+                    'vat_percentage' => $req->vat_percentage,
+                    'vat_amount' => $req->vat_amount,
+                    'tax_percentage' => $req->tax_percentage,
+                    'tax_amount' => $req->tax_amount,
+                    'total_payable_amount' => $req->total_payable_amount,
+                    'paid_amount' => $req->paid_amount,
+                    'due_amount' => $req->due_amount,
+                    'editor_id' => $user->id,
+                ]);
+
+                model('ProductInvoiceDetail')::where([
+                    'product_invoice_id' => $productInvoice->id,
+                ])->delete();
+
+                foreach($req->details as $item) {
+
+                    model('ProductInvoiceDetail')::create([
+                        'product_invoice_id' => $productInvoice->id,
+                        'product_stock_id' => $item['product_stock_id'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity'],
+                        'amount' => $item['amount'],
+                    ]);
+                }
+
+            }
+
+			return res_msg('Product invoice saved successfully!', 200);
+
+		} else if ($name == 'delete_product_invoice_data') {
+
+			$productInvoice = model('ProductInvoice')::find($req->id);
+
+            if ($productInvoice) {
+
+                model('ProductInvoiceDetail')::where([
+                    'product_invoice_id' => $productInvoice->id,
+                ])->delete();
+
+                $productInvoice->delete();
+            }
+
+			return res_msg('Product invoice deleted successfully!', 200);
 
 		}
 
