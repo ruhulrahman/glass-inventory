@@ -134,12 +134,21 @@
               </q-item-section>
             </q-item>
 
+            <q-item to="/holidays" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="watch"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Holiday List</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
         </q-expansion-item>
 
         <q-item to="/employee-attendances" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
-            <q-icon name="attendance"/>
+            <q-icon name="person"/>
           </q-item-section>
           <q-item-section>
             <q-item-label>Attendance</q-item-label>
