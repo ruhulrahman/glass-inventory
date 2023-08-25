@@ -1613,12 +1613,33 @@ class AjaxController extends Controller
 
             foreach($req->details as $item) {
 
+                $productStock = model('ProductStock')::find($item['product_stock_id']);
+
+                $benefit_per_product = $item['price'] - $productStock->price;
+                if($benefit_per_product > -1) {
+                    $benefit_amount = $benefit_per_product * $item['quantity'];
+                } else {
+                    $benefit_amount = 0.00;
+                }
+
+                $loss_per_product = $productStock->price - $item['price'];
+
+                if($loss_per_product > -1) {
+                    $loss_amount = $loss_per_product * $item['quantity'];
+                } else {
+                    $loss_amount = 0.00;
+                }
+
                 model('ProductInvoiceDetail')::create([
                     'product_invoice_id' => $productInvoice->id,
                     'product_stock_id' => $item['product_stock_id'],
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],
                     'amount' => $item['amount'],
+                    'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
+                    'benefit_amount' => $benefit_amount,
+                    'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
+                    'loss_amount' => $loss_amount,
                 ]);
             }
 

@@ -7,25 +7,24 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
       <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Sales" />
+      <q-breadcrumbs-el label="Benefits" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Sales</div>
+          <div class="text-h6 col-10 text-grey-8">Benefits</div>
           <div class="col-2 text-right">
-            <q-btn glossy to="/add-or-update-invoice" flat color="white" class="bg-green-7 d-block"
+            <!-- <q-btn glossy to="/add-or-update-invoice" flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
               Add New Sale
-            </q-btn>
+            </q-btn> -->
           </div>
         </div>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-none">
-        <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
           row-key="name" no-data-label=" I didn't find anything for you"
           :loading="loading"
@@ -94,8 +93,6 @@
                     View History
                   </q-tooltip> -->
                 </q-btn>
-                <q-btn @click="editData(props.row)" icon="edit" size="sm" class="text-teal" flat dense></q-btn>
-                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="text-red" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -103,6 +100,15 @@
       </q-card-section>
 
     </q-card>
+
+    <q-dialog fullWidth v-model="showAddNewDialog">
+      <add-or-update :dropdownList="dropdowns" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
+
+    <q-dialog fullWidth v-model="showDetailDialog">
+        <detail-dialog :listData="detailItems" @reloadListData="getListData" @closeModal="showDetailDialog = false" />
+    </q-dialog>
 
   </q-page>
 </template>
@@ -112,6 +118,8 @@ import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
+import AddOrUpdate from "./AddOrUpdate.vue"
+import DetailDialog from "./DetailDialog.vue"
 
 const metaData = { title: 'Product List' }
 
@@ -131,6 +139,7 @@ export default ({
   name: "ProductList",
   mixins: [helperMixin],
   components: {
+    AddOrUpdate, DetailDialog
   },
   setup() {
     useMeta(metaData);
