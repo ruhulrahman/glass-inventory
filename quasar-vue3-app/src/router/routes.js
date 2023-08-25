@@ -28,6 +28,7 @@ const routes = [
       {path: '/invoice-details/:id', component: () => import('pages/product-management/sale/InvoiceDetails.vue')},
       {path: '/customer-list', component: () => import('pages/product-management/customer/List.vue')},
       {path: '/employee-attendances', component: () => import('pages/attendance/List.vue')},
+      {path: '/holidays', component: () => import('pages/configs/holidays/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},

@@ -6,28 +6,12 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
       <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Employee" />
+      <q-breadcrumbs-el label="Attendance" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Employee List</div>
-          <div class="col-2 text-right">
-            <q-btn
-              glossy
-              flat
-              color="white"
-              class="bg-green-7 d-block"
-              style="text-transform: capitalize; padding: 0px 10px 0 19px"
-              @click="openAddNewDialog()"
-            >
-              <q-icon
-                name="add_circle"
-                style="margin-left: -13px !important"
-              ></q-icon>
-              Attendence
-            </q-btn>
-          </div>
+          <div class="text-h6 col-10 text-grey-8">Attendance List</div>
         </div>
       </q-card-section>
       <q-separator></q-separator>
@@ -46,27 +30,48 @@
           :pagination="initialPagination"
           :filter="filter"
         >
+        
           <template v-slot:top-right>
+            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section
+            style="font-size: 12px !important"
+          >
+            <q-select
+               filled
+              borderless
+              dense
+              v-model="search_query.status_type"
+              :options="status_arr"
+              emit-value
+              map-options
+            >
+            </q-select>
+          </q-item-section>
+        </q-item>
             <q-input
-              v-if="show_filter"
               filled
               borderless
               dense
               debounce="300"
-              v-model="filter"
+              v-model="search_input"
               placeholder="Search"
+              @click="(()=>{calander = true})"
             >
               <template v-slot:append>
-                <q-icon name="search" />
+                <q-icon name="search" @click="getListData()" />
               </template>
             </q-input>
 
             <q-btn
               class="q-ml-sm"
-              icon="filter_list"
-              @click="show_filter = !show_filter"
+              icon="refresh"
+              @click="reset()"
               flat
             />
+            <q-date v-if="calander" @click="get_date()" style="position: absolute;
+    top: 55px;
+    z-index: 1;
+    right: 78px;" v-model="date_range" range />
           </template>
           <template v-slot:no-data="{ icon, message, filter }">
             <div class="full-width row flex-center text-red q-gutter-sm">
@@ -121,24 +126,22 @@
         </q-table>
       </q-card-section>
     </q-card>
-    <!-- <q-dialog v-model="showAddNewDialog" position="right">
-        <create-employee
-          :title="editItem.id ? 'Update Employee' : 'Create Employee'"
-          :companies="companies" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
-      </q-dialog>
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-card-section>
+          <div class="text-h5">Today {{dDate(new Date().toISOString().slice(0, 10))}} <strong style="text-transform: capitalize;">{{holiday_name}}</strong></div>
+        </q-card-section>
 
-      <div class="q-pa-md q-gutter-sm">
-        <q-dialog v-model="showDetailsDialog"> 
+        <q-card-section class="q-pt-none text-warning">
+          <q-icon name="warning"></q-icon>
+          Attendance is not accepted on <strong>holidays</strong>
+        </q-card-section>
 
-        <details-component
-          :title="editItem.name+' Details'"
-          :editItem="editItem"
-          @closeModal="showDetailsDialog = false"
-        />
-        </q-dialog>
-      </div> -->
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" @click="getListData()" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -216,6 +219,20 @@ export default {
       departments: [],
       listData: [],
       editItem: "",
+      date_range: null,
+      calander:false,
+      search_input: null,
+      search_query:{
+        from:null,
+        to:null,
+        status_type: null,
+      },
+      status_arr:[
+        {id:'Yes',label: 'Present'},
+        {id:'No',label: 'Absent'},
+      ],
+      alert:false,
+      holiday_name: null
     };
   },
   computed: {
@@ -248,11 +265,14 @@ export default {
       try {
         this.loading = true;
         let res = await jq.get(
-          ref.apiUrl("api/v1/admin/ajax/get_employee_list")
+          ref.apiUrl("api/v1/admin/ajax/get_attendance_employee_list"),ref.search_query
         );
+        ref.calander = false;
         this.listData = res.data.data.map((item) => {
-          item.present = item.attendance_status == 'Yes' ? 'Present' : 'Absent';
-          item.date = ref.dDate(new Date().toISOString().slice(0, 10));
+          item.present = item.present == 'Yes' ? 'Present' : 'Absent';
+          item.date = item.date ? ref.dDate(item.date) : ref.dDate(new Date().toISOString().slice(0, 10));
+          item.holiday = res.data.day
+          item.holiday_name = res.data.holiday_name
           return item;
         });
       } catch (err) {
@@ -260,6 +280,14 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    reset:async function(){
+      var ref = this
+      ref.search_input = '';
+      ref.search_query.from = null
+      ref.search_query.to = null
+      ref.search_query.status_type = null
+      ref.getListData()
     },
     editData: async function (item) {
       this.editItem = this.clone_object(item);
@@ -289,7 +317,7 @@ export default {
 
       try {
         let res = await jq.post(
-          ref.apiUrl("api/v1/admin/ajax/delete_employee_data"),
+          ref.apiUrl("api/v1/admin/ajax/delete_attendance_data"),
           item
         );
         this.notify(res.msg);
@@ -301,26 +329,54 @@ export default {
       }
     },
     change_status: async function (item) {
-    //   console.log(item);
+      // console.log(item);
       let ref = this;
       let jq = ref.jq();
-      try {
-        this.loading = true;
-        let res = await jq.post(
-          ref.apiUrl("api/v1/admin/ajax/store_or_update_attendance"),item
-        );
-        this.notify(res.msg);
-        // this.listData = res.data.data.map((item) => {
-        //   item.present = "Absent";
-        //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
-        //   return item;
-        // });
-      } catch (err) {
-        this.notify(this.err_msg(err), "negative");
-      } finally {
-        this.loading = false;
+
+      if(item.holiday == true){
+        ref.alert = true;
+        ref.holiday_name = item.holiday_name
+        return;
+      }else{
+        ref.alert = false;
+        try {
+          this.loading = true;
+          let res = await jq.post(
+            ref.apiUrl("api/v1/admin/ajax/update_attendance"),item
+          );
+          await this.getListData();
+          this.notify(res.msg);
+          // this.listData = res.data.data.map((item) => {
+          //   item.present = "Absent";
+          //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
+          //   return item;
+          // });
+        } catch (err) {
+          this.notify(this.err_msg(err), "negative");
+        } finally {
+          this.loading = false;
+        }
+
       }
+
     },
+    get_date(){
+      var ref = this
+      if (ref.date_range != null && ref.date_range.from) {
+        // console.log(ref.date_range);
+        ref.search_input = 'From:'+ref.date_range.from+' To:'+ref.date_range.to;
+        ref.search_query.from = ref.date_range.from
+        ref.search_query.to = ref.date_range.to
+        // console.log(this.date_range.from);
+        // console.log(this.date_range.to);
+        
+      }else{
+        console.log(ref.date_range);
+        ref.search_input = 'From:'+ref.date_range+' To:'+'';
+        ref.search_query.from = ref.date_range
+        ref.search_query.to = null
+      }
+    }
   },
 };
 </script>

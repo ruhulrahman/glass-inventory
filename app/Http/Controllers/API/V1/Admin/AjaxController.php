@@ -324,6 +324,104 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
+		}else if ($name == 'get_attendance_employee_list') {
+			// return $req->all();
+
+			$count = model('EmployeeAttendance')::whereDate('date',Carbon::today())->count();
+
+			if ($count == 0) {
+				$employees = model('Employee')::where('active', 1)->select('id')->get();
+				foreach ($employees as $key => $value) {
+					model('EmployeeAttendance')::create([
+						'company_id' => $user->company_id,
+						'employee_id' => $value->id,
+						'date' => Carbon::today(),
+						'present' => 'No',
+						'creator_id' => $user->id,
+						'created_at' => Carbon::now()
+					]);
+				}
+			}
+
+			$query = model('EmployeeAttendance')::query();
+
+			if ($req->from && $req->to) {
+				$query->whereBetween('date',[Carbon::parse($req->from), Carbon::parse($req->to)]);
+			}else if($req->from){
+                $query->whereDate('date',Carbon::parse($req->from));
+			}else if($req->to){
+                $query->whereDate('date',Carbon::parse($req->to));
+			}
+
+			if($req->status_type){
+                $query->where('present', $req->status_type);
+			}
+
+			if(!$req->from && !$req->to){
+                $query->whereDate('date', Carbon::today());
+			}
+
+			$attendances = $query->get();
+			// return $attendances;
+			$employees = NULL;
+
+			if($req->from || $req->to || $req->status_type && count($attendances) > 0){
+				foreach ($attendances as $key => $value) {
+					$employees[$key] =  model('Employee')::where('active', 1)->where('id', $value->employee_id)->first();
+					$employees[$key]->present = $value->present;
+					$employees[$key]->date = $value->date;
+				}
+
+			}else{
+
+				if(count($attendances) > 0){
+					$employees = model('Employee')::where('active', 1)->get();
+					foreach ($attendances as $key => $value) {
+						if($employees[$key]->id == $value->employee_id){
+							$employees[$key]->present = $value->present;
+							$employees[$key]->date = $value->date;
+						}
+					}
+				}
+			}
+
+			$holidays = model('Holiday')::where('status',1)->get();
+
+			$day = false;
+			$holiday_name = false;
+
+			foreach ($holidays as $key => $value) {
+
+				if($value->from && $value->to){
+					$from = explode('-', $value->from);
+
+					for ($i=0; $i <$value->total ; $i++) {
+						$date = Carbon::parse($from[0].'-'.$from[1].'-'.$from[2]+$i);
+						if(Carbon::today()->eq($date)){
+                            $day = true;
+							$holiday_name = $value->name;
+						}
+
+					}
+				}
+
+				if ($day == true) {
+					break;
+				}
+			}
+
+
+			return res_msg('list Data', 200, [
+				'data' => $employees,
+				'day' => $day,
+				'holiday_name' => $holiday_name
+			]);
+		}else if($name == "get_holiday_list"){
+			$holidays = model('Holiday')::all();
+
+			return res_msg('list Data', 200, [
+				'data' => $holidays
+			]);
 		} else if ($name == 'get_product_invoice_data_by_id') {
 
 			$productInvoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
@@ -347,7 +445,6 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'productInvoice' => $productInvoice
 			]);
-
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -1442,32 +1539,16 @@ class AjaxController extends Controller
 			$customer->delete();
 
 			return res_msg('Customer deleted successfully!', 200);
-		} else if($name == 'store_or_update_attendance'){
+		} else if($name == 'update_attendance'){
 
-			$data = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', Carbon::now())->first();
+			$data = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', Carbon::today())->first();
 
 			if($data){
-				model('Employee')::where('id', $req->id)->update([
-					'attendance_status' => $req->present == 'Present' ? 'Yes' : 'No'
-				]);
 
                 $data->present = $req->present == 'Present' ? 'Yes' : 'No';
                 $data->editor_id = $user->id;
                 $data->updated_at = Carbon::now();
 				$data->update();
-			}else{
-				model('EmployeeAttendance')::create([
-					'company_id' => $user->company_id,
-					'employee_id' => $req->id,
-					'date' => Carbon::now(),
-					'present' => $req->present == 'Present' ? 'Yes' : 'No',
-					'creator_id' => $user->id,
-					'created_at' => Carbon::now()
-				]);
-
-				model('Employee')::where('id', $req->id)->update([
-					'attendance_status' => $req->present == 'Present' ? 'Yes' : 'No'
-				]);
 			}
 
 			return res_msg('Attendance updated successfully!', 200);
@@ -1671,6 +1752,74 @@ class AjaxController extends Controller
 
 			return res_msg("Invoice payment added successfully", 200);
 
+		}else if($name == "update_holiday_data"){
+			$validator = Validator::make($req->all(), [
+				'name' => 'required',
+				'from' => 'required'
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			$diff = 0;
+
+			if($req->from && $req->to){
+				$from = explode('-', $req->from);
+				$to = explode('-', $req->to);
+
+				$total = $to[2] - $from[2];
+				$diff = $total == 0 ? $total+1 : $total+1;
+			}
+
+			$holidays = model('Holiday')::where('id', $req->id)->update([
+				'name'=>$req->name,
+				'from'=> $req->from,
+				'to'=> $req->to,
+				'total'=>$diff == 0 ? 1 : $diff,
+				'editor_id'=>$user->id
+			]);
+
+			return res_msg('Holiday update successfully', 200, []);
+		}else if($name == "store_holiday_data"){
+			$validator = Validator::make($req->all(), [
+				'name' => 'required',
+				'from' => 'required'
+			]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			$diff = 0;
+
+			if($req->from && $req->to){
+				$from = explode('-', $req->from);
+				$to = explode('-', $req->to);
+
+				$total = $to[2] - $from[2];
+				$diff = $total == 0 ? $total+1 : $total+1;
+			}
+
+			$holidays = model('Holiday')::create([
+				'name'=>$req->name,
+				'from'=> $req->from,
+				'to'=> $req->to,
+				'total'=>$diff == 0 ? 1 : $diff,
+				'creator_id'=>$user->id
+			]);
+
+
+			return res_msg('Holiday create successfully', 200, []);
+		}else if($name == 'delete_holiday_data'){
+			model('Holiday')::where('id', $req->id)->delete();
+			return res_msg('Holiday deleted successfully', 200, []);
+		}
+		else if($name == 'delete_attendance_data'){
+			model('EmployeeAttendance')::where('id', $req->id)->delete();
+			return res_msg('Attendance deleted successfully', 200, []);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
