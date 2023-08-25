@@ -239,7 +239,7 @@ export default ({
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_stock_list'));
         this.listData = res.data.data
 
       } catch (err) {
@@ -275,7 +275,7 @@ export default ({
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_stock_data'), item);
         this.notify(res.msg)
         this.getListData()
 

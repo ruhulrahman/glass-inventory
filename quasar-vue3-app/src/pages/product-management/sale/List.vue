@@ -64,39 +64,25 @@
               <q-td key="sl" :props="props">
                 {{ props.pageIndex + 1 }}
               </q-td>
-              <q-td key="type_name" :props="props">
-                {{ props.row.type_name }}
+              <q-td key="invoice_code" :props="props">
+                #{{ props.row.invoice_code }}
               </q-td>
-              <q-td key="category_name" :props="props">
-                {{ props.row.category_name }}
+              <q-td key="customer" :props="props">
+                {{ props.row.customer_name }} <br/>
+                <small>{{ props.row.customer_phone }}</small>
               </q-td>
-              <q-td key="color_name" :props="props">
-                {{ props.row.color_name }}
+              <q-td key="invoice_date" :props="props">
+                {{ dDate(props.row.invoice_date) }}
               </q-td>
-              <q-td key="unit_name" :props="props">
-                {{ props.row.unit_name }}
+              <q-td key="total_payable_amount" :props="props">
+                {{ props.row.total_payable_amount }}
               </q-td>
-              <q-td key="price" :props="props">
-                {{ props.row.price }}
+              <q-td key="due_amount" :props="props">
+                {{ props.row.due_amount }}
               </q-td>
-              <q-td key="quantity" :props="props">
-                {{ props.row.quantity + ' ' + props.row.unit_name }}
-              </q-td>
-              <q-td key="cost" :props="props">
-                {{ props.row.cost }}
-              </q-td>
-              <q-td key="stock" :props="props">
-                <q-badge rounded color="red">
-                  {{ props.row.product_in_stock }}
-                </q-badge>
-                {{ props.row.unit_name }}
-              </q-td>
-              <q-td key="selling_price" :props="props">
-                {{ props.row.selling_price }}
-              </q-td>
-              <q-td key="status" :props="props">
-                <q-badge :color="props.row.status_color">
-                  {{ props.row.status }}
+              <q-td key="payment_status" :props="props">
+                <q-badge :color="props.row.payment_status_color">
+                  {{ props.row.payment_status_name }}
                 </q-badge>
               </q-td>
               <q-td key="action" :props="props">
@@ -139,23 +125,13 @@ const metaData = { title: 'Product List' }
 
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  { name: "type_name", field: "type_name", label: "Product Type", sortable: true, align: "left" },
-  { name: "category_name", align: "center", label: "Category", field: "category_name", sortable: true, align: "left" },
-  { name: "color_name", label: "Color", field: "color_name", sortable: true, align: "left" },
-  // { name: "unit_name", label: "unit", field: "unit_name", sortable: true, align: "center" },
-  { name: "price", label: "Unit price", field: "price", sortable: true, align: "right" },
-  { name: "quantity", label: "Quantity", field: "quantity", sortable: true, align: "left" },
-  { name: "cost", label: "Cost", field: "cost", sortable: true, align: "right" },
-  { name: "stock", label: "Stock", field: "stock", sortable: true, align: "left" },
-  { name: "selling_price", label: "Selling price", field: "selling_price", sortable: true, align: "right" },
-  { name: "status", label: "Status", field: "status", sortable: true, align: "center" },
-  {
-    name: "action",
-    label: "Action",
-    field: "Action",
-    sortable: false,
-    align: "center",
-  },
+  { name: "invoice_code", field: "invoice_code", label: "Invoice Code", sortable: true, align: "left" },
+  { name: "customer", field: "customer",  label: "Customer", sortable: true, align: "left" },
+  { name: "invoice_date", field: "invoice_date",  label: "Invoice Date", sortable: true, align: "left" },
+  { name: "total_payable_amount", field: "total_payable_amount",  label: "Payable Amount", sortable: true, align: "right" },
+  { name: "due_amount", field: "due_amount",  label: "Due Amount", sortable: true, align: "right" },
+  { name: "payment_status", field: "payment_status", label: "Payment Status", sortable: true, align: "center" },
+  { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
 ];
 
 export default ({
@@ -195,15 +171,10 @@ export default ({
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map(item => {
-          item.type_name = item.type ? item.type.name : ''
-          item.color_name = item.color ? item.color.name : ''
-          item.unit_name = item.unit ? item.unit.name : ''
-          item.unit_price = `${item.price} ${item.unit_name}`
-          item.category_name = item.category ? item.category.name : ''
-          item.supplier_name = item.supplier ? item.supplier.name : ''
-          item.active = item.active ? true : false
-          item.status = item.active ? 'Active' : 'Inactive'
-          item.status_color = item.active ? 'green' : 'red'
+          item.customer_name = item.customer ? item.customer.name : ''
+          item.customer_phone = item.customer ? item.customer.phone : ''
+          item.payment_status_name = item.payment_status ? item.payment_status.name : ''
+          item.payment_status_color = item.payment_status ? item.payment_status.color_name : ''
           return Object.assign(item)
         })
       } else {
@@ -240,8 +211,8 @@ export default ({
       this.showDetailDialog = true
     },
     editData: async function (item) {
-      this.editItem = this.clone_object(item)
-      this.showAddNewDialog = true
+      // this.$router.push({path: '/add-or-update-invoice', params: { id: item.id }})
+      this.$router.push(`/add-or-update-invoice/${this.hash_id(item.id)}`)
     },
     deleteData: async function (item) {
       Dialog.create({
@@ -261,7 +232,7 @@ export default ({
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_product_invoice_data'), item);
         this.notify(res.msg)
         this.getListData()
 

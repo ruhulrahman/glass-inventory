@@ -187,9 +187,9 @@ export default {
         this.loading(true)
         let res = ''
         if (this.submitForm.id) {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_stock_data'), this.submitForm);
         } else {
-          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_data'), this.submitForm);
+          res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_stock_data'), this.submitForm);
         }
         this.notify(res.msg)
         this.$emit('closeModal', true)
