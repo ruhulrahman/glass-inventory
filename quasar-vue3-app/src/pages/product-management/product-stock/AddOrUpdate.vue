@@ -1,6 +1,6 @@
 <template>
   <q-card class="bg-primary text-white no-shadow wait_me" bordered>
-    <q-form :loading="loadingState" @submit="saveData">
+    <q-form @submit="saveData">
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
@@ -110,7 +110,6 @@ export default {
   mixins: [helperMixin],
   setup(props) {
     const stringOptions = props.dropdownList.categories
-    console.log('stringOptions', stringOptions)
     const options = ref(stringOptions)
 
     return {
@@ -183,7 +182,6 @@ export default {
 
       try {
         // ref.wait_me(".wait_me");
-        this.loadingState = true
         this.loading(true)
         let res = ''
         if (this.submitForm.id) {
@@ -199,7 +197,6 @@ export default {
       } finally {
         // ref.wait_me(".wait_me", "hide");
         this.loading(false)
-        this.loadingState = false
       }
     },
     // filterFn (val, update) {

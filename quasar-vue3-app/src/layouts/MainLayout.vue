@@ -199,7 +199,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/type-list" active-class="q-item-no-link-highlighting">
+            <q-item to="/product-type-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="keyboard_alt" color="teal"/>
               </q-item-section>

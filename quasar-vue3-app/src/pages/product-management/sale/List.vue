@@ -77,6 +77,9 @@
               <q-td key="total_payable_amount" :props="props">
                 {{ props.row.total_payable_amount }}
               </q-td>
+              <q-td key="paid_amount" :props="props">
+                {{ props.row.paid_amount }}
+              </q-td>
               <q-td key="due_amount" :props="props">
                 {{ props.row.due_amount }}
               </q-td>
@@ -129,6 +132,7 @@ const columns = [
   { name: "customer", field: "customer",  label: "Customer", sortable: true, align: "left" },
   { name: "invoice_date", field: "invoice_date",  label: "Invoice Date", sortable: true, align: "left" },
   { name: "total_payable_amount", field: "total_payable_amount",  label: "Payable Amount", sortable: true, align: "right" },
+  { name: "paid_amount", field: "paid_amount",  label: "Paid Amount", sortable: true, align: "right" },
   { name: "due_amount", field: "due_amount",  label: "Due Amount", sortable: true, align: "right" },
   { name: "payment_status", field: "payment_status", label: "Payment Status", sortable: true, align: "center" },
   { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
@@ -205,12 +209,10 @@ export default ({
         this.loading = false
       }
     },
-    viewDetails: async function (item) {
-      console.log('item', item)
-      this.detailItems = item.histories
-      this.showDetailDialog = true
+    viewDetails: function (item) {
+      this.$router.push(`/invoice-details/${this.hash_id(item.id)}`)
     },
-    editData: async function (item) {
+    editData: function (item) {
       // this.$router.push({path: '/add-or-update-invoice', params: { id: item.id }})
       this.$router.push(`/add-or-update-invoice/${this.hash_id(item.id)}`)
     },

@@ -330,12 +330,16 @@ class AjaxController extends Controller
 
             if ($productInvoice) {
                 foreach($productInvoice->details as $item) {
-                   $productStock = model('ProductStock')::find($item->product_stock_id);
+                   $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
                    if ($productStock) {
                     $item->product_type_id = $productStock->product_type_id;
+                    $item->product_type = $productStock->type ? $productStock->type->name : '';
                     $item->category_id = $productStock->category_id;
+                    $item->category = $productStock->category ? $productStock->category->name : '';
                     $item->color_id = $productStock->color_id;
+                    $item->color = $productStock->color ? $productStock->color->name : '';
                     $item->unit_id = $productStock->unit_id;
+                    $item->unit = $productStock->unit ? $productStock->unit->name : '';
                    }
                 }
             }
@@ -1633,6 +1637,39 @@ class AjaxController extends Controller
             }
 
 			return res_msg('Product invoice deleted successfully!', 200);
+
+		} else if ($name == 'store_product_invoice_payment_data') {
+
+			$validator= Validator::make($req->all(), [
+                'product_invoice_id'=>'required',
+                'paid_amount'=>'required',
+                'payment_status_id'=>'required',
+            ]);
+
+			if($validator->fails()){
+                $errors=$validator->errors()->all();
+                return response(['msg'=>$errors[0]], 422);
+            }
+
+			$productInvoice = model('ProductInvoice')::find($req->product_invoice_id);
+
+            if ($req->paid_amount > 0) {
+
+                $PaymentHistory = model('ProductInvoicePaymentHistory')::create([
+                    'product_invoice_id' => $productInvoice->id,
+                    'paid_amount' => $req->paid_amount,
+                    'creator_id' => $user->id,
+                ]);
+
+                $productInvoice->paid_amount = $productInvoice->paid_amount + $PaymentHistory->paid_amount;
+                $productInvoice->due_amount = $productInvoice->total_payable_amount - $productInvoice->paid_amount;
+
+            }
+
+            $productInvoice->payment_status_id = $req->payment_status_id;
+            $productInvoice->save();
+
+			return res_msg("Invoice payment added successfully", 200);
 
 		}
 
