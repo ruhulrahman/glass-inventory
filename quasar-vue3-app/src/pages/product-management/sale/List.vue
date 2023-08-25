@@ -113,7 +113,7 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
 
-const metaData = { title: 'Product List' }
+const metaData = { title: 'Sale List' }
 
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
@@ -128,7 +128,7 @@ const columns = [
 ];
 
 export default ({
-  name: "ProductList",
+  name: "SaleList",
   mixins: [helperMixin],
   components: {
   },

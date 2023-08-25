@@ -25,6 +25,7 @@ const routes = [
       {path: '/product-stock-list', component: () => import('pages/product-management/product-stock/List.vue')},
       {path: '/sale-list', component: () => import('pages/product-management/sale/List.vue')},
       {path: '/benefit-list', component: () => import('pages/product-management/benefit/List.vue')},
+      {path: '/benefit-or-loss-details/:id', component: () => import('pages/product-management/benefit/BenefitOrLossDetails.vue')},
       {path: '/add-or-update-invoice/:id?', component: () => import('pages/product-management/sale/AddOrUpdate.vue')},
       {path: '/invoice-details/:id', component: () => import('pages/product-management/sale/InvoiceDetails.vue')},
       {path: '/customer-list', component: () => import('pages/product-management/customer/List.vue')},

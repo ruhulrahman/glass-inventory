@@ -318,7 +318,10 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_product_invoice_list') {
 
-			$list = model('ProductInvoice')::with('customer', 'payment_status', 'details')->orderBy('id','desc')->get();
+			$list = model('ProductInvoice')::with('customer', 'payment_status', 'details')
+            ->where('company_id', $user->company_id)
+            ->orderBy('id','desc')
+            ->get();
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -445,6 +448,40 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'productInvoice' => $productInvoice
 			]);
+		} else if ($name == 'get_benefit_and_loss_by_invoice_wise') {
+
+			$list = model('ProductInvoice')::where('company_id', $user->company_id)
+            ->orderBy('id','desc')
+            ->get();
+
+            foreach($list as $item) {
+                $detailsQuery = model('ProductInvoiceDetail')::where('product_invoice_id', $item->id);
+                $item->benefit_amount = (clone $detailsQuery)->sum('benefit_amount');
+                $item->loss_amount = (clone $detailsQuery)->sum('loss_amount');
+                $item->invoice_date = dDate($item->invoice_date);
+            }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
+		} else if ($name == 'get_benefit_and_loss_by_product_wise') {
+
+			$list = model('ProductInvoice')::where('company_id', $user->company_id)
+            ->orderBy('id','desc')
+            ->get();
+
+            foreach($list as $item) {
+                $detailsQuery = model('ProductInvoiceDetail')::where('product_invoice_id', $item->id);
+                $item->benefit_amount = (clone $detailsQuery)->sum('benefit_amount');
+                $item->loss_amount = (clone $detailsQuery)->sum('loss_amount');
+                $item->invoice_date = dDate($item->invoice_date);
+            }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -1711,6 +1748,23 @@ class AjaxController extends Controller
                 ])->delete();
 
                 foreach($req->details as $item) {
+
+					$productStock = model('ProductStock')::find($item['product_stock_id']);
+
+					$benefit_per_product = $item['price'] - $productStock->price;
+					if($benefit_per_product > -1) {
+						$benefit_amount = $benefit_per_product * $item['quantity'];
+					} else {
+						$benefit_amount = 0.00;
+					}
+
+					$loss_per_product = $productStock->price - $item['price'];
+
+					if($loss_per_product > -1) {
+						$loss_amount = $loss_per_product * $item['quantity'];
+					} else {
+						$loss_amount = 0.00;
+					}
 
                     model('ProductInvoiceDetail')::create([
                         'product_invoice_id' => $productInvoice->id,

@@ -135,7 +135,7 @@ import { ref } from 'vue'
 import AddOrUpdate from "./AddOrUpdate.vue"
 import DetailDialog from "./DetailDialog.vue"
 
-const metaData = { title: 'Product List' }
+const metaData = { title: 'Product Stock List' }
 
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
@@ -159,7 +159,7 @@ const columns = [
 ];
 
 export default ({
-  name: "ProductList",
+  name: "ProductStockList",
   mixins: [helperMixin],
   components: {
     AddOrUpdate, DetailDialog

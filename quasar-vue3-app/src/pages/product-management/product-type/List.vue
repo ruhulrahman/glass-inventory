@@ -98,7 +98,7 @@ import DialogConfirmationComponent from 'src/components/DialogConfirmationCompon
 import { ref } from 'vue'
 import AddOrUpdate from "./AddOrUpdate.vue";
 
-const metaData = { title: 'Type List' }
+const metaData = { title: 'Product Type List' }
 
 const columns = [
   { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
@@ -122,7 +122,7 @@ const columns = [
 ];
 
 export default ({
-  name: "TypeList",
+  name: "ProductTypeList",
   mixins: [helperMixin],
   components: {
     AddOrUpdate,

@@ -240,7 +240,7 @@
                 <q-icon name="account_balance_wallet" color="indigo-4"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label>Benefits</q-item-label>
+                <q-item-label>Benefit & Loss</q-item-label>
               </q-item-section>
             </q-item>
 

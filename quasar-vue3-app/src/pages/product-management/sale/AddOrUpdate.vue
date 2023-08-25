@@ -441,11 +441,11 @@ export default {
     addNewRow: async function () {
       this.submitForm.details.push({
         id: '',
-        product_type_id: null,
-        color_id: 10,
-        category_id: null,
-        product_invoice_id: null,
-        product_stock_id: null,
+        product_type_id: '',
+        color_id: '',
+        category_id: '',
+        product_invoice_id: '',
+        product_stock_id: '',
         quantity: 0,
         price: 0,
         amount: 0,
