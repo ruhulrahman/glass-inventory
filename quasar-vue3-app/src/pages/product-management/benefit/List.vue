@@ -89,8 +89,8 @@
             </q-tab-panel>
             <q-tab-panel name="product_wise" class="q-pa-none">
 
-              <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow  q-pa-none q-ma-none" :rows="tableRow"
-                :columns="columns" row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+              <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow  q-pa-none q-ma-none" :rows="productWiselistData"
+                :columns="productWisecolumns" row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
                 :pagination="initialPagination" :filter="filter">
                 <template v-slot:loading>
                   <q-inner-loading showing color="primary" />
@@ -131,11 +131,26 @@
                         :to="`/invoice-details/${hash_id(props.row.id)}`">#{{
                           props.row.invoice_code }}</router-link>
                     </q-td>
-                    <q-td key="invoice_date" :props="props">
-                      {{ props.row.invoice_date }}
+                    <q-td key="product_type_name" :props="props">
+                      {{ props.row.product_type_name }}
+                    </q-td>
+                    <q-td key="category_name" :props="props">
+                      {{ props.row.category_name }}
+                    </q-td>
+                    <q-td key="color_name" :props="props">
+                      {{ props.row.color_name }}
+                    </q-td>
+                    <q-td key="unit_name" :props="props">
+                      {{ props.row.unit_name }}
+                    </q-td>
+                    <q-td key="benefit_per_product" :props="props">
+                      {{ props.row.benefit_per_product }}
                     </q-td>
                     <q-td key="benefit_amount" :props="props">
                       {{ props.row.benefit_amount }}
+                    </q-td>
+                    <q-td key="loss_per_product" :props="props">
+                      {{ props.row.loss_per_product }}
                     </q-td>
                     <q-td key="loss_amount" :props="props">
                       {{ props.row.loss_amount }}
@@ -182,6 +197,19 @@ const columns = [
   { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
 ];
 
+const productWisecolumns = [
+  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
+  { name: "product_type_name", field: "product_type_name", label: "Product Name", sortable: true, align: "left" },
+  { name: "category_name", field: "category_name", label: "Category", sortable: true, align: "left" },
+  { name: "color_name", field: "color_name", label: "Color", sortable: true, align: "left" },
+  { name: "unit_name", field: "unit_name", label: "Unit", sortable: true, align: "left" },
+  { name: "benefit_per_product", field: "benefit_per_product", label: "Benefit Per Product", sortable: true, align: "right" },
+  { name: "benefit_amount", field: "benefit_amount", label: "Benefit Amount", sortable: true, align: "right" },
+  { name: "loss_per_product", field: "loss_per_product", label: "Loss Per Product", sortable: true, align: "right" },
+  { name: "loss_amount", field: "loss_amount", label: "Loss Amount", sortable: true, align: "right" },
+  { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
+];
+
 export default ({
   name: "BenefitList",
   mixins: [helperMixin],
@@ -196,6 +224,7 @@ export default ({
       filter: ref(""),
       show_filter,
       columns,
+      productWisecolumns,
       tab: ref('invoice_wise')
     };
   },
@@ -212,6 +241,7 @@ export default ({
       showDetailDialog: false,
       loading: false,
       listData: [],
+      productWiselistData: [],
       detailItems: [],
       editItem: '',
     };
@@ -260,7 +290,7 @@ export default ({
       try {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_benefit_and_loss_by_product_wise'));
-        this.listData = res.data.data
+        this.productWiselistData = res.data.data
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')

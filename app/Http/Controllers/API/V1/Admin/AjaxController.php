@@ -467,16 +467,55 @@ class AjaxController extends Controller
 
 		} else if ($name == 'get_benefit_and_loss_by_product_wise') {
 
-			$list = model('ProductInvoice')::where('company_id', $user->company_id)
-            ->orderBy('id','desc')
-            ->get();
+            $query = DB::table('product_invoice_details')
+            ->leftJoin('product_invoices', 'product_invoice_details.product_invoice_id', 'product_invoices.id')
+            ->leftJoin('product_stocks', 'product_invoice_details.product_stock_id', 'product_stocks.id')
+            ->leftJoin('product_types', 'product_stocks.product_type_id', 'product_types.id')
+            ->leftJoin('product_categories', 'product_stocks.category_id', 'product_categories.id')
+            ->leftJoin('product_units', 'product_stocks.unit_id', 'product_units.id')
+            ->leftJoin('product_colors', 'product_stocks.color_id', 'product_units.id')
+            ->where('product_invoice_details.company_id', $user->company_id);
 
-            foreach($list as $item) {
-                $detailsQuery = model('ProductInvoiceDetail')::where('product_invoice_id', $item->id);
-                $item->benefit_amount = (clone $detailsQuery)->sum('benefit_amount');
-                $item->loss_amount = (clone $detailsQuery)->sum('loss_amount');
-                $item->invoice_date = dDate($item->invoice_date);
+            if($req->invoice_code) {
+                $query->where('product_invoices.invoice_code', $req->invoice_code);
             }
+
+            if($req->invoice_date) {
+                $query->whereDate('product_invoices.invoice_date', $req->invoice_date);
+            }
+
+            if($req->product_type_id) {
+                $query->where('product_types.id', $req->product_type_id);
+            }
+
+            if($req->category_id) {
+                $query->where('product_categories.id', $req->category_id);
+            }
+
+            if($req->unit_id) {
+                $query->where('product_units.id', $req->unit_id);
+            }
+
+            if($req->color_id) {
+                $query->where('product_colors.id', $req->color_id);
+            }
+
+            $query->select(
+                'product_invoice_details.*',
+                'product_invoices.invoice_code',
+                'product_invoices.invoice_date',
+                'product_types.name as product_type_name',
+                'product_categories.name as category_name',
+                'product_colors.name as color_name',
+                'product_units.name as unit_name',
+            );
+
+            // $list = $query->paginate($default_per_page);
+            $list = $query->get();
+
+            // foreach($list as $item) {
+            //     $item->invoice_date = dDate($item->invoice_date);
+            // }
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -1667,7 +1706,8 @@ class AjaxController extends Controller
                     $loss_amount = 0.00;
                 }
 
-                model('ProductInvoiceDetail')::create([
+                $productInvoiceDetail = model('ProductInvoiceDetail')::create([
+                    'company_id' => $user->company_id,
                     'product_invoice_id' => $productInvoice->id,
                     'product_stock_id' => $item['product_stock_id'],
                     'price' => $item['price'],
@@ -1678,6 +1718,11 @@ class AjaxController extends Controller
                     'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
                     'loss_amount' => $loss_amount,
                 ]);
+
+                $productStock->product_in_stock = $productStock->product_in_stock - $productInvoiceDetail->quantity;
+                $productStock->last_sale_date = Carbon::now();
+                $productStock->save();
+
             }
 
 			return res_msg('Product invoice saved successfully!', 200);
@@ -1743,11 +1788,12 @@ class AjaxController extends Controller
                     'editor_id' => $user->id,
                 ]);
 
-                model('ProductInvoiceDetail')::where([
-                    'product_invoice_id' => $productInvoice->id,
-                ])->delete();
-
                 foreach($req->details as $item) {
+
+                    model('ProductInvoiceDetail')::where([
+                        'company_id' => $user->company_id,
+                        'product_invoice_id' => $productInvoice->id,
+                    ])->delete();
 
 					$productStock = model('ProductStock')::find($item['product_stock_id']);
 
@@ -1767,11 +1813,16 @@ class AjaxController extends Controller
 					}
 
                     model('ProductInvoiceDetail')::create([
+                        'company_id' => $user->company_id,
                         'product_invoice_id' => $productInvoice->id,
                         'product_stock_id' => $item['product_stock_id'],
                         'price' => $item['price'],
                         'quantity' => $item['quantity'],
                         'amount' => $item['amount'],
+                        'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
+                        'benefit_amount' => $benefit_amount,
+                        'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
+                        'loss_amount' => $loss_amount,
                     ]);
                 }
 
