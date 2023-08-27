@@ -7,14 +7,14 @@
       </template>
       <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
       <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Sales" icon="widgets" to="/sale-list" />
-      <q-breadcrumbs-el>Invoice Details</q-breadcrumbs-el>
+      <q-breadcrumbs-el label="Benefits" icon="widgets" to="/benefit-list" />
+      <q-breadcrumbs-el>Benefit & Loss Details</q-breadcrumbs-el>
     </q-breadcrumbs>
 
     <q-card class="no-shadow q-mb-xl" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Invoice Details</div>
+          <div class="text-h6 col-10 text-grey-8">Benefit & Loss Details</div>
           <div class="col-2 text-right">
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
@@ -36,23 +36,10 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-input filled dense v-model="submitForm.customer_name" label="Customer name" />
-            </q-item-section>
-          </q-item>
-
-          <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-input filled dense v-model="submitForm.customer_phone" label="Customer phone"
-                :rules="[val => val && val.length > 0 && showCustomerAddField==true || 'Please enter customer phone']" />
-            </q-item-section>
-          </q-item>
-
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
               <q-item-label>Invoice Code</q-item-label>
-              <q-item-label caption>#{{ submitForm.invoice_code }}</q-item-label>
+              <q-item-label caption><router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(submitForm.id)}`">#{{ submitForm.invoice_code }}</router-link></q-item-label>
             </q-item-section>
           </q-item>
 
@@ -98,108 +85,35 @@
               <q-td key="amount" :props="props" class="q-mt-md">
                 {{ props.row.amount }}
               </q-td>
-              <q-td key="action" :props="props">
-                <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md"
-                  class="text-red" flat dense></q-btn>
-                <q-btn @click="addNewRow(props.row)" icon="add_circle" size="md" class="text-green" flat dense />
+              <q-td key="benefit_per_product" :props="props" class="q-mt-md">
+                {{ props.row.benefit_per_product }}
+              </q-td>
+              <q-td key="benefit_amount" :props="props" class="q-mt-md">
+                {{ props.row.benefit_amount }}
+              </q-td>
+              <q-td key="loss_per_product" :props="props" class="q-mt-md">
+                {{ props.row.loss_per_product }}
+              </q-td>
+              <q-td key="loss_amount" :props="props" class="q-mt-md">
+                {{ props.row.loss_amount }}
               </q-td>
             </q-tr>
           </template>
           <template v-slot:bottom-row>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="7" class="text-right">
-                <b>Sub-Total</b>
+                <b>Total</b>
               </q-td>
               <q-td class="text-right">
-                {{ subTotalAmount }}
+                <q-badge color="black">{{ totalAmount }}</q-badge>
               </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Discount</b>
-              </q-td>
+              <q-td></q-td>
               <q-td class="text-right">
-                {{ submitForm.discount_amount }}
+                <q-badge color="green">{{ totalBenefitAmount }}</q-badge>
               </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Vat ({{ submitForm.vat_percentage }}%)</b>
-              </q-td>
+              <q-td></q-td>
               <q-td class="text-right">
-                {{ submitForm.vat_amount }}
-              </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Tax ({{ submitForm.tax_percentage }}%)</b>
-              </q-td>
-              <q-td class="text-right">
-                {{ submitForm.tax_amount }}
-              </q-td>
-            </q-tr>
-            <q-tr class="bg-blue-grey-1">
-              <q-td colspan="7" class="text-right">
-                <b>Total Payable Amount</b>
-              </q-td>
-              <q-td class="text-right">
-                {{ submitForm.total_payable_amount }}
-              </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Paid Amount</b>
-              </q-td>
-              <q-td class="text-right">
-                {{ submitForm.paid_amount }}
-              </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Due Amount</b>
-              </q-td>
-              <q-td class="text-right">
-                <q-badge :color="submitForm.due_amount > 0 ? 'red' : 'black'">
-                  {{ submitForm.due_amount }}
-                </q-badge>
-              </q-td>
-            </q-tr>
-            <q-tr v-if="submitForm.due_amount > 0">
-              <q-td colspan="7" class="text-right">
-                <q-btn glossy @click="showDueAmount = !showDueAmount" flat color="white" class="bg-red d-block"
-                  style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                  Pay Now
-                </q-btn>
-              </q-td>
-              <q-td v-if="showDueAmount" class="text-right">
-                <q-input bg-color="green-1" type="number" filled dense v-model="pay_due_amount"
-                  label="Pay Due Amount" input-class="text-right" />
-              </q-td>
-            </q-tr>
-            <q-tr v-if="showDueAmount">
-              <q-td colspan="7" class="text-right">
-                <b>Payable Later</b>
-              </q-td>
-              <q-td class="text-right">
-                {{ submitForm.due_amount - pay_due_amount }}{{ submitForm.due_amount - pay_due_amount ? '' : '.00' }}
-              </q-td>
-            </q-tr>
-            <q-tr>
-              <q-td colspan="7" class="text-right">
-                <b>Payment Status</b>
-              </q-td>
-              <q-td class="text-right">
-                <q-select :bg-color="submitForm.due_amount > 0 ? 'red-3' : 'green-3'" :disable="submitForm.due_amount > 0 ? false : true" filled dense v-model="submitForm.payment_status_id" label="Status"
-                  :options="dropdownList.paymentStatuses" emit-value map-options>
-                </q-select>
-              </q-td>
-            </q-tr>
-            <q-tr v-if="submitForm.due_amount > 0">
-              <q-td colspan="8" class="text-right">
-                <q-btn glossy @click="saveInvoicePayment()" flat color="white" class="bg-green-7 d-block"
-                  style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                  Payment Update
-                </q-btn>
+                <q-badge color="red">{{ totalLossAmount }}</q-badge>
               </q-td>
             </q-tr>
           </template>
@@ -286,44 +200,50 @@ export default {
         { name: "price", label: "Unit price", field: "price", align: "center" },
         { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
         { name: "amount", label: "Amount", field: "amount", align: "right" },
+        { name: "benefit_per_product", label: "Benefit per product", field: "benefit_per_product", align: "right" },
+        { name: "benefit_amount", label: "Benefit amount", field: "benefit_amount", align: "right" },
+        { name: "loss_per_product", label: "Loss per product", field: "loss_per_product", align: "right" },
+        { name: "loss_amount", label: "Loss amount", field: "loss_amount", align: "right" },
       ]
     },
-    subTotalAmount: function () {
+    totalAmount: function () {
 
-      let payable_amount = 0.00
+      let amount = 0.00
 
       this.submitForm.details.forEach(function (row) {
         if (row.amount && row.amount > 0) {
-          payable_amount += parseFloat(row.amount)
+          amount += parseFloat(row.amount)
         }
       })
 
-      if (this.submitForm.discount_percentage > 0) {
-        const discountAmount = parseFloat((this.submitForm.discount_percentage * payable_amount) / 100).toFixed(2)
-        this.submitForm.discount_amount = discountAmount
-      }
+      return parseFloat(amount).toFixed(2)
+    },
+    totalBenefitAmount: function () {
 
-      if (this.submitForm.vat_percentage > 0.1 && payable_amount > 0) {
-        this.submitForm.vat_amount = parseFloat((this.submitForm.vat_percentage / 100) * payable_amount).toFixed(2)
-      } else {
-        this.submitForm.vat_amount = 0
-      }
+      let benefit_amount = 0.00
 
-      if (this.submitForm.tax_percentage > 0.1 && payable_amount > 0) {
-        this.submitForm.tax_amount = parseFloat((this.submitForm.tax_percentage / 100) * payable_amount).toFixed(2)
-      } else {
-        this.submitForm.tax_amount = 0
-      }
+      this.submitForm.details.forEach(function (row) {
+        if (row.benefit_amount && row.benefit_amount > 0) {
+          benefit_amount += parseFloat(row.benefit_amount)
+        }
+      })
 
-      // this.submitForm.total_payable_amount = ((payable_amount + this.submitForm.vat_amount + this.submitForm.tax_amount) - this.submitForm.discount_amount)
-      this.submitForm.total_payable_amount = parseFloat(parseFloat(payable_amount + parseFloat(this.submitForm.vat_amount) + parseFloat(this.submitForm.tax_amount)) - parseFloat(this.submitForm.discount_amount)).toFixed(2)
-      this.submitForm.due_amount = parseFloat(this.submitForm.total_payable_amount - this.submitForm.paid_amount).toFixed(2)
+      return parseFloat(benefit_amount).toFixed(2)
+    },
+    totalLossAmount: function () {
 
-      return parseFloat(payable_amount).toFixed(2)
+      let loss_amount = 0.00
+
+      this.submitForm.details.forEach(function (row) {
+        if (row.loss_amount && row.loss_amount > 0) {
+          loss_amount += parseFloat(row.loss_amount)
+        }
+      })
+
+      return parseFloat(loss_amount).toFixed(2)
     },
   },
   created() {
-    this.getInitialData()
     const productInvoiceId = this.hash_id(this.$route.params.id, false)[0]
     if (productInvoiceId) {
       this.getProductInvoiceDataById(productInvoiceId)
@@ -372,22 +292,6 @@ export default {
         amount: 0,
       })
     },
-    getProductPrice: async function (item, rowIndex) {
-
-      let ref = this;
-      let jq = ref.jq();
-      try {
-        this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'), item);
-        const objIndex = this.submitForm.details.findIndex((item, index) => index == rowIndex)
-        this.submitForm.details[objIndex].price = res.data.data ? res.data.data.selling_price : ''
-        this.submitForm.details[objIndex].product_stock_id = res.data.data ? res.data.data.id : ''
-      } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
-      } finally {
-        this.loading = false
-      }
-    },
     getProductInvoiceDataById: async function (productInvoiceId) {
       let ref = this;
       let jq = ref.jq();
@@ -400,16 +304,6 @@ export default {
         this.notify(this.err_msg(err), 'negative')
       } finally {
         this.loading = false
-      }
-    },
-    getInitialData: async function () {
-      let ref = this;
-      let jq = ref.jq();
-      try {
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_initial_dropdown_list'));
-        this.dropdownList = res.data
-      } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
       }
     },
     saveInvoicePayment: async function () {

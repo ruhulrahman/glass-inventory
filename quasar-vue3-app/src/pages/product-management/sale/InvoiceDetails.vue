@@ -417,7 +417,7 @@ export default {
       let jq = ref.jq();
 
       try {
-        this.loading(true)
+        // this.loading(true)
         const params = {
           payment_status_id: this.submitForm.payment_status_id,
           product_invoice_id: this.submitForm.id,
@@ -429,7 +429,7 @@ export default {
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        this.loading(false)
+        // this.loading(false)
       }
     },
   },
