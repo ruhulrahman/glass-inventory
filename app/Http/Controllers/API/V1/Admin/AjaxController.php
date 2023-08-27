@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Nette\Utils\Random;
+use Illuminate\Support\Facades\Hash;
 
 class AjaxController extends Controller
 {
@@ -25,7 +26,7 @@ class AjaxController extends Controller
 			$auth_user = model('User')::find($user->id);
 
 			return res_msg('Auth User Data', 200, [
-				'auth_user' => $auth_user
+				'auth_user' => $user
 			]);
 		} else if ($name == "get_statuses_with_groups") {
 
@@ -115,7 +116,7 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_user_list_with_pagination') {
 
-			$list = model('User')::where('company_id', $user->company_id)->orderBy('id', 'desc')->paginate($default_per_page);
+			$list = model('User')::with('employee')->where('company_id', $user->company_id)->orderBy('id', 'desc')->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
@@ -367,9 +368,12 @@ class AjaxController extends Controller
 
 			if($req->from || $req->to || $req->status_type && count($attendances) > 0){
 				foreach ($attendances as $key => $value) {
+					$count_present = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'Yes'])->whereMonth('date', Carbon::today())->count();
+					$count_absent = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'No'])->whereMonth('date', Carbon::today())->count();
 					$employees[$key] =  model('Employee')::where('active', 1)->where('id', $value->employee_id)->first();
 					$employees[$key]->present = $value->present;
 					$employees[$key]->date = $value->date;
+					$employees[$key]->count_present = $count_present;
 				}
 
 			}else{
@@ -378,8 +382,12 @@ class AjaxController extends Controller
 					$employees = model('Employee')::where('active', 1)->get();
 					foreach ($attendances as $key => $value) {
 						if($employees[$key]->id == $value->employee_id){
+							$count_present = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'Yes'])->whereMonth('date', Carbon::today())->count();
+							$count_absent = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'No'])->whereMonth('date', Carbon::today())->count();
 							$employees[$key]->present = $value->present;
 							$employees[$key]->date = $value->date;
+							$employees[$key]->count_present = $count_present;
+							$employees[$key]->count_absent = $count_absent;
 						}
 					}
 				}
@@ -445,6 +453,16 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'productInvoice' => $productInvoice
 			]);
+		}else if($name == "get_employee_attendance_list"){
+			$attendances = model('EmployeeAttendance')::where('employee_id', $req->id)->get();
+			$count_present = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'Yes' ])->count();
+			$count_absent = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'No' ])->count();
+
+            return res_msg('list Data', 200, [
+				'data' => $attendances,
+				'count_present' => $count_present,
+				'count_absent' => $count_absent
+			]);			
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -1841,6 +1859,23 @@ class AjaxController extends Controller
 		else if($name == 'delete_attendance_data'){
 			model('EmployeeAttendance')::where('id', $req->id)->delete();
 			return res_msg('Attendance deleted successfully', 200, []);
+		}else if($name == 'forgot_password'){
+			$validator= Validator::make($req->all(), [
+				'email'=>'required|email|exists:users,email',
+				'password'=>'required|string|min:8|max:30|required_with:confirm_password|same:confirm_password',
+				'confirm_password'=>'required|string|min:8|max:30'
+			]);
+	
+			if($validator->fails()){
+				$errors=$validator->errors()->all();
+				return response(['msg'=>$errors[0]], 422);
+			}
+
+			model('User')::where(['id'=> $req->id, 'email'=>$req->email])->update([
+				'password'=>Hash::make($req->password)
+			]);
+
+			return res_msg('Password updated successfully', 200, []);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

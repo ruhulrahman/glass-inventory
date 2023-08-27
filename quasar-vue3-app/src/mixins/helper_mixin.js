@@ -475,6 +475,9 @@ export default {
             var fecha =year+"-"+mes+"-"+dia;
             return moment(fecha + ' ' + value).format('LT');
         },
+        dDayDate: function (value, format = "D MMM YYYY dddd") {
+            return moment.utc(value).local().format(format);
+        },
         getBetweenHour: function (startTime, endTime) {
             const myEndTime = endTime ? new Date(endTime) : new Date();
             const myStartTime = new Date(startTime);
