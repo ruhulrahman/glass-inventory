@@ -41,7 +41,7 @@
                   <q-item>
                     <q-item-section class="text-grey">
                       No results
-                      <q-btn glossy @click="showCustomerAddField = true" flat color="white" size="sm" class="bg-red-12 d-block">
+                      <q-btn glossy @click="toggleCustomerAddField()" flat color="white" size="sm" class="bg-red-12 d-block">
                         Add New customer
                       </q-btn>
                     </q-item-section>
@@ -434,6 +434,10 @@ export default {
         const needle = val.toLowerCase()
         this.dropdownList.customerList = this.dropdownList.customers.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
       })
+    },
+    toggleCustomerAddField: async function () {
+      this.submitForm.customer_id = ''
+      this.showCustomerAddField = !this.showCustomerAddField
     },
     removeRow: async function (index) {
       this.submitForm.details.splice(index, 1)

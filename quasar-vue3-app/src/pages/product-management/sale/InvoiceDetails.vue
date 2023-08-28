@@ -11,11 +11,16 @@
       <q-breadcrumbs-el>Invoice Details</q-breadcrumbs-el>
     </q-breadcrumbs>
 
-    <q-card class="no-shadow q-mb-xl" bordered>
+    <q-card class="no-shadow q-mb-xl" bordered id="divToPrint">
       <q-card-section>
         <div class="row">
           <div class="text-h6 col-10 text-grey-8">Invoice Details</div>
           <div class="col-2 text-right">
+
+            <q-btn glossy @click="printDocument()" flat color="white" class="bg-green-7 d-block"
+              style="text-transform: capitalize; padding: 0px 10px 0 19px">
+              Print
+            </q-btn>
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
@@ -45,7 +50,7 @@
           <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
               <q-input filled dense v-model="submitForm.customer_phone" label="Customer phone"
-                :rules="[val => val && val.length > 0 && showCustomerAddField==true || 'Please enter customer phone']" />
+                :rules="[val => val && val.length > 0 && showCustomerAddField == true || 'Please enter customer phone']" />
             </q-item-section>
           </q-item>
 
@@ -64,7 +69,8 @@
           </q-item>
 
         </q-list>
-        <q-table dense hide-pagination flat bordered class="no-shadow" :rows="submitForm.details" :columns="columns" row-key="name">
+        <q-table dense hide-pagination flat bordered class="no-shadow" :rows="submitForm.details" :columns="columns"
+          row-key="name">
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-blue-grey-2 text-primary">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -95,13 +101,8 @@
               <q-td key="quantity" :props="props" class="q-mt-md">
                 {{ props.row.quantity }}
               </q-td>
-              <q-td key="amount" :props="props" class="q-mt-md">
+              <q-td key="amount" :props="props" class="q-mt-md"  width="15%">
                 {{ props.row.amount }}
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn v-if="props.pageIndex > 0" @click="removeRow(props.pageIndex)" icon="remove_circle" size="md"
-                  class="text-red" flat dense></q-btn>
-                <q-btn @click="addNewRow(props.row)" icon="add_circle" size="md" class="text-green" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -165,15 +166,15 @@
               </q-td>
             </q-tr>
             <q-tr v-if="submitForm.due_amount > 0">
-              <q-td colspan="7" class="text-right">
+              <q-td :colspan="showDueAmount ? '7' : '8'" class="text-right">
                 <q-btn glossy @click="showDueAmount = !showDueAmount" flat color="white" class="bg-red d-block"
                   style="text-transform: capitalize; padding: 0px 10px 0 19px">
                   Pay Now
                 </q-btn>
               </q-td>
               <q-td v-if="showDueAmount" class="text-right">
-                <q-input bg-color="green-1" type="number" filled dense v-model="pay_due_amount"
-                  label="Pay Due Amount" input-class="text-right" />
+                <q-input bg-color="green-1" type="number" filled dense v-model="pay_due_amount" label="Pay Due Amount"
+                  input-class="text-right" />
               </q-td>
             </q-tr>
             <q-tr v-if="showDueAmount">
@@ -189,8 +190,9 @@
                 <b>Payment Status</b>
               </q-td>
               <q-td class="text-right">
-                <q-select :bg-color="submitForm.due_amount > 0 ? 'red-3' : 'green-3'" :disable="submitForm.due_amount > 0 ? false : true" filled dense v-model="submitForm.payment_status_id" label="Status"
-                  :options="dropdownList.paymentStatuses" emit-value map-options>
+                <q-select :bg-color="submitForm.due_amount > 0 ? 'red-3' : 'green-3'"
+                  :disable="submitForm.due_amount > 0 ? false : true" filled dense v-model="submitForm.payment_status_id"
+                  label="Status" :options="dropdownList.paymentStatuses" emit-value map-options>
                 </q-select>
               </q-td>
             </q-tr>
@@ -213,9 +215,12 @@
 
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
+import pdfMake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import htmlToPdfmake from 'html-to-pdfmake';
 
 export default {
-  props: ['editItem'],
+  props: [],
   mixins: [helperMixin],
   components: {
     // flatPickr
@@ -372,28 +377,12 @@ export default {
         amount: 0,
       })
     },
-    getProductPrice: async function (item, rowIndex) {
-
-      let ref = this;
-      let jq = ref.jq();
-      try {
-        this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'), item);
-        const objIndex = this.submitForm.details.findIndex((item, index) => index == rowIndex)
-        this.submitForm.details[objIndex].price = res.data.data ? res.data.data.selling_price : ''
-        this.submitForm.details[objIndex].product_stock_id = res.data.data ? res.data.data.id : ''
-      } catch (err) {
-        this.notify(this.err_msg(err), 'negative')
-      } finally {
-        this.loading = false
-      }
-    },
     getProductInvoiceDataById: async function (productInvoiceId) {
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId });
         this.submitForm = res.data.productInvoice
 
       } catch (err) {
@@ -432,6 +421,18 @@ export default {
         // this.loading(false)
       }
     },
+    printDocument() {
+
+      //get table html
+      const pdfTable = document.getElementById('divToPrint');
+      //html to pdf format
+      var html = htmlToPdfmake(pdfTable.innerHTML);
+
+      const documentDefinition = { content: html };
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      pdfMake.createPdf(documentDefinition).download();
+
+    }
   },
 }
 </script>

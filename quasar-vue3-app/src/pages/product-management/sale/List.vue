@@ -89,10 +89,15 @@
                 </q-badge>
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn @click="getProductInvoiceDataById(props.row)" icon="cloud_download" size="sm" class="text-green" flat dense>
+                <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                    Download
+                  </q-tooltip>
+                </q-btn>
                 <q-btn @click="viewDetails(props.row)" icon="visibility" size="sm" class="text-blue" flat dense>
-                  <!-- <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
-                    View History
-                  </q-tooltip> -->
+                  <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                    View Details
+                  </q-tooltip>
                 </q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" class="text-teal" flat dense></q-btn>
                 <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="text-red" flat dense />
@@ -104,14 +109,66 @@
 
     </q-card>
 
+    <!-- <vue-html2pdf
+                :image="{ type: 'jpg', quality: 1 }"
+                :html2canvas="{dpi: 192, letterRendering: true, useCORS: true}"
+                :show-layout="false"
+                :margin="[100, 100, 100, 100]"
+                :float-layout="true"
+                :enableLinks="false"
+                :enable-download="false"
+                :preview-modal="true"
+                :paginate-elements-by-height="1400"
+                :filename="invoiceDetails ? this.cn(this.invoiceDetails, 'client_lead.first_name') +'-id-' + invoiceDetails.invoice_code : 'Invoice Details'" :pdf-quality="2"
+                :manual-pagination="true"
+                pdf-format="a4"
+                pdf-margin="20"
+                pdf-orientation="landscape"
+                pdf-content-width="1115px"
+                @progress="onProgress($event)"
+                ref="invoiceDetailsPdfRef">
+                <section slot="pdf-content">
+
+                </section>
+            </vue-html2pdf> -->
+
+            <!-- <vue3-html2pdf
+            :show-layout="false"
+        :float-layout="true"
+        :enable-download="true"
+        :preview-modal="true"
+        :paginate-elements-by-height="1400"
+        filename="hee hee"
+        :pdf-quality="2"
+        :manual-pagination="false"
+        pdf-format="a4"
+        pdf-orientation="landscape"
+        pdf-content-width="800px"
+              ref="invoiceDetailsPdfRef"
+            >
+              <template  v-slot:pdf-content>
+
+            <invoice-details-pdf
+                    :invoiceDetails="invoiceDetails"
+                    />
+              </template>
+          </vue3-html2pdf> -->
+            <!-- <invoice-details-pdf
+                    :invoiceDetails="invoiceDetails"
+                    /> -->
   </q-page>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
-import { ref } from 'vue'
+import InvoiceDetailsPdf from './InvoiceDetailsPdf.vue'
+
+// import VueHtml2pdf from 'vue3-html2pdf'
+// import Vue3Html2pdf from 'vue3-html2pdf'
+// Vue.use(VueHtml2pdf)
 
 const metaData = { title: 'Sale List' }
 
@@ -131,6 +188,8 @@ export default ({
   name: "SaleList",
   mixins: [helperMixin],
   components: {
+    // Vue3Html2pdf,
+    InvoiceDetailsPdf
   },
   setup() {
     useMeta(metaData);
@@ -144,6 +203,7 @@ export default ({
   },
   data() {
     return {
+      invoiceDetails: '',
       dropdowns: {
         categories: [],
         suppliers: [],
@@ -231,6 +291,24 @@ export default ({
       } finally {
         ref.wait_me(".wait_me", "hide");
       }
+    },
+    getProductInvoiceDataById: async function (productInvoiceId) {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
+        this.invoiceDetails = res.data.productInvoice
+        this.downloadInvoice()
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
+    downloadInvoice: async function () {
+        // this.companyImageFile = await this.getBase64ImageFromURL(this.cn(this.companyInfo, 'logo_url'))
+        this.$refs.invoiceDetailsPdfRef.generatePdf()
     }
   }
 });

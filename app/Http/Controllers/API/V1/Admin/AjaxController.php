@@ -258,7 +258,13 @@ class AjaxController extends Controller
 
             foreach($customers as $item) {
                 $item->value = $item->id;
-                $item->label = $item->name;
+                if ($item->phone && $item->name) {
+                    $item->label = "$item->name ($item->phone)";
+                } else if($item->phone) {
+                    $item->label = $item->phone;
+                } else {
+                    $item->label = $item->name;
+                }
             }
 
 			$paymentStatuses = get_statuses('payment_statuses');
@@ -1630,18 +1636,40 @@ class AjaxController extends Controller
 			return res_msg('Attendance updated successfully!', 200);
 		} else if ($name == 'store_product_invoice_data') {
 
+            if (!$req->customer_id && !$req->customer_phone) {
+                return response(['msg' => 'Customer name or phone number is missing'], 422);
+            }
+
 			$validator = Validator::make($req->all(), [
 				'invoice_date' => 'required',
-				// 'due_date' => 'required',
 				'payment_status_id' => 'required',
 				'sub_total' => 'required',
 				'total_payable_amount' => 'required',
-				'details.*' => 'array',
-				'details.*product_stock_id' => 'required',
-				'details.*price' => 'required',
-				'details.*quantity' => 'required',
-				'details.*amount' => 'required',
-			]);
+				'details' => 'array|required',
+				'details.*.product_type_id' => 'required',
+				'details.*.category_id' => 'required',
+				'details.*.color_id' => 'required',
+				'details.*.unit_id' => 'required',
+				'details.*.product_stock_id' => 'required',
+				'details.*.price' => 'required',
+				'details.*.quantity' => 'required',
+				'details.*.amount' => 'required',
+			], [
+                'invoice_date.required' => 'Invoice date filed is required',
+                'payment_status_id.required' => 'Payment status filed is required',
+                'payment_status_id.required' => 'Payment status filed is required',
+                'sub_total.required' => 'Sub-Total value is required',
+                'total_payable_amount.required' => 'Total Payable Amount is required',
+                'details.*.product_type_id.required' => 'Product type field is required',
+                'details.*.category_id.required' => 'Category field is required',
+                'details.*.color_id.required' => 'Color field is required',
+                'details.*.unit_id.required' => 'Unit field is required',
+                'details.*.unit_id.required' => 'Unit field is required',
+                'details.*.product_stock_id.required' => 'Product stock id is required',
+                'details.*.price.required' => 'Price field is required',
+                'details.*.quantity.required' => 'Quantity field is required',
+                'details.*.amount.required' => 'Amount field is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -1650,13 +1678,13 @@ class AjaxController extends Controller
 
             $customer_id = $req->customer_id;
 
-            if (empty($req->customer_id)) {
+            if (empty($req->customer_id) && $req->phone) {
 
                 $customer = model('Customer')::create([
 					'company_id' => $user->company_id,
 					'name' => $req->customer_name,
 					'email' => $req->email,
-					'phone' => $req->phone,
+					'phone' => $req->customer_phone,
 					'is_active' => 1,
 					'creator_id' => $user->id,
 					'created_at' => $carbon,
@@ -1731,45 +1759,45 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'invoice_date' => 'required',
-				// 'due_date' => 'required',
 				'payment_status_id' => 'required',
 				'sub_total' => 'required',
 				'total_payable_amount' => 'required',
-				'details.*' => 'array',
-				'details.*product_stock_id' => 'required',
-				'details.*price' => 'required',
-				'details.*quantity' => 'required',
-				'details.*amount' => 'required',
-			]);
+				'details' => 'array|required',
+				'details.*.product_type_id' => 'required',
+				'details.*.category_id' => 'required',
+				'details.*.color_id' => 'required',
+				'details.*.unit_id' => 'required',
+				'details.*.product_stock_id' => 'required',
+				'details.*.price' => 'required',
+				'details.*.quantity' => 'required',
+				'details.*.amount' => 'required',
+			], [
+                'invoice_date.required' => 'Invoice date filed is required',
+                'payment_status_id.required' => 'Payment status filed is required',
+                'payment_status_id.required' => 'Payment status filed is required',
+                'sub_total.required' => 'Sub-Total value is required',
+                'total_payable_amount.required' => 'Total Payable Amount is required',
+                'details.*.product_type_id.required' => 'Product type field is required',
+                'details.*.category_id.required' => 'Category field is required',
+                'details.*.color_id.required' => 'Color field is required',
+                'details.*.unit_id.required' => 'Unit field is required',
+                'details.*.unit_id.required' => 'Unit field is required',
+                'details.*.product_stock_id.required' => 'Product stock id is required',
+                'details.*.price.required' => 'Price field is required',
+                'details.*.quantity.required' => 'Quantity field is required',
+                'details.*.amount.required' => 'Amount field is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
 				return response(['msg' => $errors[0]], 422);
 			}
 
-            $customer_id = $req->customer_id;
-
-            if (empty($req->customer_id)) {
-
-                $customer = model('Customer')::create([
-					'company_id' => $user->company_id,
-					'name' => $req->customer_name,
-					'email' => $req->email,
-					'phone' => $req->phone,
-					'is_active' => 1,
-					'creator_id' => $user->id,
-					'created_at' => $carbon,
-				]);
-
-                $customer_id = $customer->id;
-            }
-
 			$productInvoice = model('ProductInvoice')::find($req->id);
 
             if ($productInvoice) {
 
                 $productInvoice->update([
-                    'customer_id' => $customer_id,
                     'invoice_date' => new Carbon($req->invoice_date),
                     'due_date' => new Carbon($req->due_date),
                     'notes' => $req->notes,
