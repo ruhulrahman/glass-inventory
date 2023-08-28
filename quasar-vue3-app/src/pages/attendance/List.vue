@@ -30,24 +30,21 @@
           :pagination="initialPagination"
           :filter="filter"
         >
-        
           <template v-slot:top-right>
             <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <q-item-section
-            style="font-size: 12px !important"
-          >
-            <q-select
-               filled
-              borderless
-              dense
-              v-model="search_query.status_type"
-              :options="status_arr"
-              emit-value
-              map-options
-            >
-            </q-select>
-          </q-item-section>
-        </q-item>
+              <q-item-section style="font-size: 12px !important">
+                <q-select
+                  filled
+                  borderless
+                  dense
+                  v-model="search_query.status_type"
+                  :options="status_arr"
+                  emit-value
+                  map-options
+                >
+                </q-select>
+              </q-item-section>
+            </q-item>
             <q-input
               filled
               borderless
@@ -55,23 +52,25 @@
               debounce="300"
               v-model="search_input"
               placeholder="Search"
-              @click="(()=>{calander = true})"
+              @click="
+                () => {
+                  calander = true;
+                }
+              "
             >
               <template v-slot:append>
                 <q-icon name="search" @click="getListData()" />
               </template>
             </q-input>
 
-            <q-btn
-              class="q-ml-sm"
-              icon="refresh"
-              @click="reset()"
-              flat
+            <q-btn class="q-ml-sm" icon="refresh" @click="reset()" flat />
+            <q-date
+              v-if="calander"
+              @click="get_date()"
+              style="position: absolute; top: 55px; z-index: 1; right: 78px"
+              v-model="date_range"
+              range
             />
-            <q-date v-if="calander" @click="get_date()" style="position: absolute;
-    top: 55px;
-    z-index: 1;
-    right: 78px;" v-model="date_range" range />
           </template>
           <template v-slot:no-data="{ icon, message, filter }">
             <div class="full-width row flex-center text-red q-gutter-sm">
@@ -109,9 +108,32 @@
                   @click="change_status(props.row)"
                 />
               </q-td>
+              <q-td key="count_attendance" :props="props">
+                <div class="q-pa-md q-gutter-md">
+                  <q-badge
+                    rounded
+                    color="orange"
+                    title="Current Month Total Present"
+                    :label="'P - ' + props.row.count_present"
+                  />
+                  <q-badge
+                    rounded
+                    color="red"
+                    title="Current Month Total Absent"
+                    :label="'Ab - ' + props.row.count_absent"
+                  />
+                </div>
+              </q-td>
+
               <q-td key="action" :props="props">
-                <!-- <q-btn @click="detailsData(props.row)" icon="details" size="sm" flat dense></q-btn>
-                <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn> -->
+                <q-btn
+                  @click="detailsData(props.row)"
+                  class="text-blue"
+                  icon="visibility"
+                  size="sm"
+                  flat
+                  dense
+                ></q-btn>
                 <q-btn
                   @click="deleteData(props.row)"
                   icon="delete"
@@ -129,7 +151,12 @@
     <q-dialog v-model="alert">
       <q-card>
         <q-card-section>
-          <div class="text-h5">Today {{dDate(new Date().toISOString().slice(0, 10))}} <strong style="text-transform: capitalize;">{{holiday_name}}</strong></div>
+          <div class="text-h5">
+            Today {{ dDate(new Date().toISOString().slice(0, 10)) }}
+            <strong style="text-transform: capitalize">{{
+              holiday_name
+            }}</strong>
+          </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none text-warning">
@@ -138,10 +165,26 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="OK" color="primary" @click="getListData()" v-close-popup />
+          <q-btn
+            flat
+            label="OK"
+            color="primary"
+            @click="getListData()"
+            v-close-popup
+          />
         </q-card-actions>
+
       </q-card>
     </q-dialog>
+        <div class="q-pa-md q-gutter-sm">
+          <q-dialog v-model="showDetailsDialog">
+            <attendance-details
+              :title="editItem.name + ' Attendance list'"
+              :editItem="editItem"
+              @closeModal="showDetailsDialog = false"
+            />
+          </q-dialog>
+        </div>
   </q-page>
 </template>
 
@@ -155,7 +198,7 @@ const metaData = {
   titleTemplate: (title) => `${title} - Inventory App`,
 };
 // import createEmployee from "./AddOrUpdate.vue";
-// import DetailsComponent from "./Details.vue";
+import AttendanceDetails from "./Details.vue";
 
 const columns = [
   {
@@ -185,6 +228,12 @@ const columns = [
   },
   { name: "present", label: "Status", field: "present" },
   {
+    name: "count_attendance",
+    label: "Total Attendance",
+    field: "count_attendance",
+  },
+
+  {
     name: "action",
     label: "Action",
     field: "action",
@@ -194,11 +243,11 @@ const columns = [
 ];
 
 export default {
-  name: "EmployeeList",
+  name: "AttendanceList",
   mixins: [helperMixin],
   components: {
     // createEmployee,
-    // DetailsComponent,
+    AttendanceDetails,
   },
   setup() {
     useMeta(metaData);
@@ -220,19 +269,19 @@ export default {
       listData: [],
       editItem: "",
       date_range: null,
-      calander:false,
+      calander: false,
       search_input: null,
-      search_query:{
-        from:null,
-        to:null,
+      search_query: {
+        from: null,
+        to: null,
         status_type: null,
       },
-      status_arr:[
-        {id:'Yes',label: 'Present'},
-        {id:'No',label: 'Absent'},
+      status_arr: [
+        { id: "Yes", label: "Present" },
+        { id: "No", label: "Absent" },
       ],
-      alert:false,
-      holiday_name: null
+      alert: false,
+      holiday_name: null,
     };
   },
   computed: {
@@ -243,6 +292,7 @@ export default {
           item.name = item.name;
           item.date = item.date;
           item.present = item.present;
+          item.count_attendance == "";
           return Object.assign(item);
         });
       } else {
@@ -265,14 +315,17 @@ export default {
       try {
         this.loading = true;
         let res = await jq.get(
-          ref.apiUrl("api/v1/admin/ajax/get_attendance_employee_list"),ref.search_query
+          ref.apiUrl("api/v1/admin/ajax/get_attendance_employee_list"),
+          ref.search_query
         );
         ref.calander = false;
         this.listData = res.data.data.map((item) => {
-          item.present = item.present == 'Yes' ? 'Present' : 'Absent';
-          item.date = item.date ? ref.dDate(item.date) : ref.dDate(new Date().toISOString().slice(0, 10));
-          item.holiday = res.data.day
-          item.holiday_name = res.data.holiday_name
+          item.present = item.present == "Yes" ? "Present" : "Absent";
+          item.date = item.date
+            ? ref.dDate(item.date)
+            : ref.dDate(new Date().toISOString().slice(0, 10));
+          item.holiday = res.data.day;
+          item.holiday_name = res.data.holiday_name;
           return item;
         });
       } catch (err) {
@@ -281,13 +334,13 @@ export default {
         this.loading = false;
       }
     },
-    reset:async function(){
-      var ref = this
-      ref.search_input = '';
-      ref.search_query.from = null
-      ref.search_query.to = null
-      ref.search_query.status_type = null
-      ref.getListData()
+    reset: async function () {
+      var ref = this;
+      ref.search_input = "";
+      ref.search_query.from = null;
+      ref.search_query.to = null;
+      ref.search_query.status_type = null;
+      ref.getListData();
     },
     editData: async function (item) {
       this.editItem = this.clone_object(item);
@@ -333,16 +386,17 @@ export default {
       let ref = this;
       let jq = ref.jq();
 
-      if(item.holiday == true){
+      if (item.holiday == true) {
         ref.alert = true;
-        ref.holiday_name = item.holiday_name
+        ref.holiday_name = item.holiday_name;
         return;
-      }else{
+      } else {
         ref.alert = false;
         try {
           this.loading = true;
           let res = await jq.post(
-            ref.apiUrl("api/v1/admin/ajax/update_attendance"),item
+            ref.apiUrl("api/v1/admin/ajax/update_attendance"),
+            item
           );
           await this.getListData();
           this.notify(res.msg);
@@ -356,27 +410,25 @@ export default {
         } finally {
           this.loading = false;
         }
-
       }
-
     },
-    get_date(){
-      var ref = this
+    get_date() {
+      var ref = this;
       if (ref.date_range != null && ref.date_range.from) {
         // console.log(ref.date_range);
-        ref.search_input = 'From:'+ref.date_range.from+' To:'+ref.date_range.to;
-        ref.search_query.from = ref.date_range.from
-        ref.search_query.to = ref.date_range.to
+        ref.search_input =
+          "From:" + ref.date_range.from + " To:" + ref.date_range.to;
+        ref.search_query.from = ref.date_range.from;
+        ref.search_query.to = ref.date_range.to;
         // console.log(this.date_range.from);
         // console.log(this.date_range.to);
-        
-      }else{
+      } else {
         console.log(ref.date_range);
-        ref.search_input = 'From:'+ref.date_range+' To:'+'';
-        ref.search_query.from = ref.date_range
-        ref.search_query.to = null
+        ref.search_input = "From:" + ref.date_range + " To:" + "";
+        ref.search_query.from = ref.date_range;
+        ref.search_query.to = null;
       }
-    }
+    },
   },
 };
 </script>

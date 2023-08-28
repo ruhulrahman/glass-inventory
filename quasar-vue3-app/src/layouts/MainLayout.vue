@@ -43,12 +43,31 @@
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
           </q-btn>
-            <router-link to="/logout" round dense flat style="color:red !important;">
+          <q-btn round dense flat style="color:red !important;">
+            <i class="fa-solid fa-power-off fa-2x"></i>
+            <q-menu style="width: 150px !important;">
+              <q-list style="padding: 5px 10px !important;">
+                <q-card class="text-left no-shadow no-border" @click="detailsData()">
+                  <q-icon name="person"></q-icon>
+                  <q-btn label="Profile" style="text-transform: capitalize;" flat dense class="text-black"></q-btn>
+                </q-card>
+                <q-card class="text-left no-shadow no-border" @click="(()=>{showAddNewDialog = true})">
+                  <q-icon name="key"></q-icon>
+                  <q-btn label="Forgot Password" style="text-transform: capitalize;" flat dense class="text-black"></q-btn>
+                </q-card>
+                <q-card class="text-left no-shadow no-border" style="color:red !important;" @click="logOut()">
+                  <i class="fa-solid fa-power-off"></i>
+                  <q-btn label="Logout" style="text-transform: capitalize;color:red !important;" flat dense class="text-black"></q-btn>
+                </q-card>
+              </q-list>
+            </q-menu>
+          </q-btn>
+            <!-- <router-link to="/logout" round dense flat style="color:red !important;">
               <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
                 Logout
               </q-tooltip>
               <i class="fa-solid fa-power-off fa-2x"></i>
-            </router-link>
+            </router-link> -->
         </div>
       </q-toolbar>
     </q-header>
@@ -502,6 +521,24 @@
 
     <q-page-container class="bg-grey-2">
       <router-view/>
+
+      <q-dialog v-model="showAddNewDialog" position="right">
+        <forgot-pass
+          :title="'Reset Password'"
+          :editItem="user" @closeModal="showAddNewDialog = false"
+        />
+      </q-dialog>
+
+      <div class="q-pa-md q-gutter-sm">
+        <q-dialog v-model="showDetailsDialog">
+
+        <user-profile
+          :title="user.name+' Details'"
+          :editItem="user"
+          @closeModal="showDetailsDialog = false"
+        />
+        </q-dialog>
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -509,10 +546,12 @@
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
-import helperMixin from 'src/mixins/helper_mixin.js'
+import helperMixin from '../mixins/helper_mixin.js'
 
 import {defineComponent, ref} from 'vue'
 import {useQuasar, useMeta} from "quasar";
+import ForgotPass from "../pages/configs/users/ForgotPass.vue";
+import UserProfile from "../pages/configs/users/Profile.vue";
 
 
 const metaData = {
@@ -525,7 +564,9 @@ export default defineComponent({
 
   components: {
     EssentialLink,
-    Messages
+    Messages,
+    ForgotPass,
+    UserProfile
   },
   mixins: [helperMixin],
   setup() {
@@ -539,6 +580,13 @@ export default defineComponent({
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
+    }
+  },
+  data(){
+    return{
+      showAddNewDialog: false,
+      user: null,
+      showDetailsDialog: false
     }
   },
   created () {
@@ -556,7 +604,7 @@ export default defineComponent({
   mounted: async function(){
 
     // this.getCommonDropdownList();
-
+    this.authUser()
 
   },
   methods: {
@@ -572,6 +620,35 @@ export default defineComponent({
       } catch (error) {
           this.alert(ref.err_msg(error), 'error')
       }
+    },
+
+    authUser: async function(){
+      let ref = this;
+      let jq = ref.jq();
+
+      try {
+          let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_auth_user'));
+          ref.user = res.data.auth_user
+      } catch (error) {
+          this.alert(ref.err_msg(error), 'error')
+      }
+    },
+    logOut: async function  (){
+        let ref = this;
+        let jq = ref.jq();
+
+        try {
+            let res = await jq.post(ref.apiUrl('api/v1/admin/logout'));
+            this.notify(res.msg)
+            localStorage.removeItem('api_token');
+            ref.$router.push('/login')
+
+        } catch (err) {
+            this.notify(this.err_msg(err), 'negative')
+        }
+    },
+    detailsData: async function(){
+      this.showDetailsDialog = true
     },
   },
 })

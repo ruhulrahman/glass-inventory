@@ -76,6 +76,7 @@
                   <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
                 <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
@@ -91,6 +92,18 @@
           @reloadListData="getListData" @closeModal="showAddNewDialog = false"
         />
       </q-dialog>
+
+      <div class="q-pa-md q-gutter-sm">
+        <q-dialog v-model="showDetailsDialog">
+
+        <details-component
+          :title="editItem.name+' Details'"
+          :editItem="editItem"
+          @closeModal="showDetailsDialog = false"
+        />
+        </q-dialog>
+      </div>
+
   </q-page>
 </template>
 
@@ -104,6 +117,7 @@ const metaData = {
   titleTemplate: (title) => `${title} - Inventory App`,
 };
 import createUser from "./AddOrUpdate.vue";
+import DetailsComponent from "./Profile.vue";
 
 const columns = [
     {
@@ -148,6 +162,7 @@ export default {
   mixins: [helperMixin],
   components: {
     createUser,
+    DetailsComponent
   },
   setup() {
     useMeta(metaData);
@@ -167,6 +182,7 @@ export default {
       departments: [],
       listData: [],
       editItem: '',
+      showDetailsDialog: false
     };
   },
   computed: {
@@ -240,7 +256,12 @@ export default {
       } finally {
         ref.wait_me(".wait_me", "hide");
       }
-    }
+    },
+    detailsData: async function(item){
+      this.editItem = this.clone_object(item)
+      // console.log(this.editItem);
+      this.showDetailsDialog = true
+    },
   },
 };
 </script>
