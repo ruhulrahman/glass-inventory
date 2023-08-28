@@ -17,7 +17,7 @@
           <div class="text-h6 col-10 text-grey-8">Invoice Details</div>
           <div class="col-2 text-right">
 
-            <q-btn glossy @click="printDocument()" flat color="white" class="bg-green-7 d-block"
+            <q-btn glossy @click="printDocument()" flat color="white" class="bg-secondary d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px">
               Print
             </q-btn>
@@ -101,7 +101,7 @@
               <q-td key="quantity" :props="props" class="q-mt-md">
                 {{ props.row.quantity }}
               </q-td>
-              <q-td key="amount" :props="props" class="q-mt-md"  width="15%">
+              <q-td key="amount" :props="props" class="q-mt-md" width="15%">
                 {{ props.row.amount }}
               </q-td>
             </q-tr>

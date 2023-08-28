@@ -471,7 +471,7 @@ class AjaxController extends Controller
 				'data' => $attendances,
 				'count_present' => $count_present,
 				'count_absent' => $count_absent
-			]);			
+			]);
 		} else if ($name == 'get_benefit_and_loss_by_invoice_wise') {
 
 			$list = model('ProductInvoice')::where('company_id', $user->company_id)
@@ -1659,7 +1659,7 @@ class AjaxController extends Controller
             }
 
 			$validator = Validator::make($req->all(), [
-				'invoice_date' => 'required',
+				// 'invoice_date' => 'required',
 				'payment_status_id' => 'required',
 				'sub_total' => 'required',
 				'total_payable_amount' => 'required',
@@ -1673,7 +1673,7 @@ class AjaxController extends Controller
 				'details.*.quantity' => 'required',
 				'details.*.amount' => 'required',
 			], [
-                'invoice_date.required' => 'Invoice date filed is required',
+                // 'invoice_date.required' => 'Invoice date filed is required',
                 'payment_status_id.required' => 'Payment status filed is required',
                 'payment_status_id.required' => 'Payment status filed is required',
                 'sub_total.required' => 'Sub-Total value is required',
@@ -1696,87 +1696,102 @@ class AjaxController extends Controller
 
             $customer_id = $req->customer_id;
 
-            if (empty($req->customer_id) && $req->phone) {
+            DB::beginTransaction();
 
-                $customer = model('Customer')::create([
-					'company_id' => $user->company_id,
-					'name' => $req->customer_name,
-					'email' => $req->email,
-					'phone' => $req->customer_phone,
-					'is_active' => 1,
-					'creator_id' => $user->id,
-					'created_at' => $carbon,
-				]);
+            try {
 
-                $customer_id = $customer->id;
-            }
+                if (empty($req->customer_id) && $req->phone) {
 
-			$productInvoice = model('ProductInvoice')::create([
-				'company_id' => $user->company_id,
-				'invoice_code' => $req->invoice_code ? $req->invoice_code : rand(10000,1000000),
-				'customer_id' => $customer_id,
-				'invoice_date' => new Carbon($req->invoice_date),
-				'due_date' => new Carbon($req->due_date),
-				'notes' => $req->notes,
-				'po_no' => $req->po_no,
-				'payment_status_id' => $req->payment_status_id,
-				'sub_total' => $req->sub_total,
-				'discount_percentage' => $req->discount_percentage,
-				'discount_amount' => $req->discount_amount,
-				'vat_percentage' => $req->vat_percentage,
-				'vat_amount' => $req->vat_amount,
-				'tax_percentage' => $req->tax_percentage,
-				'tax_amount' => $req->tax_amount,
-				'total_payable_amount' => $req->total_payable_amount,
-				'paid_amount' => $req->paid_amount,
-				'due_amount' => $req->due_amount,
-				'creator_id' => $user->id,
-            ]);
+                    $customer = model('Customer')::create([
+                        'company_id' => $user->company_id,
+                        'name' => $req->customer_name,
+                        'email' => $req->email,
+                        'phone' => $req->customer_phone,
+                        'is_active' => 1,
+                        'creator_id' => $user->id,
+                        'created_at' => $carbon,
+                    ]);
 
-            foreach($req->details as $item) {
-
-                $productStock = model('ProductStock')::find($item['product_stock_id']);
-
-                $benefit_per_product = $item['price'] - $productStock->price;
-                if($benefit_per_product > -1) {
-                    $benefit_amount = $benefit_per_product * $item['quantity'];
-                } else {
-                    $benefit_amount = 0.00;
+                    $customer_id = $customer->id;
                 }
 
-                $loss_per_product = $productStock->price - $item['price'];
-
-                if($loss_per_product > -1) {
-                    $loss_amount = $loss_per_product * $item['quantity'];
-                } else {
-                    $loss_amount = 0.00;
-                }
-
-                $productInvoiceDetail = model('ProductInvoiceDetail')::create([
+                $productInvoice = model('ProductInvoice')::create([
                     'company_id' => $user->company_id,
-                    'product_invoice_id' => $productInvoice->id,
-                    'product_stock_id' => $item['product_stock_id'],
-                    'price' => $item['price'],
-                    'quantity' => $item['quantity'],
-                    'amount' => $item['amount'],
-                    'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
-                    'benefit_amount' => $benefit_amount,
-                    'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
-                    'loss_amount' => $loss_amount,
+                    // 'invoice_code' => $req->invoice_code ? $req->invoice_code : rand(10000,1000000),
+                    'customer_id' => $customer_id,
+                    // 'invoice_date' => new Carbon($req->invoice_date),
+                    'invoice_date' => Carbon::now(),
+                    'due_date' => new Carbon($req->due_date),
+                    'notes' => $req->notes,
+                    'po_no' => $req->po_no,
+                    'payment_status_id' => $req->payment_status_id,
+                    'sub_total' => $req->sub_total,
+                    'discount_percentage' => $req->discount_percentage,
+                    'discount_amount' => $req->discount_amount,
+                    'vat_percentage' => $req->vat_percentage,
+                    'vat_amount' => $req->vat_amount,
+                    'tax_percentage' => $req->tax_percentage,
+                    'tax_amount' => $req->tax_amount,
+                    'total_payable_amount' => $req->total_payable_amount,
+                    'paid_amount' => $req->paid_amount,
+                    'due_amount' => $req->due_amount,
+                    'creator_id' => $user->id,
                 ]);
 
-                $productStock->product_in_stock = $productStock->product_in_stock - $productInvoiceDetail->quantity;
-                $productStock->last_sale_date = Carbon::now();
-                $productStock->save();
+                foreach($req->details as $item) {
 
-            }
+                    $productStock = model('ProductStock')::find($item['product_stock_id']);
 
-			return res_msg('Product invoice saved successfully!', 200);
+                    $benefit_per_product = $item['price'] - $productStock->price;
+                    if($benefit_per_product > -1) {
+                        $benefit_amount = $benefit_per_product * $item['quantity'];
+                    } else {
+                        $benefit_amount = 0.00;
+                    }
+
+                    $loss_per_product = $productStock->price - $item['price'];
+
+                    if($loss_per_product > -1) {
+                        $loss_amount = $loss_per_product * $item['quantity'];
+                    } else {
+                        $loss_amount = 0.00;
+                    }
+
+                    $productInvoiceDetail = model('ProductInvoiceDetail')::create([
+                        'company_id' => $user->company_id,
+                        'product_invoice_id' => $productInvoice->id,
+                        'product_stock_id' => $item['product_stock_id'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity'],
+                        'amount' => $item['amount'],
+                        'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
+                        'benefit_amount' => $benefit_amount,
+                        'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
+                        'loss_amount' => $loss_amount,
+                    ]);
+
+                    $productStock->product_in_stock = $productStock->product_in_stock - $productInvoiceDetail->quantity;
+                    $productStock->last_sale_date = Carbon::now();
+                    $productStock->save();
+
+                }
+
+                DB::commit();
+
+                return res_msg('Product invoice saved successfully!', 200, [
+                    'productInvoice' => $productInvoice
+                ]);
+
+            } catch (\Throwable $e) {
+				DB::rollback();
+				return response(['msg' => 'Wrong data entry', 'error' => $e], 422);
+			}
+
 
 		} else if ($name == 'update_product_invoice_data') {
 
 			$validator = Validator::make($req->all(), [
-				'invoice_date' => 'required',
+				// 'invoice_date' => 'required',
 				'payment_status_id' => 'required',
 				'sub_total' => 'required',
 				'total_payable_amount' => 'required',
@@ -1790,7 +1805,7 @@ class AjaxController extends Controller
 				'details.*.quantity' => 'required',
 				'details.*.amount' => 'required',
 			], [
-                'invoice_date.required' => 'Invoice date filed is required',
+                // 'invoice_date.required' => 'Invoice date filed is required',
                 'payment_status_id.required' => 'Payment status filed is required',
                 'payment_status_id.required' => 'Payment status filed is required',
                 'sub_total.required' => 'Sub-Total value is required',
@@ -1811,70 +1826,81 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			$productInvoice = model('ProductInvoice')::find($req->id);
+            DB::beginTransaction();
+            try {
 
-            if ($productInvoice) {
+                $productInvoice = model('ProductInvoice')::find($req->id);
 
-                $productInvoice->update([
-                    'invoice_date' => new Carbon($req->invoice_date),
-                    'due_date' => new Carbon($req->due_date),
-                    'notes' => $req->notes,
-                    'po_no' => $req->po_no,
-                    'payment_status_id' => $req->payment_status_id,
-                    'sub_total' => $req->sub_total,
-                    'discount_percentage' => $req->discount_percentage,
-                    'discount_amount' => $req->discount_amount,
-                    'vat_percentage' => $req->vat_percentage,
-                    'vat_amount' => $req->vat_amount,
-                    'tax_percentage' => $req->tax_percentage,
-                    'tax_amount' => $req->tax_amount,
-                    'total_payable_amount' => $req->total_payable_amount,
-                    'paid_amount' => $req->paid_amount,
-                    'due_amount' => $req->due_amount,
-                    'editor_id' => $user->id,
-                ]);
+                if ($productInvoice) {
 
-                foreach($req->details as $item) {
-
-                    model('ProductInvoiceDetail')::where([
-                        'company_id' => $user->company_id,
-                        'product_invoice_id' => $productInvoice->id,
-                    ])->delete();
-
-					$productStock = model('ProductStock')::find($item['product_stock_id']);
-
-					$benefit_per_product = $item['price'] - $productStock->price;
-					if($benefit_per_product > -1) {
-						$benefit_amount = $benefit_per_product * $item['quantity'];
-					} else {
-						$benefit_amount = 0.00;
-					}
-
-					$loss_per_product = $productStock->price - $item['price'];
-
-					if($loss_per_product > -1) {
-						$loss_amount = $loss_per_product * $item['quantity'];
-					} else {
-						$loss_amount = 0.00;
-					}
-
-                    model('ProductInvoiceDetail')::create([
-                        'company_id' => $user->company_id,
-                        'product_invoice_id' => $productInvoice->id,
-                        'product_stock_id' => $item['product_stock_id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['quantity'],
-                        'amount' => $item['amount'],
-                        'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
-                        'benefit_amount' => $benefit_amount,
-                        'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
-                        'loss_amount' => $loss_amount,
+                    $productInvoice->update([
+                        // 'invoice_date' => new Carbon($req->invoice_date),
+                        'due_date' => new Carbon($req->due_date),
+                        'notes' => $req->notes,
+                        'po_no' => $req->po_no,
+                        'payment_status_id' => $req->payment_status_id,
+                        'sub_total' => $req->sub_total,
+                        'discount_percentage' => $req->discount_percentage,
+                        'discount_amount' => $req->discount_amount,
+                        'vat_percentage' => $req->vat_percentage,
+                        'vat_amount' => $req->vat_amount,
+                        'tax_percentage' => $req->tax_percentage,
+                        'tax_amount' => $req->tax_amount,
+                        'total_payable_amount' => $req->total_payable_amount,
+                        'paid_amount' => $req->paid_amount,
+                        'due_amount' => $req->due_amount,
+                        'editor_id' => $user->id,
                     ]);
+
+                    foreach($req->details as $item) {
+
+                        model('ProductInvoiceDetail')::where([
+                            'company_id' => $user->company_id,
+                            'product_invoice_id' => $productInvoice->id,
+                        ])->delete();
+
+                        $productStock = model('ProductStock')::find($item['product_stock_id']);
+
+                        $benefit_per_product = $item['price'] - $productStock->price;
+                        if($benefit_per_product > -1) {
+                            $benefit_amount = $benefit_per_product * $item['quantity'];
+                        } else {
+                            $benefit_amount = 0.00;
+                        }
+
+                        $loss_per_product = $productStock->price - $item['price'];
+
+                        if($loss_per_product > -1) {
+                            $loss_amount = $loss_per_product * $item['quantity'];
+                        } else {
+                            $loss_amount = 0.00;
+                        }
+
+                        model('ProductInvoiceDetail')::create([
+                            'company_id' => $user->company_id,
+                            'product_invoice_id' => $productInvoice->id,
+                            'product_stock_id' => $item['product_stock_id'],
+                            'price' => $item['price'],
+                            'quantity' => $item['quantity'],
+                            'amount' => $item['amount'],
+                            'benefit_per_product' => $benefit_per_product > -1 ? $benefit_per_product : NULL,
+                            'benefit_amount' => $benefit_amount,
+                            'loss_per_product' => $loss_per_product > -1 ? $loss_per_product : NULL,
+                            'loss_amount' => $loss_amount,
+                        ]);
+                    }
+
                 }
 
-            }
+                DB::commit();
 
-			return res_msg('Product invoice saved successfully!', 200);
+                return res_msg('Product invoice saved successfully!', 200, [
+                    'productInvoice' => $productInvoice
+                ]);
+            } catch (\Throwable $e) {
+				DB::rollback();
+				return response(['msg' => 'Wrong data entry', 'error' => $e], 422);
+			}
 
 		} else if ($name == 'delete_product_invoice_data') {
 
@@ -1998,7 +2024,7 @@ class AjaxController extends Controller
 				'password'=>'required|string|min:8|max:30|required_with:confirm_password|same:confirm_password',
 				'confirm_password'=>'required|string|min:8|max:30'
 			]);
-	
+
 			if($validator->fails()){
 				$errors=$validator->errors()->all();
 				return response(['msg'=>$errors[0]], 422);

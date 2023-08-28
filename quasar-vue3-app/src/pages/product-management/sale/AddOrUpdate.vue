@@ -64,16 +64,16 @@
             </q-item-section>
           </q-item>
 
-          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <!-- <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
               <q-input :disable="submitForm.id && submitForm.invoice_code ? true : false" filled dense v-model="submitForm.invoice_code" label="Invoice Code"
                 :rules="[val => val && val.length > 0 || 'Please enter invoice code']" />
             </q-item-section>
-          </q-item>
+          </q-item> -->
 
-          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <!-- <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input filled dense v-model="submitForm.invoice_date" label="Invoice Date" :rules="['date']">
+              <q-input :disable="true" filled dense v-model="submitForm.invoice_date" label="Invoice Date" :rules="['date']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -86,6 +86,20 @@
                   </q-icon>
                 </template>
               </q-input>
+            </q-item-section>
+          </q-item> -->
+
+          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-item-label>Invoice Code</q-item-label>
+              <q-item-label caption>#{{ submitForm.invoice_code }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-item-label>Invoice Date</q-item-label>
+              <q-item-label caption>{{ dDate(submitForm.invoice_date) }}</q-item-label>
             </q-item-section>
           </q-item>
 
@@ -464,7 +478,7 @@ export default {
       try {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_price_by_filter'), item);
-        console.log('res.data.data', res.data.data)
+        // console.log('res.data.data', res.data.data)
         // const importedListCopy = this.submitForm.details.map(item => item.index === this.editItem.index ? {...this.importedList, ...this.editItem} : item );
         // this.submitForm.details = importedListCopy
         const objIndex = this.submitForm.details.findIndex((item, index) => index == rowIndex)
@@ -519,7 +533,8 @@ export default {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_invoice_data'), this.submitForm);
         }
         this.notify(res.msg)
-        this.$router.push('/sale-list')
+        // this.$router.push('/sale-list')
+        this.$router.push(`/invoice-details/${this.hash_id(res.data.productInvoice.id)}`)
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {

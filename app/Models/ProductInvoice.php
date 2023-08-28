@@ -32,4 +32,30 @@ class ProductInvoice extends Model
 	public function editor(){
 		return $this->belongsTo(User::class, 'editor_id');
 	}
+
+    public static function getInvoiceCode()
+     {
+         $num = 1;
+         $currentYear = date('y');
+         $currentMonth = date('m');
+
+         $model = self::latest('id')->first(['id', 'invoice_code']);
+         $prefix = $currentYear.$currentMonth;
+         $startPosition = strlen($prefix);
+
+         if ($model) {
+             $num = (int) substr($model->invoice_code, $startPosition) + 1;
+         }
+
+         return "{$prefix}{$num}";
+     }
+
+     protected static function boot()
+     {
+         parent::boot();
+
+         static::creating(function($model) {
+             $model->invoice_code = self::getInvoiceCode();
+         });
+     }
 }
