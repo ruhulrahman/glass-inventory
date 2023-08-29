@@ -72,7 +72,7 @@
                 <small>{{ props.row.customer_phone }}</small>
               </q-td>
               <q-td key="invoice_date" :props="props">
-                {{ dDate(props.row.invoice_date) }}
+                {{ props.row.invoice_date }}
               </q-td>
               <q-td key="total_payable_amount" :props="props">
                 {{ props.row.total_payable_amount }}
@@ -227,6 +227,7 @@ export default ({
           item.customer_phone = item.customer ? item.customer.phone : ''
           item.payment_status_name = item.payment_status ? item.payment_status.name : ''
           item.payment_status_color = item.payment_status ? item.payment_status.color_name : ''
+          item.invoice_date = item.invoice_date ? this.dDate(item.invoice_date) : ''
           return Object.assign(item)
         })
       } else {

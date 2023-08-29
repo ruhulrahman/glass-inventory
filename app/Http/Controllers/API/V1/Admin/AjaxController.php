@@ -277,13 +277,19 @@ class AjaxController extends Controller
 
 			return res_msg('list Data', 200, [
 				'categories' => $categories,
+				'categoryList' => $categories,
 				'suppliers' => $suppliers,
+				'supplierList' => $suppliers,
 				'productUnits' => $productUnits,
+				'productUnitList' => $productUnits,
 				'productColors' => $productColors,
+				'productColorList' => $productColors,
 				'productTypes' => $productTypes,
+				'productTypeList' => $productTypes,
 				'customers' => $customers,
 				'customerList' => $customers,
 				'paymentStatuses' => $paymentStatuses,
+				'paymentStatusList' => $paymentStatuses,
             ]);
 
 		} else if ($name == 'get_employee_list') {
@@ -497,7 +503,7 @@ class AjaxController extends Controller
             ->leftJoin('product_types', 'product_stocks.product_type_id', 'product_types.id')
             ->leftJoin('product_categories', 'product_stocks.category_id', 'product_categories.id')
             ->leftJoin('product_units', 'product_stocks.unit_id', 'product_units.id')
-            ->leftJoin('product_colors', 'product_stocks.color_id', 'product_units.id')
+            ->leftJoin('product_colors', 'product_stocks.color_id', 'product_colors.id')
             ->where('product_invoice_details.company_id', $user->company_id);
 
             if($req->invoice_code) {
@@ -533,6 +539,82 @@ class AjaxController extends Controller
                 'product_colors.name as color_name',
                 'product_units.name as unit_name',
             );
+
+            // $list = $query->paginate($default_per_page);
+            $list = $query->get();
+
+            // foreach($list as $item) {
+            //     $item->invoice_date = dDate($item->invoice_date);
+            // }
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
+		} else if ($name == 'get_benefit_and_loss_by_item_wise') {
+
+            $query = DB::table('product_invoice_details')
+            ->leftJoin('product_invoices', 'product_invoice_details.product_invoice_id', 'product_invoices.id')
+            ->leftJoin('product_stocks', 'product_invoice_details.product_stock_id', 'product_stocks.id')
+            ->leftJoin('product_types', 'product_stocks.product_type_id', 'product_types.id')
+            ->leftJoin('product_categories', 'product_stocks.category_id', 'product_categories.id')
+            ->leftJoin('product_units', 'product_stocks.unit_id', 'product_units.id')
+            ->leftJoin('product_colors', 'product_stocks.color_id', 'product_colors.id')
+            ->where('product_invoice_details.company_id', $user->company_id);
+
+            if($req->invoice_code) {
+                $query->where('product_invoices.invoice_code', $req->invoice_code);
+            }
+
+            if($req->invoice_date) {
+                $query->whereDate('product_invoices.invoice_date', $req->invoice_date);
+            }
+
+            if($req->product_type_id) {
+                $query->where('product_types.id', $req->product_type_id);
+            }
+
+            if($req->category_id) {
+                $query->where('product_categories.id', $req->category_id);
+            }
+
+            if($req->unit_id) {
+                $query->where('product_units.id', $req->unit_id);
+            }
+
+            if($req->color_id) {
+                $query->where('product_colors.id', $req->color_id);
+            }
+
+            $query->select(
+                'product_invoice_details.*',
+                'product_invoices.invoice_code',
+                'product_invoices.invoice_date',
+                'product_stocks.product_type_id',
+                'product_stocks.category_id',
+                'product_stocks.color_id',
+                'product_stocks.unit_id',
+                'product_types.name as product_type_name',
+                'product_categories.name as category_name',
+                'product_colors.name as color_name',
+                'product_units.name as unit_name',
+            );
+
+            if($req->product_type_id) {
+                $query->groupBy('product_stocks.product_type_id');
+            }
+
+            if($req->category_id) {
+                $query->groupBy('product_stocks.category_id');
+            }
+
+            if($req->unit_id) {
+                $query->groupBy('product_stocks.unit_id');
+            }
+
+            if($req->color_id) {
+                $query->groupBy('product_stocks.color_id');
+            }
 
             // $list = $query->paginate($default_per_page);
             $list = $query->get();
@@ -1833,31 +1915,30 @@ class AjaxController extends Controller
 
                 if ($productInvoice) {
 
-                    $productInvoice->update([
-                        // 'invoice_date' => new Carbon($req->invoice_date),
-                        'due_date' => new Carbon($req->due_date),
-                        'notes' => $req->notes,
-                        'po_no' => $req->po_no,
-                        'payment_status_id' => $req->payment_status_id,
-                        'sub_total' => $req->sub_total,
-                        'discount_percentage' => $req->discount_percentage,
-                        'discount_amount' => $req->discount_amount,
-                        'vat_percentage' => $req->vat_percentage,
-                        'vat_amount' => $req->vat_amount,
-                        'tax_percentage' => $req->tax_percentage,
-                        'tax_amount' => $req->tax_amount,
-                        'total_payable_amount' => $req->total_payable_amount,
-                        'paid_amount' => $req->paid_amount,
-                        'due_amount' => $req->due_amount,
-                        'editor_id' => $user->id,
-                    ]);
+                    $productInvoice->due_date = new Carbon($req->due_date);
+                    $productInvoice->customer_id = $req->customer_id;
+                    $productInvoice->notes = $req->notes;
+                    $productInvoice->po_no = $req->po_no;
+                    $productInvoice->payment_status_id = $req->payment_status_id;
+                    $productInvoice->sub_total = $req->sub_total;
+                    $productInvoice->discount_percentage = $req->discount_percentage;
+                    $productInvoice->discount_amount = $req->discount_amount;
+                    $productInvoice->vat_percentage = $req->vat_percentage;
+                    $productInvoice->vat_amount = $req->vat_amount;
+                    $productInvoice->tax_percentage = $req->tax_percentage;
+                    $productInvoice->tax_amount = $req->tax_amount;
+                    $productInvoice->total_payable_amount = $req->total_payable_amount;
+                    $productInvoice->paid_amount = $req->paid_amount;
+                    $productInvoice->due_amount = $req->due_amount;
+                    $productInvoice->editor_id = $user->id;
+                    $productInvoice->save();
+
+                    model('ProductInvoiceDetail')::where([
+                        'company_id' => $user->company_id,
+                        'product_invoice_id' => $productInvoice->id,
+                    ])->delete();
 
                     foreach($req->details as $item) {
-
-                        model('ProductInvoiceDetail')::where([
-                            'company_id' => $user->company_id,
-                            'product_invoice_id' => $productInvoice->id,
-                        ])->delete();
 
                         $productStock = model('ProductStock')::find($item['product_stock_id']);
 
@@ -1890,13 +1971,15 @@ class AjaxController extends Controller
                         ]);
                     }
 
+                    DB::commit();
+
+                    return res_msg('Product invoice saved successfully!', 200, [
+                        'productInvoice' => $productInvoice
+                    ]);
+
+                } else {
+                    return res_msg('Product invoice Not found!', 422);
                 }
-
-                DB::commit();
-
-                return res_msg('Product invoice saved successfully!', 200, [
-                    'productInvoice' => $productInvoice
-                ]);
             } catch (\Throwable $e) {
 				DB::rollback();
 				return response(['msg' => 'Wrong data entry', 'error' => $e], 422);

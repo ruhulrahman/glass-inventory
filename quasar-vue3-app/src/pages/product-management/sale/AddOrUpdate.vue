@@ -35,7 +35,7 @@
 
           <q-item v-if="!showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select filled dense clearable v-model="submitForm.customer_id" label="Customer"
+              <q-select :disable="submitForm.id ? true : false" filled dense clearable v-model="submitForm.customer_id" label="Customer"
                 :options="dropdownList.customerList" emit-value map-options use-input @filter="filterFn">
                 <template v-slot:no-option>
                   <q-item>
@@ -89,14 +89,14 @@
             </q-item-section>
           </q-item> -->
 
-          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
               <q-item-label>Invoice Code</q-item-label>
-              <q-item-label caption>#{{ submitForm.invoice_code }}</q-item-label>
+              <q-item-label caption><router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(submitForm.id)}`">#{{ submitForm.invoice_code }}</router-link></q-item-label>
             </q-item-section>
           </q-item>
 
-          <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
               <q-item-label>Invoice Date</q-item-label>
               <q-item-label caption>{{ dDate(submitForm.invoice_date) }}</q-item-label>
