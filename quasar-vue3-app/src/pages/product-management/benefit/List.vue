@@ -17,7 +17,7 @@
             <q-tabs v-model="tab" align="justify" narrow-indicator class="q-mb-xs">
               <q-tab class="text-purple" name="invoice_wise" label="Invoice Wise" />
               <q-tab class="text-orange" name="product_wise" label="Product Wise" />
-              <q-tab class="text-orange" name="item_wise" label="Item Wise" />
+              <!-- <q-tab class="text-orange" name="item_wise" label="Item Wise" /> -->
             </q-tabs>
           </div>
 
@@ -98,7 +98,152 @@
                 <template v-slot:loading>
                   <q-inner-loading showing color="primary" />
                 </template>
-                <template v-slot:top-right>
+                <template v-slot:top-left>
+                  <q-list class="row q-mt-md">
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+                        <q-select filled dense clearable v-model="search.product_type_id" label="Product Type"
+                          :options="dropdownList.productTypes" emit-value map-options use-input
+                          @filter="productTypefilter">
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+                        <q-select filled dense clearable v-model="search.category_id" label="Product Category"
+                          :options="dropdownList.categories" emit-value map-options use-input @filter="categoryfilter">
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+                        <q-select filled dense clearable v-model="search.color_id" label="Product Color"
+                          :options="dropdownList.productColors" emit-value map-options use-input @filter="colorfilter">
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
+                        <q-select filled dense clearable v-model="search.unit_id" label="Product Unit"
+                          :options="dropdownList.productUnits" emit-value map-options use-input @filter="unitfilter">
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section>
+                        <div class="d-flex q-mb-sm">
+                          <span class="q-mr-sm">Invoice Date</span>
+                          <q-btn icon="event" round color="primary">
+                            <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale"
+                          anchor="bottom middle" self="center middle">
+                          Select Invoice Date
+                        </q-tooltip>
+                            <q-popup-proxy @before-show="updateProxy" cover transition-show="scale" transition-hide="scale">
+                              <q-date v-model="search.invoice_date" range>
+                                <div class="row items-center justify-end q-gutter-sm">
+                                  <q-btn label="Cancel" color="primary" flat v-close-popup />
+                                  <q-btn label="OK" color="primary" flat @click="save" v-close-popup />
+                                </div>
+                              </q-date>
+                            </q-popup-proxy>
+                          </q-btn>
+                        </div>
+                        <q-badge color="teal" v-if="search.invoice_date">{{ search.invoice_date }}</q-badge>
+                        <!-- <q-input type="text" filled dense v-model="search.invoice_date" label="Invoice Date">
+                          <template v-slot:append>
+                            <q-icon name="event" class="cursor-pointer">
+                              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                <q-date v-model="search.invoice_date" range>
+                                  <div class="row items-center justify-end" v-close-popup>
+                                    <q-btn v-close-popup label="Close" color="primary" flat />
+                                  </div>
+                                </q-date>
+                              </q-popup-proxy>
+                            </q-icon>
+                          </template>
+                        </q-input> -->
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section>
+                        <q-btn glossy @click="searchData()" flat color="white" class="bg-green-7"
+                          style="text-transform: capitalize; padding: 0px 10px 0 19px">
+                          Search
+                        </q-btn>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section>
+                        <q-btn glossy @click="clearData()" flat color="white" class="bg-red-7"
+                          style="text-transform: capitalize; padding: 0px 10px 0 19px">
+                          Clear
+                        </q-btn>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                  <q-list class="row q-ma-none q-pa-none">
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12 q-ma-none q-pa-none">
+                      <q-item-section class=" q-ma-none q-pa-none">
+                        <q-item-label class="text-weight-bold">Benefit Amount: {{ getProductWiseBenefitAmount
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12 q-ma-none q-pa-none">
+                      <q-item-section class=" q-ma-none q-pa-none">
+                        <q-item-label class="text-weight-bold">Benefit Amount: {{ getProductWiseBenefitAmount
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <!-- <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12 q-ma-none q-pa-none">
+                      <q-item-section class=" q-ma-none q-pa-none">
+                        <vue-flat-pickr v-model="date" :config="config" />
+                      </q-item-section>
+                    </q-item> -->
+                  </q-list>
+                </template>
+                <!-- <template v-slot:top-left>
+                  <q-list class="row">
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section>
+                        <q-item-label>Benefit Amount: {{ getProductWiseBenefitAmount }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                      <q-item-section>
+                        <q-item-label>Loss Amount: {{ getProductWiseBenefitAmount }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </template> -->
+                <!-- <template v-slot:top-right>
                   <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter"
                     placeholder="Search">
                     <template v-slot:append>
@@ -107,7 +252,7 @@
                   </q-input>
 
                   <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
-                </template>
+                </template> -->
                 <template v-slot:no-data="{ icon, message, filter }">
                   <div class="full-width row flex-center text-red q-gutter-sm">
                     <q-icon size="2em" name="sentiment_dissatisfied" />
@@ -334,6 +479,8 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
 import DetailDialog from "./DetailDialog.vue"
+// import DateRange from 'datetimerangepicker'
+// import { VueFlatPickr } from 'datetimerangepicker'
 
 const metaData = { title: 'Benefit List' }
 
@@ -370,7 +517,9 @@ export default ({
   name: "BenefitList",
   mixins: [helperMixin],
   components: {
-    DetailDialog
+    DetailDialog,
+    // DateRange,
+    // VueFlatPickr
   },
   setup() {
     useMeta(metaData);
@@ -387,6 +536,13 @@ export default ({
   },
   data() {
     return {
+      date: new Date(),
+      config: {
+        wrap: true, // set wrap to true only when using 'input-group'
+        altFormat: 'M j, Y',
+        altInput: true,
+        dateFormat: 'Y-m-d',
+      },
       search: {
         product_type_id: '',
         category_id: '',
@@ -412,6 +568,8 @@ export default ({
       showDetailDialog: false,
       loading: false,
       listData: [],
+      productWiseBenefitAmount: 0,
+      productWiseLossAmount: 0,
       productWiselistData: [],
       itemWiselistData: [],
       detailItems: [],
@@ -449,6 +607,24 @@ export default ({
         return []
       }
     },
+    getProductWiseBenefitAmount: function () {
+      let total = 0
+      if (this.productWiselistData.length) {
+        this.productWiselistData.forEach(item => {
+          total = total + parseFloat(item.benefit_amount)
+        })
+      }
+      return total
+    },
+    getProductWiseLossAmount: function () {
+      let total = 0
+      if (this.productWiselistData.length) {
+        this.productWiselistData.forEach(item => {
+          total = total + parseFloat(item.loss_amount)
+        })
+      }
+      return total
+    },
     itemWiseTableRow: function () {
       if (this.itemWiselistData.length) {
         return this.itemWiselistData.map(item => {
@@ -462,13 +638,14 @@ export default ({
   },
   mounted() {
     this.getInvoiceWiseLis();
-    this.getProductWiseList();
+    // this.getProductWiseList();
     // this.getItemWiseSearchList();
     this.getInitialData();
   },
   methods: {
     searchData: function () {
-      this.getItemWiseSearchList()
+      this.getProductWiseList()
+      // this.getItemWiseSearchList()
     },
     clearData: function () {
       this.search = {
@@ -478,7 +655,7 @@ export default ({
         unit_id: '',
         invoice_date: '',
       }
-      this.getItemWiseSearchList()
+      this.productWiselistData = []
     },
     openAddNewDialog: function () {
       this.editItem = ''
@@ -542,7 +719,11 @@ export default ({
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_benefit_and_loss_by_product_wise'));
+        const params = Object.assign(this.search, {
+          invoice_start_date: typeof(this.search.invoice_date) == 'object' ? this.search.invoice_date.from : this.search.invoice_date,
+          invoice_end_date: typeof(this.search.invoice_date) == 'object' ? this.search.invoice_date.to : this.search.invoice_date,
+        })
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_benefit_and_loss_by_product_wise'), params);
         this.productWiselistData = res.data.data
 
       } catch (err) {

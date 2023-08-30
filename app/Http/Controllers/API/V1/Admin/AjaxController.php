@@ -496,6 +496,24 @@ class AjaxController extends Controller
 			]);
 
 		} else if ($name == 'get_benefit_and_loss_by_product_wise') {
+            $validator = Validator::make($req->all(), [
+				'invoice_date' => 'required',
+			], [
+				'invoice_date.required' => 'Please select invoice date',
+			]);
+
+			if ($req->phone2) {
+				$validator = Validator::make($req->all(), [
+					'phone2' => 'numeric',
+				], [
+					'phone2.numeric' => 'The Alternative Phone must be number',
+				]);
+			}
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
 
             $query = DB::table('product_invoice_details')
             ->leftJoin('product_invoices', 'product_invoice_details.product_invoice_id', 'product_invoices.id')
@@ -511,7 +529,10 @@ class AjaxController extends Controller
             }
 
             if($req->invoice_date) {
-                $query->whereDate('product_invoices.invoice_date', $req->invoice_date);
+                $invoice_start_date = new Carbon($req->invoice_start_date);
+                $invoice_end_date = new Carbon($req->invoice_end_date);
+                $query->whereDate('product_invoices.invoice_date', '>=', $invoice_start_date)
+                ->whereDate('product_invoices.invoice_date', '<=', $invoice_end_date);
             }
 
             if($req->product_type_id) {
@@ -1854,6 +1875,7 @@ class AjaxController extends Controller
 
                     $productStock->product_in_stock = $productStock->product_in_stock - $productInvoiceDetail->quantity;
                     $productStock->last_sale_date = Carbon::now();
+                    $productStock->sale_count = $productStock->sale_count + 1;
                     $productStock->save();
 
                 }
