@@ -9,3 +9,7 @@ export default defineComponent({
   name: 'App',
 })
 </script>
+
+<style lang="scss" scoped>
+.text-decoration-none { text-decoration: none !important;}
+</style>

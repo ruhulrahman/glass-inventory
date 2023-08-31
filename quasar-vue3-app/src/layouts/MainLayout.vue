@@ -110,7 +110,7 @@
 
             <q-item to="/employee-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="person"/>
+                <q-icon name="badge"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label>Employee List</q-item-label>

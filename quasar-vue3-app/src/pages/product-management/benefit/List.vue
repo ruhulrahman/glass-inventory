@@ -318,156 +318,13 @@
                 </template>
               </q-table>
             </q-tab-panel>
-            <q-tab-panel name="item_wise" class="q-pa-none">
-
-              <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow  q-pa-none q-ma-none"
-                :rows="itemWiseTableRow" :columns="itemWiseColumns" row-key="name"
-                no-data-label=" I didn't find anything for you" :loading="loading" :pagination="initialPagination"
-                :filter="filter">
-                <template v-slot:loading>
-                  <q-inner-loading showing color="primary" />
-                </template>
-                <template v-slot:top-left>
-                  <q-list class="row q-mt-md">
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.product_type_id" label="Product Type"
-                          :options="dropdownList.productTypes" emit-value map-options use-input
-                          @filter="productTypefilter">
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.category_id" label="Product Category"
-                          :options="dropdownList.categories" emit-value map-options use-input @filter="categoryfilter">
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.color_id" label="Product Color"
-                          :options="dropdownList.productColors" emit-value map-options use-input @filter="colorfilter">
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.unit_id" label="Product Unit"
-                          :options="dropdownList.productUnits" emit-value map-options use-input @filter="unitfilter">
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section>
-                        <q-input filled dense v-model="search.invoice_date" label="Invoice Date">
-                          <template v-slot:append>
-                            <q-icon name="event" class="cursor-pointer">
-                              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                <q-date v-model="search.invoice_date">
-                                  <div class="row items-center justify-end" v-close-popup>
-                                    <q-btn v-close-popup label="Close" color="primary" flat />
-                                  </div>
-                                </q-date>
-                              </q-popup-proxy>
-                            </q-icon>
-                          </template>
-                        </q-input>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section>
-                        <q-btn glossy @click="searchData()" flat color="white" class="bg-green-7 d-block"
-                          style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                          Search
-                        </q-btn>
-                      </q-item-section>
-                    </q-item>
-                    <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <q-item-section>
-                        <q-btn glossy @click="clearData()" flat color="white" class="bg-red-7 d-block"
-                          style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                          Search
-                        </q-btn>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </template>
-                <template v-slot:no-data="{ icon, message, filter }">
-                  <div class="full-width row flex-center text-red q-gutter-sm">
-                    <q-icon size="2em" name="sentiment_dissatisfied" />
-                    <span>
-                      Well this is sad... {{ message }}
-                    </span>
-                    <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-                  </div>
-                </template>
-                <template v-slot:header="props">
-                  <q-tr :props="props" class="bg-blue-grey-2 text-primary">
-                    <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                      {{ col.label }}
-                    </q-th>
-                  </q-tr>
-                </template>
-                <template v-slot:body="props">
-                  <q-tr :props="props">
-                    <q-td key="sl" :props="props">
-                      {{ props.pageIndex + 1 }}
-                    </q-td>
-                    <q-td key="item_name" :props="props">
-                      {{ props.row.item_name }}
-                    </q-td>
-                    <q-td key="benefit_per_product" :props="props">
-                      {{ props.row.benefit_per_product }}
-                    </q-td>
-                    <q-td key="benefit_amount" :props="props">
-                      {{ props.row.benefit_amount }}
-                    </q-td>
-                    <q-td key="loss_per_product" :props="props">
-                      {{ props.row.loss_per_product }}
-                    </q-td>
-                    <q-td key="loss_amount" :props="props">
-                      {{ props.row.loss_amount }}
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </q-tab-panel>
           </q-tab-panels>
         </div>
       </q-card-section>
     </q-card>
 
     <q-dialog fullWidth v-model="showDetailDialog">
-      <detail-dialog :listData="detailItems" @reloadListData="getInvoiceWiseLis" @closeModal="showDetailDialog = false" />
+      <detail-dialog :listData="detailItems" @reloadListData="getInvoiceWiseList" @closeModal="showDetailDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -600,7 +457,7 @@ export default ({
     productWiseTableRow: function () {
       if (this.productWiselistData.length) {
         return this.productWiselistData.map(item => {
-          item.invoice_date = item.invoice_date ? this.dDate(item.invoice_date) : ''
+          // item.invoice_date = item.invoice_date ? this.dDate(item.invoice_date) : ''
           return Object.assign(item)
         })
       } else {
@@ -637,7 +494,7 @@ export default ({
     }
   },
   mounted() {
-    this.getInvoiceWiseLis();
+    this.getInvoiceWiseList();
     // this.getProductWiseList();
     // this.getItemWiseSearchList();
     this.getInitialData();
@@ -700,7 +557,7 @@ export default ({
         this.loading = false
       }
     },
-    getInvoiceWiseLis: async function () {
+    getInvoiceWiseList: async function () {
       let ref = this;
       let jq = ref.jq();
       try {

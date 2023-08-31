@@ -488,7 +488,7 @@ class AjaxController extends Controller
                 $detailsQuery = model('ProductInvoiceDetail')::where('product_invoice_id', $item->id);
                 $item->benefit_amount = (clone $detailsQuery)->sum('benefit_amount');
                 $item->loss_amount = (clone $detailsQuery)->sum('loss_amount');
-                $item->invoice_date = dDate($item->invoice_date);
+                $item->invoice_date = dDate($item->invoice_date, 'd-m-Y');
             }
 
 			return res_msg('list Data', 200, [
@@ -565,7 +565,7 @@ class AjaxController extends Controller
             $list = $query->get();
 
             // foreach($list as $item) {
-            //     $item->invoice_date = dDate($item->invoice_date);
+            //     $item->invoice_date = dDate($item->invoice_date, 'd-M-Y');
             // }
 
 			return res_msg('list Data', 200, [
@@ -646,6 +646,55 @@ class AjaxController extends Controller
 
 			return res_msg('list Data', 200, [
 				'data' => $list
+			]);
+
+		} else if ($name == 'get_dashboard_caculation_data') {
+
+            $dashboardData = new \StdClass;
+
+            $dashboardData->total_user = model('User')::where(['status' => 1, 'company_id' => $user->company_id])->count();
+            $dashboardData->total_employee = model('Employee')::where(['active' => 1, 'company_id' => $user->company_id])->count();
+            $dashboardData->total_customer = model('Customer')::where(['is_active' => 1, 'company_id' => $user->company_id])->count();
+            $dashboardData->total_supplier = model('Supplier')::where(['active' => 1, 'company_id' => $user->company_id])->count();
+
+            $invoiceQuery = model('ProductInvoice')::where(['company_id' => $user->company_id]);
+
+            $dashboardData->total_due_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due_last_6th_month = (clone $invoiceQuery)->whereDate('invoice_date', '<=', Carbon::now())
+            ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
+            ->sum('due_amount');
+            $dashboardData->total_due_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->sum('due_amount');
+
+            $product_invoice_ids_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->pluck('id');
+            $product_invoice_ids_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())
+            ->pluck('id');
+            $product_invoice_ids_last_6th_month = (clone $invoiceQuery)->whereDate('invoice_date', '<=', Carbon::now())
+            ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
+            ->pluck('id');
+            $product_invoice_ids_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->pluck('id');
+
+
+            $pInvoiceDetailQuery = model('ProductInvoiceDetail')::where(['company_id' => $user->company_id]);
+            $dashboardData->total_sale_today = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_today)->sum('amount');
+            $dashboardData->total_sale_this_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_month)->sum('amount');
+            $dashboardData->total_sale_last_6th_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_last_6th_month)->sum('amount');
+            $dashboardData->total_sale_this_year = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_year)->sum('amount');
+
+            $dashboardData->total_earning_today = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_today)->sum('benefit_amount');
+            $dashboardData->total_earning_this_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_month)->sum('benefit_amount');
+            $dashboardData->total_earning_last_6th_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_last_6th_month)->sum('benefit_amount');
+            $dashboardData->total_earning_this_year = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_year)->sum('benefit_amount');
+
+            $dashboardData->total_loss_today = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_today)->sum('loss_amount');
+            $dashboardData->total_loss_this_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_month)->sum('loss_amount');
+            $dashboardData->total_loss_last_6th_month = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_last_6th_month)->sum('loss_amount');
+            $dashboardData->total_loss_this_year = (clone $pInvoiceDetailQuery)->whereIn('product_invoice_id', $product_invoice_ids_this_year)->sum('loss_amount');
+
+            $dashboardData->productStocks = model('ProductStock')::with('type', 'category', 'unit', 'color')->where(['active' => 1, 'company_id' => $user->company_id])->orderBy('sale_count', 'desc')->get();
+
+			return res_msg('list Data', 200, [
+				'dashboardData' => $dashboardData,
 			]);
 
 		}
