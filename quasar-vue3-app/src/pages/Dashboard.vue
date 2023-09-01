@@ -115,7 +115,7 @@
               </q-item-section>
             </q-item>
           </div>
-          <div class="col-md-3 col-sm-12 col-xs-12">
+          <!-- <div class="col-md-3 col-sm-12 col-xs-12">
             <q-item class="q-pa-none">
               <q-item-section side class="q-pa-lg q-mr-none text-white bg-orange-9">
                 <q-icon name="balance" color="white" size="24px"></q-icon>
@@ -125,7 +125,7 @@
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_last_6th_month }}</q-item-label>
               </q-item-section>
             </q-item>
-          </div>
+          </div> -->
           <div class="col-md-3 col-sm-12 col-xs-12">
             <q-item class="q-pa-none">
               <q-item-section side class="q-pa-lg q-mr-none text-white bg-orange-9">
@@ -134,6 +134,17 @@
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
                 <q-item-label>Due This Year</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_year }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12">
+            <q-item class="q-pa-none">
+              <q-item-section side class="q-pa-lg q-mr-none text-white bg-orange-9">
+                <q-icon name="balance" color="white" size="24px"></q-icon>
+              </q-item-section>
+              <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
+                <q-item-label>Total Due</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -195,10 +206,10 @@
 
 
     <div class="row q-col-gutter-sm  q-py-sm">
-      <tab-social :productStocks="dashboardData.productStocks" />
+      <tab-most-favorite :productStocks="dashboardData.productStocks" />
     </div>
 
-    <!-- <card-charts /> -->
+    <card-charts />
 
     <!-- <div class="row q-col-gutter-sm  q-pb-sm">
       <todo-list />
@@ -218,9 +229,9 @@ export default defineComponent({
   name: 'PageIndex',
   mixins: [helperMixin],
   components: {
+    TabMostFavorite: defineAsyncComponent(() => import('components/tabs/TabMostFavorite.vue')),
     CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
     CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
-    TabSocial: defineAsyncComponent(() => import('components/tabs/TabSocial.vue')),
     CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
     CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
     TodoList: defineAsyncComponent(() => import('components/list/TodoList.vue')),
@@ -229,44 +240,6 @@ export default defineComponent({
   setup() {
     return {
       mode: 'list',
-      messages: [
-        {
-          id: 5,
-          name: 'Pratik Patel',
-          msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-            '            weekend. Do you want to grab brunch?',
-          avatar: 'https://avatars2.githubusercontent.com/u/34883558?s=400&v=4',
-          time: '10:42 PM'
-        }, {
-          id: 6,
-          name: 'Winfield Stapforth',
-          msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-            '            weekend. Do you want to grab brunch?',
-          avatar: 'https://cdn.quasar.dev/img/avatar6.jpg',
-          time: '11:17 AM'
-        }, {
-          id: 1,
-          name: 'Boy',
-          msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-            '            weekend. Do you want to grab brunch?',
-          avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          time: '5:17 AM'
-        }, {
-          id: 2,
-          name: 'Jeff Galbraith',
-          msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-            '            weekend. Do you want to grab brunch?',
-          avatar: 'https://cdn.quasar.dev/team/jeff_galbraith.jpg',
-          time: '5:17 AM'
-        }, {
-          id: 3,
-          name: 'Razvan Stoenescu',
-          msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-            '            weekend. Do you want to grab brunch?',
-          avatar: 'https://cdn.quasar.dev/team/razvan_stoenescu.jpeg',
-          time: '5:17 AM'
-        }
-      ],
     }
   },
   data () {

@@ -2,7 +2,7 @@
   <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
     <q-card class="fit no-shadow" bordered>
       <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify">
-        <q-tab name="contact" :class="tab == 'contact' ? 'text-blue' : ''" icon="contacts" label="Most Selling Product List" />
+        <q-tab name="contact" :class="tab == 'contact' ? 'text-blue' : ''" icon="inventory" label="Most Selling Product List" />
         <!-- <q-tab name="message" :class="tab=='message'?'text-blue':''" icon="comment" label="Message">
           <q-badge color="red" floating>{{ messages.length }}</q-badge>
         </q-tab> -->
@@ -28,7 +28,7 @@
 
               <q-item-section side>
                 <div class="text-grey-8 q-gutter-xs">
-                  <span>{{ item.sale_count }} piece</span>
+                  <span>{{ item.sale_count }} piece sold</span>
                 </div>
               </q-item-section>
             </q-item>

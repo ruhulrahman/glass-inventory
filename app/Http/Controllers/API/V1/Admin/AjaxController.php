@@ -665,6 +665,7 @@ class AjaxController extends Controller
             ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
             ->sum('due_amount');
             $dashboardData->total_due_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due = (clone $invoiceQuery)->sum('due_amount');
 
             $product_invoice_ids_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->pluck('id');
             $product_invoice_ids_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())
