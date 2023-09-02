@@ -701,6 +701,10 @@ class AjaxController extends Controller
               ->limit(10)
               ->get();
 
+            $dashboardData->topTenPurchaseCustomers = (clone $invoiceQuery)->with('customer')->addSelect(DB::raw('SUM(total_payable_amount) as purchase_total, customer_id'))
+            ->groupBy('customer_id')->take(10)
+            ->orderBy('purchase_total', 'DESC')->get();
+
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
 			]);

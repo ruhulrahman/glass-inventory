@@ -206,7 +206,9 @@
 
 
     <div class="row q-col-gutter-sm  q-py-sm">
-      <tab-most-favorite :productStocks="dashboardData.productStocks" :topTenCustomers="dashboardData.topTenCustomers"/>
+      <tab-most-favorite
+      :dashboardData="dashboardData"
+      />
     </div>
 
     <card-charts />
