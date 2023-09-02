@@ -732,8 +732,29 @@ class AjaxController extends Controller
             ->groupBy('customer_id')->take(10)
             ->orderBy('purchase_total', 'DESC')->get();
 
+            $dashboardData->last20DaysSales = (clone $invoiceQuery)->select("total_payable_amount as sales")->latest()->limit(20)->get();
+            $dashboardData->maxPayableAmount = (clone $invoiceQuery)->max("total_payable_amount");
+
+            // $salesQuery = (clone $invoiceQuery)->selectRaw('DAY(created_at), SUM(total_payable_amount) AS sales')
+            //     ->whereBetween('created_at', [Carbon::now()->startOfMonth(),  Carbon::now()->endOfMonth()])
+            //     ->groupBy(DB::raw('DAY(created_at)'));
+
+
+            // $dashboardData->last20DaysSales = (clone $salesQuery)->latest()->limit(20)->get();
+            // $dashboardData->maxPayableAmount = (clone $salesQuery)->max('sales');
+
+            $day = 0;
+            $max = $dashboardData->maxPayableAmount + 10000;
+            // $max = 1000000;
+            foreach($dashboardData->last20DaysSales as $item) {
+                $item->salse = (integer) $item->sales;
+                $item->label = $day."D";
+                $item->max = $max;
+                $day += 1;
+            }
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
+				'last20DaysSales' => $dashboardData->last20DaysSales,
 			]);
 
 		} else if ($name == 'generate_invoice_pdf') {
