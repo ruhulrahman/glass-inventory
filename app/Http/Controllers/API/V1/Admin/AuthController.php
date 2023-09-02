@@ -8,6 +8,8 @@ use Vinkla\Hashids\Facades\Hashids;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+// use ZanySoft\LaravelPDF\Facades\PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -113,11 +115,11 @@ class AuthController extends Controller
 		// 	'manager' => 1,
 		// ]);
 
-		
+
 		$err_txt='Given credentials do not match with our records';
-		
+
 		if(empty($auth_user)) return res_msg($err_txt, 422); //unauthorised http status code 422;
-		
+
 		if(Hash::check($req->password, $auth_user->password)){
 			// return $auth_user;
 
@@ -214,5 +216,40 @@ class AuthController extends Controller
 		// Mail::to($user->email)->send(new \App\Mail\ResetPasswordLink($user));
 
         return res_msg('A password reset link has been sent to your registered email inbox.', 200);
+    }
+
+    public function generate_invoice_pdf(Request $req){
+
+        $user = model('User')::first();
+        // $user = Auth::user();
+
+        $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
+
+            if ($invoice) {
+                foreach($invoice->details as $item) {
+                   $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
+                   if ($productStock) {
+                    $item->product_type_id = $productStock->product_type_id;
+                    $item->product_type = $productStock->type ? $productStock->type->name : '';
+                    $item->category_id = $productStock->category_id;
+                    $item->category = $productStock->category ? $productStock->category->name : '';
+                    $item->color_id = $productStock->color_id;
+                    $item->color = $productStock->color ? $productStock->color->name : '';
+                    $item->unit_id = $productStock->unit_id;
+                    $item->unit = $productStock->unit ? $productStock->unit->name : '';
+                   }
+                }
+            }
+
+            $company = $user->company;
+
+            // return view('pdf.invoice', compact('company', 'invoice'));
+
+            $pdf = PDF::loadView('pdf.invoice', compact('company', 'invoice'));
+            return $pdf->stream('invoice.pdf');
+
+            // $pdf = PDF::Make();
+            // $pdf->loadView('pdf.invoice', compact('company', 'invoice'));
+            // return $pdf->stream('invoice.pdf');
     }
 }

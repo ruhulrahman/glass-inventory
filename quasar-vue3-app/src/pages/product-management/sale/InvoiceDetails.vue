@@ -11,16 +11,18 @@
       <q-breadcrumbs-el>Invoice Details</q-breadcrumbs-el>
     </q-breadcrumbs>
 
-    <q-card class="no-shadow q-mb-xl" bordered id="divToPrint">
+    <q-card class="no-shadow q-mb-xl" bordered id="element-to-convert">
       <q-card-section>
         <div class="row">
           <div class="text-h6 col-10 text-grey-8">Invoice Details</div>
           <div class="col-2 text-right">
 
-            <q-btn glossy @click="printDocument()" flat color="white" class="bg-secondary d-block"
+            <!-- <q-btn glossy @click="printDocument()" flat color="white" class="bg-secondary d-block" -->
+            <q-btn glossy @click="printDocument(submitForm.id)" flat color="white" class="bg-secondary d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px">
-              Print
+              Download
             </q-btn>
+            <a :href="download_url" download>Download</a>
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
@@ -30,7 +32,7 @@
         </div>
       </q-card-section>
       <q-separator></q-separator>
-      <q-card-section class="q-pa-none">
+      <q-card-section class="q-pa-none" id="divToPrint">
         <q-list class="row q-mt-md">
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -209,6 +211,24 @@
       </q-card-section>
 
     </q-card>
+    <!-- <vue3-html2pdf
+        :show-layout="false"
+        :float-layout="true"
+        :enable-download="true"
+        :preview-modal="true"
+        :paginate-elements-by-height="1400"
+        :filename="'hee-hee'"
+        :pdf-quality="2"
+        :manual-pagination="false"
+        pdf-format="a4"
+        pdf-orientation="landscape"
+        pdf-content-width="800px"
+        ref="html2Pdf"
+    >
+        <template  v-slot:pdf-content>
+            <h1>Hello World</h1>
+        </template>
+    </vue3-html2pdf> -->
 
   </q-page>
 </template>
@@ -218,15 +238,18 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import pdfMake from 'pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
+// import Vue3Html2pdf from 'vue3-html2pdf'
 
 export default {
   props: [],
   mixins: [helperMixin],
   components: {
     // flatPickr
+    // Vue3Html2pdf
   },
   data() {
     return {
+      download_url: '#',
       dropdownList: [],
       showCustomerAddField: false,
       showDueAmount: false,
@@ -335,6 +358,7 @@ export default {
     } else {
       this.$router.push('/sale-list')
     }
+    this.gen_download_url()
   },
   mounted() {
   },
@@ -391,6 +415,20 @@ export default {
         this.loading = false
       }
     },
+    generateInvoicePdf: async function (productInvoiceId) {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true
+        await jq.get(ref.apiUrl('api/v1/admin/ajax/generate_invoice_pdf'), { id: productInvoiceId });
+        // this.submitForm = res.data.productInvoice
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+    },
     getInitialData: async function () {
       let ref = this;
       let jq = ref.jq();
@@ -421,6 +459,18 @@ export default {
         // this.loading(false)
       }
     },
+    gen_download_url: function () {
+        var ref=this;
+        var jq=this.jq();
+        this.download_url = ref.apiUrl('api/v1/admin/generate_invoice_pdf');
+        const search = {
+          user_id: localStorage.getItem('auth_user_id'),
+          id: 1,
+        }
+        var search_query = jq.param(search)
+        this.download_url += '?' + search_query
+
+    },
     printDocument() {
 
       //get table html
@@ -429,8 +479,8 @@ export default {
       var html = htmlToPdfmake(pdfTable.innerHTML);
 
       const documentDefinition = { content: html };
-      pdfMake.vfs = pdfFonts.pdfMake.vfs;
-      pdfMake.createPdf(documentDefinition).download();
+      // pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      pdfMake.createPdf(documentDefinition).print();
 
     }
   },

@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use Carbon\Carbon;
+use Nette\Utils\Random;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\DB;
-use Nette\Utils\Random;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AjaxController extends Controller
 {
@@ -697,6 +698,37 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
 			]);
+
+		} else if ($name == 'generate_invoice_pdf') {
+
+            $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
+
+            if ($invoice) {
+                foreach($invoice->details as $item) {
+                   $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
+                   if ($productStock) {
+                    $item->product_type_id = $productStock->product_type_id;
+                    $item->product_type = $productStock->type ? $productStock->type->name : '';
+                    $item->category_id = $productStock->category_id;
+                    $item->category = $productStock->category ? $productStock->category->name : '';
+                    $item->color_id = $productStock->color_id;
+                    $item->color = $productStock->color ? $productStock->color->name : '';
+                    $item->unit_id = $productStock->unit_id;
+                    $item->unit = $productStock->unit ? $productStock->unit->name : '';
+                   }
+                }
+            }
+
+            $company = $user->company;
+
+            $pdf = PDF::loadView('pdf.invoice', compact('company', 'invoice'))->setPaper('a4', 'portrait');
+
+
+            return $pdf->stream('invoice.pdf');
+
+			// return res_msg('list Data', 200, [
+			// 	'invoice' => $invoice,
+			// ]);
 
 		}
 
