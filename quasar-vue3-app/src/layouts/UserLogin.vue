@@ -95,6 +95,7 @@ export default defineComponent({
             this.notify(res.msg)
 
             localStorage.setItem('api_token', res.data.api_token);
+            localStorage.setItem('auth_user_id', res.data.auth_user.id);
 
             this.$router.replace(sessionStorage.getItem('redirectPath') || '/')
             sessionStorage.removeItem('redirectPath')

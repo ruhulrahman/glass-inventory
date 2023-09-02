@@ -14,8 +14,10 @@ Route::post('verify_email', [AuthController::class, 'verify_email'])->name('veri
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('ajax/{name}', [AjaxController::class, 'get'])->name('ajax-get');
     Route::post('ajax/{name}', [AjaxController::class, 'post'])->name('ajax-post');
+
 });
 
+Route::get('generate_invoice_pdf', [AuthController::class, 'generate_invoice_pdf'])->name('generate_invoice_pdf');
 
 // Route::get('ajax/{name}', [AjaxController::class, 'get'])->name('ajax-get');
 // Route::post('ajax/{name}', [AjaxController::class, 'post'])->name('ajax-post');

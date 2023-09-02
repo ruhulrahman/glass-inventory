@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use Carbon\Carbon;
+use Nette\Utils\Random;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\DB;
-use Nette\Utils\Random;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AjaxController extends Controller
 {
@@ -340,7 +341,34 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
-		}else if ($name == 'get_attendance_employee_list') {
+		} else if ($name == 'get_customer_due_list') {
+
+			$query = model('ProductInvoice')::with('customer', 'payment_status')
+            ->where('company_id', $user->company_id)
+            ->where('due_amount', '>', 0);
+
+            if ($req->customer_id) {
+                $query->where('customer_id', $req->customer_id);
+            }
+
+            if ($req->invoice_code) {
+                $query->where('invoice_code', $req->invoice_code);
+            }
+
+            if ($req->invoice_date) {
+                $query->whereDate('invoice_date', $req->invoice_date);
+            }
+
+            $totalDueAmount = $query->sum('due_amount');
+
+            $list = $query->orderBy('id','desc')->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $list,
+				'totalDueAmount' => $totalDueAmount,
+			]);
+
+		}  else if ($name == 'get_attendance_employee_list') {
 			// return $req->all();
 
 			$count = model('EmployeeAttendance')::whereDate('date',Carbon::today())->count();
@@ -672,6 +700,7 @@ class AjaxController extends Controller
             ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
             ->sum('due_amount');
             $dashboardData->total_due_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due = (clone $invoiceQuery)->sum('due_amount');
 
             $product_invoice_ids_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->pluck('id');
             $product_invoice_ids_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())
@@ -700,9 +729,50 @@ class AjaxController extends Controller
 
             $dashboardData->productStocks = model('ProductStock')::with('type', 'category', 'unit', 'color')->where(['active' => 1, 'company_id' => $user->company_id])->orderBy('sale_count', 'desc')->get();
 
+            $dashboardData->topTenCustomers = (clone $invoiceQuery)->with('customer')->selectRaw("customer_id,count(id) as product_buy_count")
+              ->groupBy('customer_id')
+              ->orderBy('product_buy_count','DESC')
+              ->limit(10)
+              ->get();
+
+            $dashboardData->topTenPurchaseCustomers = (clone $invoiceQuery)->with('customer')->addSelect(DB::raw('SUM(total_payable_amount) as purchase_total, customer_id'))
+            ->groupBy('customer_id')->take(10)
+            ->orderBy('purchase_total', 'DESC')->get();
+
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
 			]);
+
+		} else if ($name == 'generate_invoice_pdf') {
+
+            $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
+
+            if ($invoice) {
+                foreach($invoice->details as $item) {
+                   $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
+                   if ($productStock) {
+                    $item->product_type_id = $productStock->product_type_id;
+                    $item->product_type = $productStock->type ? $productStock->type->name : '';
+                    $item->category_id = $productStock->category_id;
+                    $item->category = $productStock->category ? $productStock->category->name : '';
+                    $item->color_id = $productStock->color_id;
+                    $item->color = $productStock->color ? $productStock->color->name : '';
+                    $item->unit_id = $productStock->unit_id;
+                    $item->unit = $productStock->unit ? $productStock->unit->name : '';
+                   }
+                }
+            }
+
+            $company = $user->company;
+
+            $pdf = PDF::loadView('pdf.invoice', compact('company', 'invoice'))->setPaper('a4', 'portrait');
+
+
+            return $pdf->stream('invoice.pdf');
+
+			// return res_msg('list Data', 200, [
+			// 	'invoice' => $invoice,
+			// ]);
 
 		}
 

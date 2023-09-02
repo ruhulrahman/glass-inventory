@@ -280,7 +280,7 @@
                           props.row.invoice_code }}</router-link>
                     </q-td>
                     <q-td key="invoice_date" :props="props">
-                      {{ props.row.invoice_date }}
+                      {{ dDate(props.row.invoice_date) }}
                     </q-td>
                     <q-td key="product_type_name" :props="props">
                       {{ props.row.product_type_name }}

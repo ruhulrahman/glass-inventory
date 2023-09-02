@@ -263,6 +263,15 @@
               </q-item-section>
             </q-item>
 
+            <q-item to="/due-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="money" color="deep-orange-13"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Due</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
         </q-expansion-item>
 
@@ -641,6 +650,7 @@ export default defineComponent({
             let res = await jq.post(ref.apiUrl('api/v1/admin/logout'));
             this.notify(res.msg)
             localStorage.removeItem('api_token');
+            localStorage.removeItem('auth_user_id');
             ref.$router.push('/login')
 
         } catch (err) {
@@ -700,5 +710,7 @@ export default defineComponent({
    margin-top: 30% !important;
     text-align: center;
 }
-
+.q-router-link--exact-active {
+  background: #00000036 !important;
+}
 </style>
