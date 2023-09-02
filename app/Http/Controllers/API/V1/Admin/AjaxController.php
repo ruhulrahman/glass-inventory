@@ -695,6 +695,12 @@ class AjaxController extends Controller
 
             $dashboardData->productStocks = model('ProductStock')::with('type', 'category', 'unit', 'color')->where(['active' => 1, 'company_id' => $user->company_id])->orderBy('sale_count', 'desc')->get();
 
+            $dashboardData->topTenCustomers = (clone $invoiceQuery)->with('customer')->selectRaw("customer_id,count(id) as product_buy_count")
+              ->groupBy('customer_id')
+              ->orderBy('product_buy_count','DESC')
+              ->limit(10)
+              ->get();
+
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
 			]);

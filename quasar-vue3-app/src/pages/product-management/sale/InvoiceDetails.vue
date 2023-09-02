@@ -479,7 +479,7 @@ export default {
       var html = htmlToPdfmake(pdfTable.innerHTML);
 
       const documentDefinition = { content: html };
-      // pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
       pdfMake.createPdf(documentDefinition).print();
 
     }
