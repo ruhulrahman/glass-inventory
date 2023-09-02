@@ -31,7 +31,70 @@
           :filter="filter"
         >
           <template v-slot:top-right>
-            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <q-item-section
+            style="margin-top: -20px !important; font-size: 12px !important"
+          >
+            <q-select
+              filled
+                  borderless
+                  dense
+              v-model="search_query.employee_id"
+              label="Employee"
+              :options="employees"
+              emit-value
+              map-options
+            >
+            </q-select>
+          </q-item-section>
+        </q-item> -->
+            <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <q-item-section style="font-size: 12px !important">
+                <q-select
+                  filled
+                  dense
+                  clearable
+                  v-model="search_query.employee_id"
+                  label="Employee"
+                  :options="employees"
+                  emit-value
+                  map-options
+                  use-input
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+            <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <q-item-section style="font-size: 12px !important">
+                <q-select
+                  filled
+                  dense
+                  clearable
+                  v-model="search_query.status_type"
+                  label="Type"
+                  :options="status_arr"
+                  emit-value
+                  map-options
+                  use-input
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+            <!-- <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <q-item-section style="font-size: 12px !important">
                 <q-select
                   filled
@@ -44,33 +107,69 @@
                 >
                 </q-select>
               </q-item-section>
+            </q-item> -->
+            <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <q-item-section>
+                <div class="d-flex q-mb-sm">
+                  <span class="q-mr-sm">Invoice Date</span>
+                  <q-btn icon="event" round color="primary">
+                    <q-tooltip
+                      class="bg-primary"
+                      transition-show="scale"
+                      transition-hide="scale"
+                      anchor="bottom middle"
+                      self="center middle"
+                    >
+                      Select Invoice Date
+                    </q-tooltip>
+                    <q-popup-proxy
+                      @before-show="updateProxy"
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date @click="get_date()" v-model="date_range" range>
+                        <div class="row items-center justify-end q-gutter-sm">
+                          <q-btn
+                            label="Cancel"
+                            color="primary"
+                            flat
+                            v-close-popup
+                          />
+                          <!-- <q-btn label="OK" color="primary" flat @click="save" v-close-popup /> -->
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
+                <q-badge color="teal" v-if="date_range">{{
+                  search_input
+                }}</q-badge>
+              </q-item-section>
             </q-item>
-            <q-input
-              filled
-              borderless
-              dense
-              debounce="300"
-              v-model="search_input"
-              placeholder="Search"
-              @click="
-                () => {
-                  calander = true;
-                }
-              "
-            >
-              <template v-slot:append>
-                <q-icon name="search" @click="getListData()" />
-              </template>
-            </q-input>
+            <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <q-item-section>
+                <q-btn
+                  glossy
+                  @click="getListData()"
+                  flat
+                  color="white"
+                  class="bg-green-7"
+                  style="text-transform: capitalize; padding: 0px 10px 0 19px"
+                >
+                  Search
+                </q-btn>
+              </q-item-section>
+            </q-item>
 
             <q-btn class="q-ml-sm" icon="refresh" @click="reset()" flat />
-            <q-date
+            <!-- <q-date
               v-if="calander"
               @click="get_date()"
               style="position: absolute; top: 55px; z-index: 1; right: 78px"
               v-model="date_range"
               range
-            />
+            /> -->
           </template>
           <template v-slot:no-data="{ icon, message, filter }">
             <div class="full-width row flex-center text-red q-gutter-sm">
@@ -173,18 +272,17 @@
             v-close-popup
           />
         </q-card-actions>
-
       </q-card>
     </q-dialog>
-        <div class="q-pa-md q-gutter-sm">
-          <q-dialog v-model="showDetailsDialog">
-            <attendance-details
-              :title="editItem.name + ' Attendance list'"
-              :editItem="editItem"
-              @closeModal="showDetailsDialog = false"
-            />
-          </q-dialog>
-        </div>
+    <div class="q-pa-md q-gutter-sm">
+      <q-dialog v-model="showDetailsDialog">
+        <attendance-details
+          :title="editItem.name + ' Attendance list'"
+          :editItem="editItem"
+          @closeModal="showDetailsDialog = false"
+        />
+      </q-dialog>
+    </div>
   </q-page>
 </template>
 
@@ -272,6 +370,7 @@ export default {
       calander: false,
       search_input: null,
       search_query: {
+        employee_id: null,
         from: null,
         to: null,
         status_type: null,
@@ -282,6 +381,7 @@ export default {
       ],
       alert: false,
       holiday_name: null,
+      employees: [],
     };
   },
   computed: {
@@ -319,15 +419,28 @@ export default {
           ref.search_query
         );
         ref.calander = false;
-        this.listData = res.data.data.map((item) => {
-          item.present = item.present == "Yes" ? "Present" : "Absent";
-          item.date = item.date
-            ? ref.dDate(item.date)
-            : ref.dDate(new Date().toISOString().slice(0, 10));
-          item.holiday = res.data.day;
-          item.holiday_name = res.data.holiday_name;
-          return item;
-        });
+        if(res.data.data.length > 0){
+          this.listData = res.data.data.map((item) => {
+            item.present = item.present == "Yes" ? "Present" : "Absent";
+            item.date = item.date
+              ? ref.dDate(item.date)
+              : ref.dDate(new Date().toISOString().slice(0, 10));
+            item.holiday = res.data.day;
+            item.holiday_name = res.data.holiday_name;
+            return item;
+          });
+  
+          ref.employees = this.listData.map((item) => {
+            return {
+              id: item.id,
+              label: item.name,
+            };
+          });
+
+        }else{
+          this.listData = []
+          ref.employees = []
+        } 
       } catch (err) {
         this.notify(this.err_msg(err), "negative");
       } finally {
@@ -420,13 +533,17 @@ export default {
           "From:" + ref.date_range.from + " To:" + ref.date_range.to;
         ref.search_query.from = ref.date_range.from;
         ref.search_query.to = ref.date_range.to;
+        const d = new Date(ref.date_range.from);
+        ref.search_query.month = d.getMonth();  
         // console.log(this.date_range.from);
         // console.log(this.date_range.to);
       } else {
-        console.log(ref.date_range);
+        // console.log(ref.date_range);
         ref.search_input = "From:" + ref.date_range + " To:" + "";
         ref.search_query.from = ref.date_range;
         ref.search_query.to = null;
+        const d = new Date(ref.date_range.from);
+        ref.search_query.month = d.getMonth(); 
       }
     },
   },

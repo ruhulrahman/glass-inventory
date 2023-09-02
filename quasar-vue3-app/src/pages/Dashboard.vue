@@ -234,6 +234,12 @@
         </q-card>
       </div>
     </div>
+    <div class="row  q-col-gutter-sm  q-py-sm">
+
+      <calendar-component-vue/>
+
+    </div>
+
 
     <card-charts />
 
@@ -252,15 +258,19 @@ import { defineComponent, defineAsyncComponent } from 'vue'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import * as echarts from 'echarts';
 import ECharts from "vue-echarts";
+import CalendarComponentVue from '../components/CalendarComponent.vue';
 
 export default defineComponent({
   name: 'PageIndex',
   mixins: [helperMixin],
   components: {
     ECharts,
+    CalendarComponentVue,
     TabMostFavorite: defineAsyncComponent(() => import('components/tabs/TabMostFavorite.vue')),
     CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
     CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
+    CalenderComponent: defineAsyncComponent(() => import('components/tabs/CalenderComponent.vue')),
+    TabSocial: defineAsyncComponent(() => import('components/tabs/TabSocial.vue')),
     CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
     CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
     TodoList: defineAsyncComponent(() => import('components/list/TodoList.vue')),
