@@ -710,5 +710,7 @@ export default defineComponent({
    margin-top: 30% !important;
     text-align: center;
 }
-
+.q-router-link--exact-active {
+  background: #00000036 !important;
+}
 </style>
