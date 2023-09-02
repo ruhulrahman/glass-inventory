@@ -1,5 +1,6 @@
 <template>
-  <q-page class="q-pa-sm bg-white">
+  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    <q-card class="fit no-shadow" bordered>
     <q-calendar-month
       ref="calendar"
       v-model="selectedDate"
@@ -25,7 +26,7 @@
             :style="badgeStyles(event, 'day')"
             class="my-event"
           >
-            <abbr :title="event.details" class="tooltip">
+            <abbr class="tooltip">
               <span class="title q-calendar__ellipsis">{{
                 event.title + (event.time ? " - " + event.time : "")
               }}</span>
@@ -34,7 +35,8 @@
         </template>
       </template>
     </q-calendar-month>
-  </q-page>
+  </q-card>
+  </div>
 </template>
 
 <script>
@@ -48,6 +50,7 @@ import {
 import "@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarMonth.sass";
+import helperMixin from "../mixins/helper_mixin.js";
 import { defineComponent } from "vue";
 // The function below is used to set up our demo data
 const CURRENT_DAY = new Date();
@@ -62,107 +65,15 @@ function getCurrentDay(day) {
 
 export default defineComponent({
   name: "Calendar",
+  mixins: [helperMixin],
   components: {
     QCalendarMonth,
   },
   data() {
     return {
       selectedDate: today(),
-      events: [
-        {
-          id: 1,
-          title: "1st of the Month",
-          details:
-            "Everything is funny as long as it is happening to someone else",
-          date: getCurrentDay(2),
-          bgcolor: "orange",
-        },
-        {
-          id: 2,
-          title: 'Sisters Birthday',
-          details: 'Buy a nice present',
-          date: getCurrentDay(4),
-          bgcolor: 'green',
-          icon: 'fas fa-birthday-cake'
-        },
-        {
-          id: 3,
-          title: 'Meeting',
-          details: 'Time to pitch my idea to the company',
-          date: getCurrentDay(10),
-          time: '10:00',
-          duration: 120,
-          bgcolor: 'red',
-          icon: 'fas fa-handshake'
-        },
-        {
-          id: 4,
-          title: 'Lunch',
-          details: 'Company is paying!',
-          date: getCurrentDay(10),
-          time: '11:30',
-          duration: 90,
-          bgcolor: 'teal',
-          icon: 'fas fa-hamburger'
-        },
-        {
-          id: 5,
-          title: 'Visit mom',
-          details: 'Always a nice chat with mom',
-          date: getCurrentDay(20),
-          time: '17:00',
-          duration: 90,
-          bgcolor: 'grey',
-          icon: 'fas fa-car'
-        },
-        {
-          id: 6,
-          title: 'Conference',
-          details: 'Teaching Javascript 101',
-          date: getCurrentDay(22),
-          time: '08:00',
-          duration: 540,
-          bgcolor: 'blue',
-          icon: 'fas fa-chalkboard-teacher'
-        },
-        {
-          id: 7,
-          title: 'Girlfriend',
-          details: 'Meet GF for dinner at Swanky Restaurant',
-          date: getCurrentDay(22),
-          time: '19:00',
-          duration: 180,
-          bgcolor: 'teal',
-          icon: 'fas fa-utensils'
-        },
-        {
-          id: 8,
-          title: 'Rowing',
-          details: 'Stay in shape!',
-          date: getCurrentDay(27),
-          bgcolor: 'purple',
-          icon: 'rowing',
-          days: 2
-        },
-        {
-          id: 9,
-          title: 'Fishing',
-          details: 'Time for some weekend R&R',
-          date: getCurrentDay(27),
-          bgcolor: 'purple',
-          icon: 'fas fa-fish',
-          days: 2
-        },
-        {
-          id: 10,
-          title: 'Vacation',
-          details: 'Trails and hikes, going camping! Don\'t forget to bring bear spray!',
-          date: getCurrentDay(29),
-          bgcolor: 'purple',
-          icon: 'fas fa-plane',
-          days: 5
-        }
-      ],
+      events: [],
+      holidays:[]
     };
   },
   computed: {
@@ -191,8 +102,9 @@ export default defineComponent({
       return map;
     },
   },
-  mounted(){
-    // this.getSundays();
+  mounted:async function(){
+    await this.get_holidays();
+    await this.getHolidayList();
   },
   methods: {
     badgeClasses(event, type) {
@@ -239,15 +151,13 @@ export default defineComponent({
     onClickHeadWorkweek(data) {
       console.log("onClickHeadWorkweek", data);
     },
-    getSundays() {
-      const sundays = [];
-
+    getHolidayList() {
+      // const sundays = [];
+     var ref = this
       var sunday = new Date();
       sunday.setDate(sunday.getDate() + 5 - sunday.getDay());
 
       for (var i = 0; i < 12; i++) {
-        // console.log(parseDate(sunday).date);
-        // sundays.push(new Date(sunday.getTime()));
         this.events.push({
           id: i+1,
           title: "Weekend",
@@ -259,18 +169,62 @@ export default defineComponent({
 
       }
 
-      this.events.push({
-          id: this.events.length + 1,
-          title: "Weekend",
-          details:"Jonmastomi",
-          date: "2023-09-06",
-          bgcolor: "red",
+      if(ref.holidays.length > 0){
+        ref.holidays.map(item =>{
+          this.events.push({
+              id: this.events.length + 1,
+              title: item.title,
+              details:item.title,
+              date: item.holiday,
+              bgcolor: "green",
+            })
+
         })
 
-      console.log(this.events);
-
-      return sundays;
+      }
     },
+    get_holidays:async function(){
+      
+      let ref = this;
+      let jq = ref.jq();
+
+      try {
+
+        this.loading = true
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_holiday_list'));
+        this.listData = res.data.data
+        ref.holidays = [];
+        if(res.data.data.length > 0){
+          res.data.data.map(item => {
+            if(item.total > 1){
+              var splits = item.from.split("-");
+              for (let index = 0; index < item.total; index++) {
+                var next_date = parseInt(splits[2]) + parseInt(index);
+                // item.holiday = splits[0]+'-'+splits[1]+'-'+next_date;
+                // console.log(item);
+                ref.holidays.push({
+                  holiday:splits[0]+'-'+splits[1]+'-'+next_date,
+                  title: item.name
+                });
+              }
+            }else{
+                // item.holiday = item.from;
+              ref.holidays.push({
+                  holiday:item.from,
+                  title: item.name
+                });
+              }
+          });
+          console.log('dddd',ref.holidays);
+        } 
+
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      } finally {
+        this.loading = false
+      }
+
+    }
   },
 });
 </script>

@@ -377,18 +377,23 @@ class AjaxController extends Controller
                 $query->whereDate('date', Carbon::today());
 			}
 
+			if($req->employee_id){
+                $query->where('employee_id', $req->employee_id);
+			}
+
 			$attendances = $query->get();
-			// return $attendances;
 			$employees = NULL;
 
 			if($req->from || $req->to || $req->status_type && count($attendances) > 0){
 				foreach ($attendances as $key => $value) {
-					$count_present = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'Yes'])->whereMonth('date', Carbon::today())->count();
-					$count_absent = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'No'])->whereMonth('date', Carbon::today())->count();
+					$count_present = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'Yes'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
+					$count_absent = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'No'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
+					
 					$employees[$key] =  model('Employee')::where('active', 1)->where('id', $value->employee_id)->first();
 					$employees[$key]->present = $value->present;
 					$employees[$key]->date = $value->date;
 					$employees[$key]->count_present = $count_present;
+					$employees[$key]->count_absent = $count_absent;
 				}
 
 			}else{
@@ -469,15 +474,17 @@ class AjaxController extends Controller
 				'productInvoice' => $productInvoice
 			]);
 		}else if($name == "get_employee_attendance_list"){
+			
 			$attendances = model('EmployeeAttendance')::where('employee_id', $req->id)->get();
-			$count_present = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'Yes' ])->count();
-			$count_absent = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'No' ])->count();
+			$count_present = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'Yes' ])->whereMonth('date', Carbon::today())->count();
+			$count_absent = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'No' ])->whereMonth('date', Carbon::today())->count();
 
             return res_msg('list Data', 200, [
 				'data' => $attendances,
 				'count_present' => $count_present,
 				'count_absent' => $count_absent
 			]);
+
 		} else if ($name == 'get_benefit_and_loss_by_invoice_wise') {
 
 			$list = model('ProductInvoice')::where('company_id', $user->company_id)

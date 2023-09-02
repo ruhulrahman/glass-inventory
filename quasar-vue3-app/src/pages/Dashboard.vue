@@ -195,6 +195,11 @@
 
 
     <div class="row q-col-gutter-sm  q-py-sm">
+      <calendar-component />
+    </div>
+
+
+    <div class="row q-col-gutter-sm  q-py-sm">
       <tab-social :productStocks="dashboardData.productStocks" />
     </div>
 
@@ -220,6 +225,7 @@ export default defineComponent({
   components: {
     CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
     CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
+    CalenderComponent: defineAsyncComponent(() => import('components/tabs/CalenderComponent.vue')),
     TabSocial: defineAsyncComponent(() => import('components/tabs/TabSocial.vue')),
     CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
     CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
@@ -276,7 +282,7 @@ export default defineComponent({
   },
   created () {},
   mounted () {
-    this.getDashboardCouterList()
+    // this.getDashboardCouterList()
   },
   methods: {
     getDashboardCouterList: async function () {
