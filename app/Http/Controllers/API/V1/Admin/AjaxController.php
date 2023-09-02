@@ -341,7 +341,34 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 
-		}else if ($name == 'get_attendance_employee_list') {
+		} else if ($name == 'get_customer_due_list') {
+
+			$query = model('ProductInvoice')::with('customer', 'payment_status')
+            ->where('company_id', $user->company_id)
+            ->where('due_amount', '>', 0);
+
+            if ($req->customer_id) {
+                $query->where('customer_id', $req->customer_id);
+            }
+
+            if ($req->invoice_code) {
+                $query->where('invoice_code', $req->invoice_code);
+            }
+
+            if ($req->invoice_date) {
+                $query->whereDate('invoice_date', $req->invoice_date);
+            }
+
+            $totalDueAmount = $query->sum('due_amount');
+
+            $list = $query->orderBy('id','desc')->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $list,
+				'totalDueAmount' => $totalDueAmount,
+			]);
+
+		}  else if ($name == 'get_attendance_employee_list') {
 			// return $req->all();
 
 			$count = model('EmployeeAttendance')::whereDate('date',Carbon::today())->count();
