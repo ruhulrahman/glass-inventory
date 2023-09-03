@@ -787,13 +787,13 @@ class AjaxController extends Controller
             // $max = 1000000;
             $last20DaysSales = [];
             foreach($dashboardData->last20DaysSales as $item) {
-                $item->label = "Date: $item->date";
-                $item->max = $max;
-                $item->sales = (integer) $item->sales;
+                // $item->label = "Date: $item->date";
+                // $item->max = $max;
+                // $item->sales = (integer) $item->sales;
                 // $item->label = $day."D";
-                $day += 1;
+                // $day += 1;
                 $data = [];
-                $data['label'] = "Date: $item->date";
+                $data['label'] = "Date: ".dDate($item->date, 'd-m-Y');
                 $data['max'] = $max;;
                 $data['sales'] = (integer) $item->sales;
 
