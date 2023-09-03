@@ -193,7 +193,7 @@ export default defineComponent({
       try {
 
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_holiday_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_holiday_and_employee_dob_list'));
         this.listData = res.data.data
         ref.holidays = [];
         if (res.data.data.length > 0) {

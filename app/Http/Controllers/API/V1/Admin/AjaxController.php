@@ -472,7 +472,15 @@ class AjaxController extends Controller
 				'day' => $day,
 				'holiday_name' => $holiday_name
 			]);
-		}else if($name == "get_holiday_list"){
+		} else if($name == "get_holiday_list"){
+			$holidays = model('Holiday')::where(['company_id' => $user->company_id])
+            ->latest()
+            ->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $holidays
+			]);
+		} else if($name == "get_holiday_and_employee_dob_list"){
 			$holidays = model('Holiday')::where(['company_id' => $user->company_id, 'status' => 1])
             ->select('name', 'from', 'to', 'total')
             // ->whereYear('from', Carbon::now())
@@ -2286,6 +2294,7 @@ class AjaxController extends Controller
 			}
 
 			$holidays = model('Holiday')::create([
+				'company_id'=> $user->company_id,
 				'name'=>$req->name,
 				'from'=> $req->from,
 				'to'=> $req->to,
