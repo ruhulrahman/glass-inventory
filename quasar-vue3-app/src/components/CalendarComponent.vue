@@ -1,44 +1,35 @@
 <template>
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <q-card class="fit no-shadow" bordered>
-      <q-card-section>
-        <span class="font-size-22 font-weight-800">Calendar</span>
+      <q-card-section class="q-mb-none q-pb-none">
+        <span class="font-size-22 font-weight-800 text-accent">{{ getCurrentMonth }}</span>
       </q-card-section>
-    <q-calendar-month
-      ref="calendar"
-      v-model="selectedDate"
-      animated
-      bordered
-      focusable
-      hoverable
-      no-active-date
-      :day-min-height="140"
-      :day-height="10"
-      @change="onChange"
-      @moved="onMoved"
-      @click-date="onClickDate"
-      @click-day="onClickDay"
-      @click-workweek="onClickWorkweek"
-      @click-head-workweek="onClickHeadWorkweek"
-      @click-head-day="onClickHeadDay"
-    >
-      <template #day="{ scope: { timestamp } }">
-        <template v-for="event in eventsMap[timestamp.date]" :key="event.id">
-          <div
-            :class="badgeClasses(event, 'day')"
-            :style="badgeStyles(event, 'day')"
-            class="my-event"
-          >
-            <abbr class="tooltip">
-              <span class="title q-calendar__ellipsis">{{
-                event.title + (event.time ? " - " + event.time : "")
-              }}</span>
-            </abbr>
-          </div>
+
+      <div class="row q-mb-sm">
+        <div class="col text-center">
+          <q-btn @click="onToday" class="glossy q-mr-sm" color="green" size="sm">Today</q-btn>
+          <q-btn @click="onPrev" class="glossy q-mr-sm" color="purple" size="sm">Previous</q-btn>
+          <q-btn @click="onNext" class="glossy" color="purple" size="sm">Next</q-btn>
+        </div>
+      </div>
+
+      <q-calendar-month ref="calendar" v-model="selectedDate" animated bordered focusable hoverable no-active-date
+        :day-min-height="140" :day-height="10" @change="onChange" @moved="onMoved" @click-date="onClickDate"
+        @click-day="onClickDay" @click-workweek="onClickWorkweek" @click-head-workweek="onClickHeadWorkweek"
+        @click-head-day="onClickHeadDay">
+        <template #day="{ scope: { timestamp } }">
+          <template v-for="event in eventsMap[timestamp.date]" :key="event.id">
+            <div :class="badgeClasses(event, 'day')" :style="badgeStyles(event, 'day')" class="my-event">
+              <abbr class="tooltip">
+                <span class="title q-calendar__ellipsis">
+                  {{ event.title + (event.time ? " - " + event.time : "") }}
+                </span>
+              </abbr>
+            </div>
+          </template>
         </template>
-      </template>
-    </q-calendar-month>
-  </q-card>
+      </q-calendar-month>
+    </q-card>
   </div>
 </template>
 
@@ -76,7 +67,8 @@ export default defineComponent({
     return {
       selectedDate: today(),
       events: [],
-      holidays:[]
+      holidays: [],
+      currentDate: new Date()
     };
   },
   computed: {
@@ -104,8 +96,14 @@ export default defineComponent({
       console.log(map);
       return map;
     },
+    getCurrentMonth: function () {
+      const date = this.currentDate
+      const month = date.toLocaleString('default', { month: 'long' })
+      const year = date.getFullYear()
+      return `${month} ${year}`
+    }
   },
-  mounted:async function(){
+  mounted: async function () {
     await this.get_holidays()
     this.getHolidayList()
   },
@@ -135,6 +133,7 @@ export default defineComponent({
     },
     onMoved(data) {
       console.log("onMoved", data);
+      this.currentDate = new Date(data.date)
     },
     onChange(data) {
       console.log("onChange", data);
@@ -156,15 +155,15 @@ export default defineComponent({
     },
     getHolidayList() {
       // const sundays = [];
-     var ref = this
+      var ref = this
       var sunday = new Date();
       sunday.setDate(sunday.getDate() + 5 - sunday.getDay());
 
       for (var i = 0; i < 12; i++) {
         this.events.push({
-          id: i+1,
+          id: i + 1,
           title: "Weekend",
-          details:"Today is off day",
+          details: "Today is off day",
           date: parseDate(sunday).date,
           bgcolor: "red",
         })
@@ -172,21 +171,21 @@ export default defineComponent({
 
       }
 
-      if(ref.holidays.length > 0){
-        ref.holidays.map(item =>{
+      if (ref.holidays.length > 0) {
+        ref.holidays.map(item => {
           this.events.push({
-              id: this.events.length + 1,
-              title: item.title,
-              details:item.title,
-              date: item.holiday,
-              bgcolor: "green",
-            })
+            id: this.events.length + 1,
+            title: item.title,
+            details: item.title,
+            date: item.holiday,
+            bgcolor: "green",
+          })
 
         })
 
       }
     },
-    get_holidays:async function(){
+    get_holidays: async function () {
 
       let ref = this;
       let jq = ref.jq();
@@ -197,28 +196,28 @@ export default defineComponent({
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_holiday_list'));
         this.listData = res.data.data
         ref.holidays = [];
-        if(res.data.data.length > 0){
+        if (res.data.data.length > 0) {
           res.data.data.map(item => {
-            if(item.total > 1){
+            if (item.total > 1) {
               var splits = item.from.split("-");
               for (let index = 0; index < item.total; index++) {
                 var next_date = parseInt(splits[2]) + parseInt(index);
                 // item.holiday = splits[0]+'-'+splits[1]+'-'+next_date;
                 // console.log(item);
                 ref.holidays.push({
-                  holiday:splits[0]+'-'+splits[1]+'-'+next_date,
+                  holiday: splits[0] + '-' + splits[1] + '-' + next_date,
                   title: item.name
                 });
               }
-            }else{
-                // item.holiday = item.from;
+            } else {
+              // item.holiday = item.from;
               ref.holidays.push({
-                  holiday:item.from,
-                  title: item.name
-                });
-              }
+                holiday: item.from,
+                title: item.name
+              });
+            }
           });
-          console.log('dddd',ref.holidays);
+          console.log('dddd', ref.holidays);
         }
 
       } catch (err) {

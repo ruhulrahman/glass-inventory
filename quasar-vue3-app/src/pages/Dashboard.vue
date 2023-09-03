@@ -224,9 +224,9 @@
       <tab-most-favorite :dashboardData="dashboardData" />
 
       <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <q-card class="q-ma-xs no-shadow" bordered style="background-color: #ea4b64">
+        <q-card class="q-ma-xs no-shadow bg-pink-8" bordered style="background-color: #ea4b64">
           <q-card-section class="text-h6 text-white">
-            Daily Sales
+            Last 20 Days Sales Graph
           </q-card-section>
           <q-card-section class="q-pa-none">
             <ECharts :option="BarChart" class="q-mt-md" :resizable="true" autoresize style="height: 250px;" />
@@ -332,7 +332,7 @@ export default defineComponent({
       let ref = this;
       let jq = ref.jq();
       try {
-        this.loading = true
+        this.loading(true)
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_dashboard_caculation_data'));
         this.dashboardData = res.data.dashboardData
         this.BarChart.dataset.source = res.data.last20DaysSales
@@ -340,7 +340,7 @@ export default defineComponent({
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        this.loading = false
+        this.loading(false)
       }
     },
   }

@@ -473,10 +473,34 @@ class AjaxController extends Controller
 				'holiday_name' => $holiday_name
 			]);
 		}else if($name == "get_holiday_list"){
-			$holidays = model('Holiday')::all();
+			$holidays = model('Holiday')::where(['company_id' => $user->company_id, 'status' => 1])
+            ->select('name', 'from', 'to', 'total')
+            // ->whereYear('from', Carbon::now())
+            // ->whereYear('to', Carbon::now())
+            ->get()->toArray();
+
+            $employees = model('Employee')::where(['company_id' => $user->company_id, 'active' => 1])
+            ->whereNotNull('dob')
+            ->select('name', 'dob')
+            ->get();
+
+            $employee_birth_list = [];
+
+            foreach($employees as $item) {
+                $data = [];
+                $data['name'] = "Birthday Of: $item->name";
+                $data['from'] = $item->dob;
+                $data['to'] = $item->dob;
+                $data['total'] = 1;
+
+                array_push($employee_birth_list, $data);
+            }
+
+            $result = array_merge($holidays, $employee_birth_list);
+
 
 			return res_msg('list Data', 200, [
-				'data' => $holidays
+				'data' => $result
 			]);
 		} else if ($name == 'get_product_invoice_data_by_id') {
 
