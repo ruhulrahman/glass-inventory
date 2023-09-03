@@ -78,7 +78,7 @@
 
               <q-item-section side>
                 <div class="text-grey-8 q-gutter-xs">
-                  <span>{{ item.purchase_total }} Tk.</span>
+                  <span>{{ item.purchase_total }} Tk. product buy</span>
                 </div>
               </q-item-section>
             </q-item>
