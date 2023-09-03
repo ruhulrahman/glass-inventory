@@ -137,6 +137,7 @@ export default defineComponent({
     },
     onChange(data) {
       console.log("onChange", data);
+      this.currentDate = new Date(data.end)
     },
     onClickDate(data) {
       console.log("onClickDate", data);
