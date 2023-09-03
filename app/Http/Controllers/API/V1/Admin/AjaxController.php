@@ -1085,6 +1085,7 @@ class AjaxController extends Controller
 				'color_id' => $req->color_id,
 				'unit_id' => $req->unit_id,
 				'product_type_id' => $req->product_type_id,
+                'product_code' => $req->product_code,
             ])->first();
 
             if ($product) {
@@ -1099,6 +1100,7 @@ class AjaxController extends Controller
 
             } else {
                 $product = model('ProductStock')::create([
+                    'product_code' => $req->product_code,
                     'price' => $req->price,
                     'quantity' => $req->quantity,
                     'cost' => $req->cost,

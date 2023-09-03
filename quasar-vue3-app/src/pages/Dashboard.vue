@@ -223,7 +223,7 @@
     <div class="row q-col-gutter-sm  q-py-sm">
       <tab-most-favorite :dashboardData="dashboardData" />
 
-      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+      <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
         <q-card class="q-ma-xs no-shadow bg-pink-8" bordered style="background-color: #ea4b64">
           <q-card-section class="text-h6 text-white">
             Last 20 Days Sales Graph

@@ -2,67 +2,84 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          @click="toggleLeftDrawer"
-          icon="menu"
-          aria-label="Menu"
-        />
+        <q-btn flat dense round @click="toggleLeftDrawer" icon="menu" aria-label="Menu" />
         <q-toolbar-title class="text-green-14">
           Welcome to Glass Garden Invetory Software
         </q-toolbar-title>
-        <q-space/>
+        <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
-                  @click="$q.fullscreen.toggle()"
-                  v-if="$q.screen.gt.sm">
+            @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
           </q-btn>
           <!-- <q-btn round dense flat style="color:red !important;" type="a" href="https://github.com/sponsors/pratik227"
                  target="_blank">
             <i class="fa fa-heart fa-2x fa-beat"></i>
           </q-btn> -->
-          <q-btn round dense flat color="white" icon="notifications">
+          <!-- <q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               5
             </q-badge>
-            <q-menu
-            >
+            <q-menu>
               <q-list style="min-width: 100px">
                 <messages></messages>
                 <q-card class="text-center no-shadow no-border">
-                  <q-btn label="View All" style="max-width: 120px !important;" flat dense
-                         class="text-indigo-8"></q-btn>
+                  <q-btn label="View All" style="max-width: 120px !important;" flat dense class="text-indigo-8"></q-btn>
                 </q-card>
               </q-list>
             </q-menu>
-          </q-btn>
+          </q-btn> -->
           <q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
-          </q-btn>
-          <q-btn round dense flat style="color:red !important;">
-            <i class="fa-solid fa-power-off fa-2x"></i>
-            <q-menu style="width: 150px !important;">
+
+            <q-menu>
+              <q-list>
+                <q-item clickable @click="detailsData()" active-class="q-item-no-link-highlighting">
+                  <q-item-section avatar>
+                    <q-icon name="account_circle" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Profile</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable @click="(() => { showAddNewDialog = true })" active-class="q-item-no-link-highlighting">
+                  <q-item-section avatar>
+                    <q-icon name="key" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Forgot Password</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+            <!-- <q-menu style="">
               <q-list style="padding: 5px 10px !important;">
+
+                <q-item clickable @click="detailsData()" active-class="q-item-no-link-highlighting">
+                  <q-item-section avatar>
+                    <q-icon name="account_circle" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Profile</q-item-label>
+                  </q-item-section>
+                </q-item>
                 <q-card class="text-left no-shadow no-border" @click="detailsData()">
                   <q-icon name="person"></q-icon>
                   <q-btn label="Profile" style="text-transform: capitalize;" flat dense class="text-black"></q-btn>
                 </q-card>
-                <q-card class="text-left no-shadow no-border" @click="(()=>{showAddNewDialog = true})">
+                <q-card class="text-left no-shadow no-border" @click="(() => { showAddNewDialog = true })">
                   <q-icon name="key"></q-icon>
-                  <q-btn label="Forgot Password" style="text-transform: capitalize;" flat dense class="text-black"></q-btn>
-                </q-card>
-                <q-card class="text-left no-shadow no-border" style="color:red !important;" @click="logOut()">
-                  <i class="fa-solid fa-power-off"></i>
-                  <q-btn label="Logout" style="text-transform: capitalize;color:red !important;" flat dense class="text-black"></q-btn>
+                  <q-btn label="Forgot Password" style="text-transform: capitalize;" flat dense
+                    class="text-black"></q-btn>
                 </q-card>
               </q-list>
-            </q-menu>
+            </q-menu> -->
           </q-btn>
-            <!-- <router-link to="/logout" round dense flat style="color:red !important;">
+          <q-btn round dense flat style="color:red !important;">
+            <i class="fa-solid fa-power-off fa-2x" @click="logOut()"></i>
+          </q-btn>
+          <!-- <router-link to="/logout" round dense flat style="color:red !important;">
               <q-tooltip class="bg-red" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
                 Logout
               </q-tooltip>
@@ -72,12 +89,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      class="bg-primary text-white"
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-primary text-white">
       <q-list>
         <q-item active-class="q-item-no-link-highlighting">
           <q-item-section>
@@ -86,7 +98,7 @@
         </q-item>
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
-            <q-icon name="dashboard"/>
+            <q-icon name="dashboard" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Dashboard</q-item-label>
@@ -94,97 +106,12 @@
         </q-item>
 
 
-        <q-expansion-item
-          icon="settings"
-          label="Configuration"
-        >
-          <q-list class="q-pl-lg">
-            <q-item to="/user-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="person"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>User List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/employee-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="badge"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Employee List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/company-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="business"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Company List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/department-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="apartment"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Department List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/designation-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="business_center"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Designation List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/company-bank-list" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="account_balance"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Bank List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item to="/holidays" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="watch"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Holiday List</q-item-label>
-              </q-item-section>
-            </q-item>
-
-          </q-list>
-        </q-expansion-item>
-
-        <q-item to="/employee-attendances" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-icon name="person"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Attendance</q-item-label>
-          </q-item-section>
-        </q-item>
-
-
-        <q-expansion-item
-          icon="inventory"
-          label="Product Management"
-        >
-
+        <q-expansion-item icon="inventory" label="Product Management">
           <q-list class="q-pl-lg">
 
             <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="airport_shuttle" color="light-blue"/>
+                <q-icon name="airport_shuttle" color="light-blue" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Supplier List</q-item-label>
@@ -193,7 +120,7 @@
 
             <q-item to="/customer-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="people" color="deep-purple-11"/>
+                <q-icon name="people" color="deep-purple-11" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Customer List</q-item-label>
@@ -202,7 +129,7 @@
 
             <q-item to="/color-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="palette" color="warning"/>
+                <q-icon name="palette" color="warning" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Color List</q-item-label>
@@ -211,7 +138,7 @@
 
             <q-item to="/unit-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="straighten" color="positive"/>
+                <q-icon name="straighten" color="positive" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Unit List</q-item-label>
@@ -220,7 +147,7 @@
 
             <q-item to="/category-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="category" color="pink"/>
+                <q-icon name="category" color="pink" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Category List</q-item-label>
@@ -229,7 +156,7 @@
 
             <q-item to="/product-type-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="keyboard_alt" color="teal"/>
+                <q-icon name="keyboard_alt" color="teal" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Product Type List</q-item-label>
@@ -238,16 +165,32 @@
 
             <q-item to="/product-stock-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="inventory" color="accent"/>
+                <q-icon name="inventory" color="accent" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Products Stock</q-item-label>
               </q-item-section>
             </q-item>
 
+          </q-list>
+        </q-expansion-item>
+
+
+        <q-expansion-item>
+          <template v-slot:header>
+            <q-item-section avatar>
+              <!-- <q-avatar icon="flag" color="primary" text-color="yellow" /> -->
+              <q-icon name="fab fa-sellcast" color="yellow" />
+            </q-item-section>
+            <q-item-section>
+              Sales Management
+            </q-item-section>
+          </template>
+          <q-list class="q-pl-lg">
+
             <q-item to="/sale-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="point_of_sale" color="light-green-14"/>
+                <q-icon name="point_of_sale" color="light-green-14" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Sales</q-item-label>
@@ -256,7 +199,7 @@
 
             <q-item to="/benefit-or-loss-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="account_balance_wallet" color="indigo-4"/>
+                <q-icon name="account_balance_wallet" color="indigo-4" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Benefit & Loss</q-item-label>
@@ -265,7 +208,7 @@
 
             <q-item to="/due-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="money" color="deep-orange-13"/>
+                <q-icon name="money" color="deep-orange-13" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Due</q-item-label>
@@ -275,6 +218,95 @@
           </q-list>
         </q-expansion-item>
 
+
+        <q-expansion-item icon="fas fa-building" label="Company Management">
+          <q-list class="q-pl-lg">
+
+            <q-item to="/company-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="business" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Company List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/department-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="apartment" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Department List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/designation-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="business_center" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Designation List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/company-bank-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="account_balance" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Bank List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/holidays" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="watch" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Holiday List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/user-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>User List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+          </q-list>
+        </q-expansion-item>
+
+
+        <q-expansion-item icon="far fa-address-card" label="Employee Management">
+          <q-list class="q-pl-lg">
+
+            <q-item to="/employee-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="badge" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Employee List</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/employee-attendances" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="fas fa-clipboard-user" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Attendance</q-item-label>
+              </q-item-section>
+            </q-item>
+
+          </q-list>
+        </q-expansion-item>
+
+
+
+
         <!-- <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -283,7 +315,8 @@
             <q-item-label>CRM Dashboard</q-item-label>
           </q-item-section>
         </q-item> -->
-        <q-expansion-item
+
+        <!-- <q-expansion-item
           icon="pages"
           label="Pages"
         >
@@ -338,8 +371,9 @@
               </q-item-section>
             </q-item>
           </q-list>
-        </q-expansion-item>
-        <q-expansion-item
+        </q-expansion-item> -->
+
+        <!-- <q-expansion-item
           icon="map"
           label="Maps"
         >
@@ -452,17 +486,17 @@
           <q-item-section>
             <q-item-label>Checkout</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
 
         <!--        not completed-->
-        <q-item to="/Calendar" active-class="q-item-no-link-highlighting">
+        <!-- <q-item to="/Calendar" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="date_range"/>
           </q-item-section>
           <q-item-section>
             <q-item-label>Calendar</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
 
         <!--        not completed-->
         <!--        <q-item to="/Taskboard" active-class="q-item-no-link-highlighting">-->
@@ -474,7 +508,7 @@
         <!--          </q-item-section>-->
         <!--        </q-item>-->
 
-        <q-item to="/Pagination" active-class="q-item-no-link-highlighting">
+        <!-- <q-item to="/Pagination" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="date_range"/>
           </q-item-section>
@@ -524,28 +558,40 @@
               </q-item>
             </q-expansion-item>
           </q-expansion-item>
-        </q-expansion-item>
+        </q-expansion-item> -->
       </q-list>
     </q-drawer>
 
     <q-page-container class="bg-grey-2">
-      <router-view/>
+      <router-view />
+
+      <q-card class="no-shadow" bordered>
+        <q-card-section class="row q-pa-lg">
+          <span class="text-body1 text-grey-8 text-weight-bold">
+            Software developed by <a href="https://www.facebook.com/Ruhul14.02/" target="_blank">
+              Ruhul Amin
+              <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle"
+                self="center middle">
+                Phone: 01638584622
+              </q-tooltip>
+            </a>
+          </span>
+          <q-space></q-space>
+          <q-btn icon="fab fa-facebook" href="https://www.facebook.com/Ruhul14.02/" target="_blank" flat dense
+            color="blue"></q-btn>
+          <q-btn icon="fab fa-github" href="https://github.com/ruhulrahman" target="_blank" flat dense
+            color="grey-8"></q-btn>
+        </q-card-section>
+      </q-card>
 
       <q-dialog v-model="showAddNewDialog" position="right">
-        <forgot-pass
-          :title="'Reset Password'"
-          :editItem="user" @closeModal="showAddNewDialog = false"
-        />
+        <forgot-pass :title="'Reset Password'" :editItem="user" @closeModal="showAddNewDialog = false" />
       </q-dialog>
 
       <div class="q-pa-md q-gutter-sm">
         <q-dialog v-model="showDetailsDialog">
 
-        <user-profile
-          :title="user.name+' Details'"
-          :editItem="user"
-          @closeModal="showDetailsDialog = false"
-        />
+          <user-profile :title="user.name + ' Details'" :editItem="user" @closeModal="showDetailsDialog = false" />
         </q-dialog>
       </div>
     </q-page-container>
@@ -557,8 +603,8 @@ import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
 import helperMixin from '../mixins/helper_mixin.js'
 
-import {defineComponent, ref} from 'vue'
-import {useQuasar, useMeta} from "quasar";
+import { defineComponent, ref } from 'vue'
+import { useQuasar, useMeta } from "quasar";
 import ForgotPass from "../pages/configs/users/ForgotPass.vue";
 import UserProfile from "../pages/configs/users/Profile.vue";
 
@@ -591,18 +637,18 @@ export default defineComponent({
       }
     }
   },
-  data(){
-    return{
+  data() {
+    return {
       showAddNewDialog: false,
       user: null,
       showDetailsDialog: false
     }
   },
-  created () {
+  created() {
 
-    let api_token=localStorage.getItem('api_token');
+    let api_token = localStorage.getItem('api_token');
 
-    if(api_token){
+    if (api_token) {
 
       // this.$store.commit('setApiToken', api_token);
       this.ajax_setup();
@@ -610,7 +656,7 @@ export default defineComponent({
 
     }
   },
-  mounted: async function(){
+  mounted: async function () {
 
     // this.getCommonDropdownList();
     this.authUser()
@@ -624,40 +670,40 @@ export default defineComponent({
       let jq = ref.jq();
 
       try {
-          let res = await jq.get(url);
-          this.$store.commit('setDropdowns', res.data);
+        let res = await jq.get(url);
+        this.$store.commit('setDropdowns', res.data);
       } catch (error) {
-          this.alert(ref.err_msg(error), 'error')
+        this.alert(ref.err_msg(error), 'error')
       }
     },
 
-    authUser: async function(){
+    authUser: async function () {
       let ref = this;
       let jq = ref.jq();
 
       try {
-          let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_auth_user'));
-          ref.user = res.data.auth_user
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_auth_user'));
+        ref.user = res.data.auth_user
       } catch (error) {
-          this.alert(ref.err_msg(error), 'error')
+        this.alert(ref.err_msg(error), 'error')
       }
     },
-    logOut: async function  (){
-        let ref = this;
-        let jq = ref.jq();
+    logOut: async function () {
+      let ref = this;
+      let jq = ref.jq();
 
-        try {
-            let res = await jq.post(ref.apiUrl('api/v1/admin/logout'));
-            this.notify(res.msg)
-            localStorage.removeItem('api_token');
-            localStorage.removeItem('auth_user_id');
-            ref.$router.push('/login')
+      try {
+        let res = await jq.post(ref.apiUrl('api/v1/admin/logout'));
+        this.notify(res.msg)
+        localStorage.removeItem('api_token');
+        localStorage.removeItem('auth_user_id');
+        ref.$router.push('/login')
 
-        } catch (err) {
-            this.notify(this.err_msg(err), 'negative')
-        }
+      } catch (err) {
+        this.notify(this.err_msg(err), 'negative')
+      }
     },
-    detailsData: async function(){
+    detailsData: async function () {
       this.showDetailsDialog = true
     },
   },
@@ -665,7 +711,6 @@ export default defineComponent({
 </script>
 
 <style>
-
 /* FONT AWESOME GENERIC BEAT */
 .fa-beat {
   animation: fa-beat 5s ease infinite;
@@ -675,65 +720,142 @@ export default defineComponent({
   0% {
     transform: scale(1);
   }
+
   5% {
     transform: scale(1.25);
   }
+
   20% {
     transform: scale(1);
   }
+
   30% {
     transform: scale(1);
   }
+
   35% {
     transform: scale(1.25);
   }
+
   50% {
     transform: scale(1);
   }
+
   55% {
     transform: scale(1.25);
   }
+
   70% {
     transform: scale(1);
   }
 }
 
-.waitMe{
+.waitMe {
   position: absolute !important;
-    top: 0px !important;
-    width: 100% !important;
-    height: 100% !important;
-    /* text-align: center; */
+  top: 0px !important;
+  width: 100% !important;
+  height: 100% !important;
+  /* text-align: center; */
 }
 
-.waitMe_text{
-   margin-top: 30% !important;
-    text-align: center;
+.waitMe_text {
+  margin-top: 30% !important;
+  text-align: center;
 }
+
 .q-router-link--exact-active {
   background: #00000036 !important;
 }
-.font-size-10 { font-size: 10px !important; }
-.font-size-11 { font-size: 11px !important; }
-.font-size-12 { font-size: 12px !important; }
-.font-size-13 { font-size: 13px !important; }
-.font-size-14 { font-size: 14px !important; }
-.font-size-15 { font-size: 15px !important; }
-.font-size-16 { font-size: 16px !important; }
-.font-size-18 { font-size: 18px !important; }
-.font-size-20 { font-size: 20px !important; }
-.font-size-22 { font-size: 22px !important; }
-.font-size-24 { font-size: 24px !important; }
-.font-size-26 { font-size: 26px !important; }
-.font-size-28 { font-size: 28px !important; }
-.font-size-30 { font-size: 30px !important; }
-.font-size-32 { font-size: 32px !important; }
-.font-size-34 { font-size: 34px !important; }
-.font-size-36 { font-size: 36px !important; }
-.font-weight-400 { font-weight: 400 !important; }
-.font-weight-500 { font-weight: 500 !important; }
-.font-weight-600 { font-weight: 600 !important; }
-.font-weight-700 { font-weight: 700 !important; }
-.font-weight-800 { font-weight: 800 !important; }
-.font-weight-900 { font-weight: 900 !important; }
+
+.font-size-10 {
+  font-size: 10px !important;
+}
+
+.font-size-11 {
+  font-size: 11px !important;
+}
+
+.font-size-12 {
+  font-size: 12px !important;
+}
+
+.font-size-13 {
+  font-size: 13px !important;
+}
+
+.font-size-14 {
+  font-size: 14px !important;
+}
+
+.font-size-15 {
+  font-size: 15px !important;
+}
+
+.font-size-16 {
+  font-size: 16px !important;
+}
+
+.font-size-18 {
+  font-size: 18px !important;
+}
+
+.font-size-20 {
+  font-size: 20px !important;
+}
+
+.font-size-22 {
+  font-size: 22px !important;
+}
+
+.font-size-24 {
+  font-size: 24px !important;
+}
+
+.font-size-26 {
+  font-size: 26px !important;
+}
+
+.font-size-28 {
+  font-size: 28px !important;
+}
+
+.font-size-30 {
+  font-size: 30px !important;
+}
+
+.font-size-32 {
+  font-size: 32px !important;
+}
+
+.font-size-34 {
+  font-size: 34px !important;
+}
+
+.font-size-36 {
+  font-size: 36px !important;
+}
+
+.font-weight-400 {
+  font-weight: 400 !important;
+}
+
+.font-weight-500 {
+  font-weight: 500 !important;
+}
+
+.font-weight-600 {
+  font-weight: 600 !important;
+}
+
+.font-weight-700 {
+  font-weight: 700 !important;
+}
+
+.font-weight-800 {
+  font-weight: 800 !important;
+}
+
+.font-weight-900 {
+  font-weight: 900 !important;
+}
 </style>
