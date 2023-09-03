@@ -527,6 +527,7 @@ export default {
       try {
         // this.loading(true)
         let res = ''
+        this.submitForm.sub_total = this.subTotalAmount
         if (this.submitForm.id) {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);
         } else {

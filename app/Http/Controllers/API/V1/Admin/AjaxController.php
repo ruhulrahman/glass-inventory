@@ -416,7 +416,7 @@ class AjaxController extends Controller
 				foreach ($attendances as $key => $value) {
 					$count_present = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'Yes'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
 					$count_absent = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'No'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
-					
+
 					$employees[$key] =  model('Employee')::where('active', 1)->where('id', $value->employee_id)->first();
 					$employees[$key]->present = $value->present;
 					$employees[$key]->date = $value->date;
@@ -502,7 +502,7 @@ class AjaxController extends Controller
 				'productInvoice' => $productInvoice
 			]);
 		}else if($name == "get_employee_attendance_list"){
-			
+
 			$attendances = model('EmployeeAttendance')::where('employee_id', $req->id)->get();
 			$count_present = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'Yes' ])->whereMonth('date', Carbon::today())->count();
 			$count_absent = model('EmployeeAttendance')::where(['employee_id' => $req->id, 'present' => 'No' ])->whereMonth('date', Carbon::today())->count();
@@ -694,21 +694,21 @@ class AjaxController extends Controller
 
             $invoiceQuery = model('ProductInvoice')::where(['company_id' => $user->company_id]);
 
-            $dashboardData->total_due_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->sum('due_amount');
-            $dashboardData->total_due_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())->sum('due_amount');
-            $dashboardData->total_due_last_6th_month = (clone $invoiceQuery)->whereDate('invoice_date', '<=', Carbon::now())
-            ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
+            $dashboardData->total_due_today = (clone $invoiceQuery)->whereDate('created_at', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due_this_month = (clone $invoiceQuery)->whereMonth('created_at', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due_last_6th_month = (clone $invoiceQuery)->whereDate('created_at', '<=', Carbon::now())
+            ->whereDate('created_at', '>=', Carbon::now()->subMonth(6))
             ->sum('due_amount');
-            $dashboardData->total_due_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->sum('due_amount');
+            $dashboardData->total_due_this_year = (clone $invoiceQuery)->whereYear('created_at', Carbon::now())->sum('due_amount');
             $dashboardData->total_due = (clone $invoiceQuery)->sum('due_amount');
 
-            $product_invoice_ids_today = (clone $invoiceQuery)->whereDate('invoice_date', Carbon::now())->pluck('id');
-            $product_invoice_ids_this_month = (clone $invoiceQuery)->whereMonth('invoice_date', Carbon::now())
+            $product_invoice_ids_today = (clone $invoiceQuery)->whereDate('created_at', Carbon::now())->pluck('id');
+            $product_invoice_ids_this_month = (clone $invoiceQuery)->whereMonth('created_at', Carbon::now())
             ->pluck('id');
-            $product_invoice_ids_last_6th_month = (clone $invoiceQuery)->whereDate('invoice_date', '<=', Carbon::now())
-            ->whereDate('invoice_date', '>=', Carbon::now()->subMonth(6))
+            $product_invoice_ids_last_6th_month = (clone $invoiceQuery)->whereDate('created_at', '<=', Carbon::now())
+            ->whereDate('created_at', '>=', Carbon::now()->subMonth(6))
             ->pluck('id');
-            $product_invoice_ids_this_year = (clone $invoiceQuery)->whereYear('invoice_date', Carbon::now())->pluck('id');
+            $product_invoice_ids_this_year = (clone $invoiceQuery)->whereYear('created_at', Carbon::now())->pluck('id');
 
 
             $pInvoiceDetailQuery = model('ProductInvoiceDetail')::where(['company_id' => $user->company_id]);
@@ -739,29 +739,37 @@ class AjaxController extends Controller
             ->groupBy('customer_id')->take(10)
             ->orderBy('purchase_total', 'DESC')->get();
 
-            $dashboardData->last20DaysSales = (clone $invoiceQuery)->select("total_payable_amount as sales")->latest()->limit(20)->get();
-            $dashboardData->maxPayableAmount = (clone $invoiceQuery)->max("total_payable_amount");
+            $salesQuery = (clone $invoiceQuery)->selectRaw('DATE(created_at) as date, SUM(sub_total) AS sales')
+                ->whereDate('created_at', '>=', Carbon::now()->subDays(20))
+                ->whereDate('created_at', '<=', Carbon::now())
+                ->groupBy(DB::raw('date'))
+                ->orderBy('date', 'DESC');
 
-            // $salesQuery = (clone $invoiceQuery)->selectRaw('DAY(created_at), SUM(total_payable_amount) AS sales')
-            //     ->whereBetween('created_at', [Carbon::now()->startOfMonth(),  Carbon::now()->endOfMonth()])
-            //     ->groupBy(DB::raw('DAY(created_at)'));
 
-
-            // $dashboardData->last20DaysSales = (clone $salesQuery)->latest()->limit(20)->get();
-            // $dashboardData->maxPayableAmount = (clone $salesQuery)->max('sales');
+            $dashboardData->last20DaysSales = $salesQuery->get();
+            $dashboardData->maxPayableAmount = $dashboardData->last20DaysSales->max('sales');
+            $dashboardData->totalAmount = $dashboardData->last20DaysSales->sum('sales');
 
             $day = 0;
             $max = $dashboardData->maxPayableAmount + 10000;
             // $max = 1000000;
+            $last20DaysSales = [];
             foreach($dashboardData->last20DaysSales as $item) {
-                $item->salse = (integer) $item->sales;
-                $item->label = $day."D";
+                $item->label = "Date: $item->date";
                 $item->max = $max;
+                $item->sales = (integer) $item->sales;
+                // $item->label = $day."D";
                 $day += 1;
+                $data = [];
+                $data['label'] = "Date: $item->date";
+                $data['max'] = $max;;
+                $data['sales'] = (integer) $item->sales;
+
+                array_push($last20DaysSales, $data);
             }
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
-				'last20DaysSales' => $dashboardData->last20DaysSales,
+				'last20DaysSales' => $last20DaysSales,
 			]);
 
 		} else if ($name == 'generate_invoice_pdf') {

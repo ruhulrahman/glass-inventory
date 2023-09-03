@@ -241,7 +241,7 @@
     </div>
 
 
-    <card-charts />
+    <!-- <card-charts /> -->
 
     <!-- <div class="row q-col-gutter-sm  q-pb-sm">
       <todo-list />
