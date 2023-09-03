@@ -12,8 +12,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
                 <q-item-label>Eearning Today</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_today
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_today }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -24,8 +23,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
                 <q-item-label>Eearning this month</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_month
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -36,8 +34,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
                 <q-item-label>Eearning last 6th month</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_last_6th_month
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_last_6th_month }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -48,8 +45,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
                 <q-item-label>Eearning this year</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_year
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -60,8 +56,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
                 <q-item-label>Sale Today</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_today
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_today }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -72,8 +67,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
                 <q-item-label>Sale this month</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_month
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -84,8 +78,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
                 <q-item-label>Sale last 6th month</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_last_6th_month
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_last_6th_month }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -96,8 +89,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
                 <q-item-label>Sale this year</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_year
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -108,8 +100,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
                 <q-item-label>Due Today</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_today
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_today }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -120,8 +111,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
                 <q-item-label>Due This Month</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_month
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -143,8 +133,7 @@
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
                 <q-item-label>Due This Year</q-item-label>
-                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_year
-                }}</q-item-label>
+                <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -167,8 +156,7 @@
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-purple-8">
                   <q-item-label>Total Customers</q-item-label>
-                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_customer
-                  }}</q-item-label>
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_customer }}</q-item-label>
                 </q-item-section>
               </q-item>
             </router-link>
@@ -181,8 +169,7 @@
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-indigo-8">
                   <q-item-label>Total Suppliers</q-item-label>
-                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_supplier
-                  }}</q-item-label>
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_supplier }}</q-item-label>
                 </q-item-section>
               </q-item>
             </router-link>
@@ -195,8 +182,7 @@
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-teal-8">
                   <q-item-label>Total Employees</q-item-label>
-                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_employee
-                  }}</q-item-label>
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_employee }}</q-item-label>
                 </q-item-section>
               </q-item>
             </router-link>
@@ -209,8 +195,7 @@
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-lime-8">
                   <q-item-label>Total Users</q-item-label>
-                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_user
-                  }}</q-item-label>
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_user }}</q-item-label>
                 </q-item-section>
               </q-item>
             </router-link>
@@ -221,27 +206,12 @@
 
 
     <div class="row q-col-gutter-sm  q-py-sm">
-      <tab-most-favorite :dashboardData="dashboardData" />
-
-      <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
-        <q-card class="q-ma-xs no-shadow bg-pink-8" bordered style="background-color: #ea4b64">
-          <q-card-section class="text-h6 text-white">
-            Last 20 Days Sales Graph
-          </q-card-section>
-          <q-card-section class="q-pa-none">
-            <ECharts :option="BarChart" class="q-mt-md" :resizable="true" autoresize style="height: 250px;" />
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-    <div class="row  q-col-gutter-sm  q-py-sm">
-
-      <calendar-component-vue/>
-
+      <tab-most-favorite
+      :dashboardData="dashboardData"
+      />
     </div>
 
-
-    <!-- <card-charts /> -->
+    <card-charts />
 
     <!-- <div class="row q-col-gutter-sm  q-pb-sm">
       <todo-list />
@@ -256,21 +226,14 @@
 <script>
 import { defineComponent, defineAsyncComponent } from 'vue'
 import helperMixin from 'src/mixins/helper_mixin.js'
-import * as echarts from 'echarts';
-import ECharts from "vue-echarts";
-import CalendarComponentVue from '../components/CalendarComponent.vue';
 
 export default defineComponent({
   name: 'PageIndex',
   mixins: [helperMixin],
   components: {
-    ECharts,
-    CalendarComponentVue,
     TabMostFavorite: defineAsyncComponent(() => import('components/tabs/TabMostFavorite.vue')),
-    CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
     CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
-    CalenderComponent: defineAsyncComponent(() => import('components/tabs/CalenderComponent.vue')),
-    TabSocial: defineAsyncComponent(() => import('components/tabs/TabSocial.vue')),
+    CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
     CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
     CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
     TodoList: defineAsyncComponent(() => import('components/list/TodoList.vue')),
@@ -281,66 +244,28 @@ export default defineComponent({
       mode: 'list',
     }
   },
-  data() {
+  data () {
     return {
       dashboardData: '',
-      BarChart: {
-        "tooltip": { "show": true },
-        "title": { "show": true, "textStyle": { "color": "rgba(0, 0, 0 , .87)", "fontFamily": "sans-serif" } },
-        "grid": { "containLabel": true, "bottom": "10%", "top": "5%" },
-        "xAxis": {
-          "show": false,
-          "type": "category",
-          "axisLine": { "lineStyle": { "color": "rgba(0, 0, 0 , .54)", "type": "dashed" } },
-          "axisTick": {
-            "show": true,
-            "alignWithLabel": true,
-            "lineStyle": { "show": true, "color": "rgba(0, 0, 0 , .54)", "type": "dashed" }
-          },
-          "axisLabel": { "show": false }
-        },
-        "yAxis": {
-          "show": false,
-          "type": "value",
-          "axisLine": { "lineStyle": { "color": "rgba(0, 0, 0 , .54)", "type": "dashed" } },
-          "axisLabel": { "show": false },
-          "splitLine": { "lineStyle": { "type": "dashed" } },
-          "axisTick": {
-            "show": true,
-            "lineStyle": { "show": true, "color": "rgba(0, 0, 0 , .54)", "type": "dashed" }
-          }
-        },
-        "series": [{
-          "type": "bar",
-          "barGap": "-100%",
-          "itemStyle": { "normal": { "color": "rgba(0,0,0,0.1)" } },
-          "barWidth": "50%"
-        }, { "barWidth": "50%", "type": "bar", "itemStyle": { "normal": { "color": "#ffffff" } } }],
-        "dataset": {
-          "source": [
-          ]
-        }
-      },
     }
   },
-  created() { },
-  mounted() {
-    this.getDashboardCouterList()
+  created () {},
+  mounted () {
+    // this.getDashboardCouterList()
   },
   methods: {
     getDashboardCouterList: async function () {
       let ref = this;
       let jq = ref.jq();
       try {
-        this.loading(true)
+        this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_dashboard_caculation_data'));
         this.dashboardData = res.data.dashboardData
-        this.BarChart.dataset.source = res.data.last20DaysSales
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
-        this.loading(false)
+        this.loading = false
       }
     },
   }
@@ -349,10 +274,7 @@ export default defineComponent({
 </script>
 
 <style>
-.text-decoration-none {
-  text-decoration: none !important;
-}
-
+.text-decoration-none { text-decoration: none !important;}
 .text-decoration-none:hover {
   text-decoration: underline !important;
 }
