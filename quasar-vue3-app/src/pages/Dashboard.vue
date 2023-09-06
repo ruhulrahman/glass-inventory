@@ -232,12 +232,14 @@ export default defineComponent({
   mixins: [helperMixin],
   components: {
     TabMostFavorite: defineAsyncComponent(() => import('components/tabs/TabMostFavorite.vue')),
-    CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
-    CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
-    CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
-    CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
-    TodoList: defineAsyncComponent(() => import('components/list/TodoList.vue')),
-    TableVisits: defineAsyncComponent(() => import('components/tables/TableVisits.vue')),
+    // CalenderComponent: defineAsyncComponent(() => import('components/tabs/CalenderComponent.vue')),
+    // CardCharts: defineAsyncComponent(() => import('components/cards/CardCharts.vue')),
+    // CardSocial: defineAsyncComponent(() => import('components/cards/CardSocial.vue')),
+    // TabSocial: defineAsyncComponent(() => import('components/tabs/TabSocial.vue')),
+    // CardWithImage: defineAsyncComponent(() => import('components/cards/CardWithImage.vue')),
+    // CardTimeLine: defineAsyncComponent(() => import('components/cards/CardTimeLine.vue')),
+    // TodoList: defineAsyncComponent(() => import('components/list/TodoList.vue')),
+    // TableVisits: defineAsyncComponent(() => import('components/tables/TableVisits.vue')),
   },
   setup() {
     return {

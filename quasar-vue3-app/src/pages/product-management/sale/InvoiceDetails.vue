@@ -236,7 +236,7 @@
 <script>
 import helperMixin from 'src/mixins/helper_mixin.js'
 import pdfMake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 // import Vue3Html2pdf from 'vue3-html2pdf'
 
@@ -479,7 +479,7 @@ export default {
       var html = htmlToPdfmake(pdfTable.innerHTML);
 
       const documentDefinition = { content: html };
-      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      // pdfMake.vfs = pdfFonts.pdfMake.vfs;
       pdfMake.createPdf(documentDefinition).print();
 
     }

@@ -6,6 +6,7 @@ import moment from "moment";
 import Hashids from "hashids";
 
 import { Notify, Loading } from 'quasar'
+import env from '../../config/env.js'
 
 waitMe($);
 
@@ -17,7 +18,8 @@ waitMe($);
 // 	}
 // });
 
-var base_url=process.env.VUE_APP_BASE_URL;
+// var base_url=process.env.VUE_APP_BASE_URL;
+var base_url=env.VUE_APP_BASE_URL
 
 export default {
     data() {
