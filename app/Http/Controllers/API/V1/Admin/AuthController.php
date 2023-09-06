@@ -8,7 +8,6 @@ use Vinkla\Hashids\Facades\Hashids;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-// use ZanySoft\LaravelPDF\Facades\PDF;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Validator;
 
@@ -220,33 +219,35 @@ class AuthController extends Controller
 
     public function generate_invoice_pdf(Request $req){
 
-        $user = model('User')::first();
-        // $user = Auth::user();
+        // $user = model('User')::first();
+        // // $user = Auth::user();
 
-        $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
+        // $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->id);
 
-            if ($invoice) {
-                foreach($invoice->details as $item) {
-                   $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
-                   if ($productStock) {
-                    $item->product_type_id = $productStock->product_type_id;
-                    $item->product_type = $productStock->type ? $productStock->type->name : '';
-                    $item->category_id = $productStock->category_id;
-                    $item->category = $productStock->category ? $productStock->category->name : '';
-                    $item->color_id = $productStock->color_id;
-                    $item->color = $productStock->color ? $productStock->color->name : '';
-                    $item->unit_id = $productStock->unit_id;
-                    $item->unit = $productStock->unit ? $productStock->unit->name : '';
-                   }
-                }
-            }
+        //     if ($invoice) {
+        //         foreach($invoice->details as $item) {
+        //            $productStock = model('ProductStock')::with('type', 'color', 'unit', 'category')->find($item->product_stock_id);
+        //            if ($productStock) {
+        //             $item->product_type_id = $productStock->product_type_id;
+        //             $item->product_type = $productStock->type ? $productStock->type->name : '';
+        //             $item->category_id = $productStock->category_id;
+        //             $item->category = $productStock->category ? $productStock->category->name : '';
+        //             $item->color_id = $productStock->color_id;
+        //             $item->color = $productStock->color ? $productStock->color->name : '';
+        //             $item->unit_id = $productStock->unit_id;
+        //             $item->unit = $productStock->unit ? $productStock->unit->name : '';
+        //            }
+        //         }
+        //     }
 
-            $company = $user->company;
+        //     $company = $user->company;
 
             // return view('pdf.invoice', compact('company', 'invoice'));
 
-            $pdf = PDF::loadView('pdf.invoice', compact('company', 'invoice'));
-            return $pdf->stream('invoice.pdf');
+			$invoice_number = '#2306001';
+
+            $pdf = PDF::loadView('pdf.invoice',compact('invoice_number'));
+            return $pdf->download('invoice.pdf');
 
             // $pdf = PDF::Make();
             // $pdf->loadView('pdf.invoice', compact('company', 'invoice'));

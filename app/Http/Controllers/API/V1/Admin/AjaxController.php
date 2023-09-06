@@ -2334,4 +2334,12 @@ class AjaxController extends Controller
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
 	}
+
+
+	public function download_pdf() {
+		$pdf = PDF::loadView('pdf.invoice')->setPaper('a4', 'portrait');
+
+
+            return $pdf->stream('invoice.pdf');
+	}
 }

@@ -22,6 +22,7 @@
             </q-btn>
           </div>
         </div>
+        <q-btn @click="downloadInvoice()">Download Pdf</q-btn>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-none">
@@ -309,7 +310,17 @@ export default ({
     },
     downloadInvoice: async function () {
         // this.companyImageFile = await this.getBase64ImageFromURL(this.cn(this.companyInfo, 'logo_url'))
-        this.$refs.invoiceDetailsPdfRef.generatePdf()
+        // this.$refs.invoiceDetailsPdfRef.generatePdf()
+        var ref=this;
+        var jq=this.jq();
+        // await jq.get(ref.apiUrl('api/v1/admin/ajax/generate_invoice_pdf'));
+        window.location.href = ref.apiUrl('api/v1/admin/generate_invoice_pdf');
+        // const search = {
+        //   user_id: localStorage.getItem('auth_user_id'),
+        //   id: 1,
+        // }
+        // var search_query = jq.param(search)
+        // this.download_url += '?' + search_query
     }
   }
 });
