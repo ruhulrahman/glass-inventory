@@ -17,7 +17,7 @@ class PdfDownloadController extends Controller{
         if($name == 'generate_invoice_pdf'){
 
 			$searchingData = new \stdClass;
-			$searchingData->heading = 'Manage Students List';
+			// $searchingData->heading = 'Glass Inventory Invoice';
 
             $invoice = model('ProductInvoice')::with('customer', 'payment_status', 'details')->find($req->product_invoice_id);
 
@@ -48,7 +48,8 @@ class PdfDownloadController extends Controller{
 
             $pdf = PDF::loadView('pdf.invoice',compact('invoice_number', 'invoice', 'searchingData', 'company'));
             $fileName = 'invoice-#'.$invoice->invoice_code.'-'.date("d-m-Y-H-i-s");
-            return $pdf->download($fileName.'.pdf');
+            // return $pdf->download($fileName.'.pdf');
+            return $pdf->stream($fileName.'.pdf');
 
         }
 

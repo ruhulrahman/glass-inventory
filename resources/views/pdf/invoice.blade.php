@@ -12,6 +12,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            position: relative;
         }
 
         .invoice-top {
@@ -1886,6 +1887,7 @@
             -webkit-box-direction: reverse;
             -ms-flex-direction: column-reverse;
             flex-direction: column-reverse;
+            z-index: 99999999;
         }
 
         .tm_invoice_footer .tm_left_footer {
@@ -2044,11 +2046,16 @@
             display: none;
         }
         .footer-shape2{
+            position: relative;
+            bottom: 0px;
+        }
+        .footer-shape2-content{
             background-color: #fff;
             height: 200px;
             background-image: url('bg-img/shape2.png');
             background-repeat: no-repeat;
             position: relative;
+            top: 0px;
         }
     </style>
 </head>
@@ -2170,18 +2177,17 @@
                                 <td class="tm_width_3 tm_primary_color tm_border_none">Paid Amount</td>
                                 <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none">{{ $invoice->paid_amount }}</td>
                             </tr>
+
+                            @if($invoice->due_amount)
                             <tr>
                                 <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Due Amount</td>
                                 <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->due_amount }}</td>
                             </tr>
+                            @endif
                             <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Payment Status</td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->payment_status->name }}</td>
+                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0 tm_bold">Payment Status</td>
+                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0 tm_bold">{{ $invoice->payment_status->name }}</td>
                             </tr>
-                            {{-- <tr class="tm_border_top tm_border_bottom">
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color">Payment Status</td>
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right">{{ $invoice->payment_status->name }}</td>
-                            </tr> --}}
                         </tbody>
                     </table>
                 </div>
@@ -2192,12 +2198,14 @@
                 </div> --}}
             </div>
         </div>
-        <div class="footer-shape2" style="background-color: #fff;margin-top: -45.8px;">
-            <p class="tm_mb2" style="top: 30px;position:absolute;"><b class="tm_primary_color">Terms & Conditions:</b></p>
-            <ul class="tm_m0 tm_note_list" style="top: 50px;position:absolute;">
-                <li>All claims relating to quantity or shipping errors.</li>
-                <li>Delivery dates are not guaranteed and Seller.</li>
-            </ul>
+        <div class="footer-shape2">
+            <div class="footer-shape2-content" style="background-color: #fff;">
+                <p class="tm_mb2" style="top: 30px;position:absolute;"><b class="tm_primary_color">Terms & Conditions:</b></p>
+                <ul class="tm_m0 tm_note_list" style="top: 50px;position:absolute;">
+                    <li>If you buy one time, you cannot return your products.</li>
+                    <li>But If you want to change any product then it can be negotiable.</li>
+                </ul>
+            </div>
         </div>
     </div>
 </body>

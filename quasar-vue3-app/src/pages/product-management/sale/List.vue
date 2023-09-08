@@ -22,7 +22,6 @@
             </q-btn>
           </div>
         </div>
-        <q-btn @click="downloadInvoice()">Download Pdf</q-btn>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-none">
@@ -90,7 +89,7 @@
                 </q-badge>
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="getProductInvoiceDataById(props.row)" icon="cloud_download" size="sm" class="text-green" flat dense>
+                <q-btn @click="downloadInvoice(props.row)" icon="cloud_download" size="sm" class="text-green" flat dense>
                 <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
                     Download
                   </q-tooltip>
@@ -301,27 +300,24 @@ export default ({
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
         this.invoiceDetails = res.data.productInvoice
-        this.downloadInvoice()
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {
         this.loading = false
       }
     },
-    downloadInvoice: async function () {
-        // this.companyImageFile = await this.getBase64ImageFromURL(this.cn(this.companyInfo, 'logo_url'))
-        // this.$refs.invoiceDetailsPdfRef.generatePdf()
-        var ref=this;
-        var jq=this.jq();
-        // await jq.get(ref.apiUrl('api/v1/admin/ajax/generate_invoice_pdf'));
-        window.location.href = ref.apiUrl('api/v1/admin/generate_invoice_pdf');
-        // const search = {
-        //   user_id: localStorage.getItem('auth_user_id'),
-        //   id: 1,
-        // }
-        // var search_query = jq.param(search)
-        // this.download_url += '?' + search_query
-    }
+    downloadInvoice: function (item) {
+      var ref=this;
+      var jq=this.jq();
+      this.download_url = ref.apiUrl('api/v1/admin/download/generate_invoice_pdf');
+      const search = {
+        auth_user_id: localStorage.getItem('auth_user_id'),
+        product_invoice_id: item.id,
+      }
+      var search_query = jq.param(search)
+      this.download_url += '?' + search_query
+      window.location.href = this.download_url
+    },
   }
 });
 </script>

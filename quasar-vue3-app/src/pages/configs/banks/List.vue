@@ -60,11 +60,15 @@
                 {{ props.row.sl }}
               </q-td>
               <q-td key="bank_name" :props="props">
-                {{ props.row.bank_name }}
+                <span>{{ props.row.bank_name }}</span>
+                <span v-if="props.row.branch_name"><br/></span>
+                <span>{{ props.row.branch_name }} Branch</span>
+                <span v-if="props.row.address"><br/></span>
+                <span>{{ props.row.address }}</span>
               </q-td>
-              <q-td key="branch_name" :props="props">
+              <!-- <q-td key="branch_name" :props="props">
                 {{ props.row.branch_name }}
-              </q-td>
+              </q-td> -->
               <q-td key="account_name" :props="props">
                   {{ props.row.account_name }}
               </q-td>
@@ -77,8 +81,10 @@
               <q-td key="routing_number" :props="props">
                   {{ props.row.routing_number }}
               </q-td>
-              <q-td key="address" :props="props">
-                {{ props.row.address }}
+              <q-td key="status" :props="props">
+                <q-badge :color="props.row.status_color">
+                  {{ props.row.status }}
+                </q-badge>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -123,24 +129,24 @@ const columns = [
   {
     name: "bank_name",
     required: true,
-    label: "Bank Name",
+    label: "Bank Info",
     align: "left",
     field: (row) => row.bank_name,
     format: (val) => `${val}`,
     sortable: true,
   },
-  {
-    name: "branch_name",
-    required: true,
-    align: "center",
-    label: "Branch Name",
-    field: "branch_name"
-  },
+  // {
+  //   name: "branch_name",
+  //   required: true,
+  //   align: "center",
+  //   label: "Branch Name",
+  //   field: "branch_name"
+  // },
   { name: "account_name", label: "Account Name", field: "account_name"},
   { name: "account_number", label: "Account Number", field: "account_number"},
   { name: "swift_code", label: "Swift Code", field: "swift_code"},
   { name: "routing_number", label: "Routing Number", field: "routing_number"},
-  { name: "address", label: "Address", field: "address"},
+  { name: "status", label: "status", field: "status"},
   {
     name: "action",
     label: "Action",
@@ -189,6 +195,8 @@ export default {
           item.routing_number = item.routing_number
           item.address = item.address
           item.details = item.details
+          item.status = item.status ? 'Active' : 'Inactive'
+          item.status_color = item.status == 'Active' ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {

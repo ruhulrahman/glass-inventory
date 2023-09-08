@@ -1495,12 +1495,17 @@ class AjaxController extends Controller
 				DB::rollback();
 			}
 		} else if($name == 'delete_company_data'){
+
 			$company = model('Company')::find($req->id);
 			$company->delete();
 			return res_msg('Company deleted successfully!', 200);
+
 		} else if ($name == 'store_company_bank_data') {
+
 			$validator = Validator::make($req->all(), [
 				'bank_name' => 'required|unique:company_bank_infos,bank_name',
+				'account_name' => 'required',
+				'account_number' => 'required',
 			]);
 
 			if ($validator->fails()) {
@@ -1508,7 +1513,13 @@ class AjaxController extends Controller
 				return response(['msg' => $errors[0]], 422);
 			}
 
-			// return $req->all();
+            $activeBank = model('CompanyBankInfo')::where('status', 1)->first();
+
+            if ($activeBank) {
+                if ($req->status == 'true') {
+                    model('CompanyBankInfo')::where('status', 1)->update(['status' => 0]);
+                }
+            }
 
 			model('CompanyBankInfo')::create([
 				'company_id' => $user->company_id,
@@ -1531,13 +1542,23 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'id' => 'required',
-				'bank_name' => 'required|unique:company_bank_infos,bank_name,' . $req->id
+				'bank_name' => 'required|unique:company_bank_infos,bank_name,' . $req->id,
+                'account_name' => 'required',
+                'account_number' => 'required',
 			]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
 				return response(['msg' => $errors[0]], 422);
 			}
+
+            $activeBank = model('CompanyBankInfo')::where('status', 1)->first();
+
+            if ($activeBank) {
+                if ($req->status == 'true') {
+                    model('CompanyBankInfo')::where('status', 1)->update(['status' => 0]);
+                }
+            }
 
 			model('CompanyBankInfo')::where('id', $req->id)->update([
 				'company_id' => $user->company_id,
