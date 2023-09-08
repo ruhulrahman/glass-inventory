@@ -18,11 +18,11 @@
           <div class="col-2 text-right">
 
             <!-- <q-btn glossy @click="printDocument()" flat color="white" class="bg-secondary d-block" -->
-            <q-btn glossy @click="printDocument(submitForm.id)" flat color="white" class="bg-secondary d-block"
+            <q-btn glossy @click="downloadInvoice()" flat color="white" class="bg-secondary d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px">
               Download
             </q-btn>
-            <a :href="download_url" download>Download</a>
+            <!-- <a :href="download_url" download class="q-btn q-btn-item">Download</a> -->
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
@@ -358,7 +358,7 @@ export default {
     } else {
       this.$router.push('/sale-list')
     }
-    this.gen_download_url()
+    // this.gen_download_url()
   },
   mounted() {
   },
@@ -462,7 +462,7 @@ export default {
     gen_download_url: function () {
         var ref=this;
         var jq=this.jq();
-        this.download_url = ref.apiUrl('api/v1/admin/generate_invoice_pdf');
+        this.download_url = ref.apiUrl('api/v1/admin/download/generate_invoice_pdf/1');
         const search = {
           user_id: localStorage.getItem('auth_user_id'),
           id: 1,
@@ -470,6 +470,18 @@ export default {
         var search_query = jq.param(search)
         this.download_url += '?' + search_query
 
+    },
+    downloadInvoice: function () {
+      var ref=this;
+      var jq=this.jq();
+      this.download_url = ref.apiUrl('api/v1/admin/download/generate_invoice_pdf');
+      const search = {
+        auth_user_id: localStorage.getItem('auth_user_id'),
+        product_invoice_id: this.submitForm.id,
+      }
+      var search_query = jq.param(search)
+      this.download_url += '?' + search_query
+      window.location.href = this.download_url
     },
     printDocument() {
 

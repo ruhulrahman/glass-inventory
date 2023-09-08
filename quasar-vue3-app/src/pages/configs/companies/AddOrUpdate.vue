@@ -60,6 +60,45 @@
           </q-item-section>
         </q-item>
 
+        <q-item class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              round
+              v-model="company.phone"
+              label="Phone 1"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-input
+              type="text"
+              dark
+              color="white"
+              round
+              v-model="company.phone2"
+              label="Phone 2"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-input
+              type="email"
+              dark
+              color="white"
+              round
+              v-model="company.email"
+              label="Email"
+            />
+          </q-item-section>
+        </q-item>
+
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
@@ -151,6 +190,9 @@ export default {
       company: {
         id:null,
         name: '',
+        phone: '',
+        phone2: '',
+        email: '',
         title: '',
         logo: '',
         address: '',
@@ -166,6 +208,9 @@ export default {
         ref.company.department = ref.editItem;
         ref.company.id =ref.editItem.id,
         ref.company.name = ref.editItem.name
+        ref.company.phone = ref.editItem.phone
+        ref.company.phone2 = ref.editItem.phone2
+        ref.company.email = ref.editItem.email
         ref.company.title = ref.editItem.title
         ref.company.address = ref.editItem.address
         ref.company.description = ref.editItem.description

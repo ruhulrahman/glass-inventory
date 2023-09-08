@@ -141,9 +141,9 @@
         html {
             color: #666;
             font-family: 'Inter', sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 400;
-            line-height: 1em;
+            line-height: 1.6em;
             overflow-x: hidden;
             background-color: #f5f6fa;
         }
@@ -271,12 +271,12 @@
 
         td {
             padding: 10px 15px;
-            line-height: 1em;
+            line-height: 1.55em;
         }
 
         th {
             padding: 10px 15px;
-            line-height: 1em;
+            line-height: 1.55em;
         }
 
         dl {
@@ -2062,8 +2062,8 @@
             <div class="right">
                 <span class="invoice-title">Invoice</span>
                 <div class="invoice-number">
-                    <span style="color: #666;">Invoice No: <strong style="color: #000;">{{$invoice->invoice_code}}</strong></span>
-                    <span class="invoice-date">Date: <strong style="color: #000;">{{ dDate($invoice->invoice_date) }}</strong></span>
+                    <span style="color: #666;">Invoice No: <strong style="color: #000;">{{$invoice_number}}</strong></span>
+                    <span class="invoice-date">Date: <strong style="color: #000;">6 Sep 2023</strong></span>
                 </div>
             </div>
             <img src="{{url('bg-img/arrow_bg.svg')}}" class="arrow-css" alt="">
@@ -2073,43 +2073,18 @@
             <div class="address-left">
                 <p class=""><b style="color: #111">Invoice To:</b></p>
                 <p style="line-height: 1.5rem; margin-top: -10px">
-                    @if($invoice->customer)
-                        @if($invoice->customer->name)
-                        <span>{{ $invoice->customer->name }}</span> <br />
-                        @endif
-                        @if($invoice->customer->phone)
-                        <span>{{ $invoice->customer->phone }}</span> <br />
-                        @endif
-                        @if($invoice->customer->email)
-                        <span>{{ $invoice->customer->email }}</span> <br />
-                        @endif
-                        @if($invoice->customer->address)
-                        <span>{{ $invoice->customer->address }}</span>
-                        @endif
-                    @endif
+                    Lowell H. Dominguez <br />
+                    84 Spilman Street, London <br />United Kingdom <br />
+                    lowell@gmail.com
                 </p>
             </div>
             <div class="address-right">
                 <p class=""><b style="color: #111">Pay To:</b></p>
                 <p style="line-height: 1.5rem; margin-top: -10px">
-
-                    @if($company->name)
-                    <span>{{ $company->name }}</span> <br />
-                    @endif
-
-                    @if($company->phone2)
-                    <span>{{ $company->phone }}, {{ $company->phone2 }}</span> <br />
-                    @else
-                    <span>{{ $company->phone }}<br />
-                    @endif
-
-                    @if($company->address)
-                    <span>{{ $company->address }}</span> <br />
-                    @endif
-
-                    @if($company->email)
-                    <span>{{ $company->email }}</span>
-                    @endif
+                    Laralink Ltd <br />
+                    86-90 Paul Street, London<br />
+                    England EC2A 4NE <br />
+                    demo@gmail.com
                 </p>
             </div>
         </div>
@@ -2119,25 +2094,44 @@
                 <table class="tm_border_bottom">
                     <thead>
                         <tr class="tm_border_top">
-                            <th class="tm_width_3 tm_semi_bold tm_primary_color tm_accent_bg_10">Product Type</th>
-                            <th class="tm_width_4 tm_semi_bold tm_primary_color tm_accent_bg_10">Category</th>
-                            <th class="tm_width_2 tm_semi_bold tm_primary_color tm_accent_bg_10">Color</th>
-                            <th class="tm_width_1 tm_semi_bold tm_primary_color tm_accent_bg_10">Unit price</th>
-                            <th class="tm_width_2 tm_semi_bold tm_primary_color tm_accent_bg_10 tm_text_right">Quantity</th>
-                            <th class="tm_width_2 tm_semi_bold tm_primary_color tm_accent_bg_10 tm_text_right">Amount</th>
+                            <th class="tm_width_3 tm_semi_bold tm_primary_color tm_accent_bg_10">Item</th>
+                            <th class="tm_width_4 tm_semi_bold tm_primary_color tm_accent_bg_10">Description
+                            </th>
+                            <th class="tm_width_2 tm_semi_bold tm_primary_color tm_accent_bg_10">Price</th>
+                            <th class="tm_width_1 tm_semi_bold tm_primary_color tm_accent_bg_10">Qty</th>
+                            <th class="tm_width_2 tm_semi_bold tm_primary_color tm_accent_bg_10 tm_text_right">
+                                Total</th>
                         </tr>
                     </thead>
                     <tbody style="background-color: #fff !important;">
-                    @foreach($invoice->details as $key => $item)
                         <tr>
-                            <td class="tm_width_2">{{ $item->product_type }}</td>
-                            <td class="tm_width_2">{{ $item->category }}</td>
-                            <td class="tm_width_2">{{ $item->color }}</td>
-                            <td class="tm_width_2">{{ $item->quantity }} {{ $item->unit }}</td>
-                            <td class="tm_width_2 tm_text_right">{{ $item->price }}</td>
-                            <td class="tm_width_2 tm_text_right">{{ $item->amount }}</td>
+                            <td class="tm_width_3">1. Website Design</td>
+                            <td class="tm_width_4">Six web page designs and three times revision</td>
+                            <td class="tm_width_2">$350</td>
+                            <td class="tm_width_1">1</td>
+                            <td class="tm_width_2 tm_text_right">$350</td>
                         </tr>
-                    @endforeach
+                        <tr>
+                            <td class="tm_width_3">2. Web Development</td>
+                            <td class="tm_width_4">Convert pixel-perfect frontend and make it dynamic</td>
+                            <td class="tm_width_2">$600</td>
+                            <td class="tm_width_1">1</td>
+                            <td class="tm_width_2 tm_text_right">$600</td>
+                        </tr>
+                        <tr>
+                            <td class="tm_width_3">3. App Development</td>
+                            <td class="tm_width_4">Android & Ios Application Development</td>
+                            <td class="tm_width_2">$200</td>
+                            <td class="tm_width_1">2</td>
+                            <td class="tm_width_2 tm_text_right">$400</td>
+                        </tr>
+                        <tr>
+                            <td class="tm_width_3">4. Digital Marketing</td>
+                            <td class="tm_width_4">Facebook, Youtube and Google Marketing</td>
+                            <td class="tm_width_2">$100</td>
+                            <td class="tm_width_1">3</td>
+                            <td class="tm_width_2 tm_text_right">$300</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -2147,49 +2141,29 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Sub-Total</td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_bold">{{ $invoice->sub_total }}</td>
+                                <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Subtoal</td>
+                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_bold">
+                                    $1650</td>
                             </tr>
                             <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Discount <span class="tm_ternary_color">({{ $invoice->discount_percentage }}%)</span></td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->discount_amount }}</td>
-                            </tr>
-                            <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Tax <span class="tm_ternary_color">({{ $invoice->tax_percentage }}%)</span></td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->tax_amount }}</td>
-                            </tr>
-                            <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Vat <span class="tm_ternary_color">({{ $invoice->vat_percentage }}%)</span></td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->vat_amount }}</td>
+                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Tax <span class="tm_ternary_color">(5%)</span></td>
+                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">
+                                    +$82</td>
                             </tr>
                             <tr class="tm_border_top tm_border_bottom">
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_primary_color">Total Payable Amount</td>
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_primary_color tm_text_right">{{ $invoice->total_payable_amount }}</td>
+                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color">Grand
+                                    Total </td>
+                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right">
+                                    $1732</td>
                             </tr>
-                            <tr style="padding-top: 10px">
-                                <td class="tm_width_3 tm_primary_color tm_border_none">Paid Amount</td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none">{{ $invoice->paid_amount }}</td>
-                            </tr>
-                            <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Due Amount</td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->due_amount }}</td>
-                            </tr>
-                            <tr>
-                                <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Payment Status</td>
-                                <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->payment_status->name }}</td>
-                            </tr>
-                            {{-- <tr class="tm_border_top tm_border_bottom">
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color">Payment Status</td>
-                                <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right">{{ $invoice->payment_status->name }}</td>
-                            </tr> --}}
                         </tbody>
                     </table>
                 </div>
 
-                {{-- <div class="tm_left_footer">
+                <div class="tm_left_footer">
                     <p class="tm_mb2"><b class="tm_primary_color">Payment info:</b></p>
                     <p class="tm_m0">Credit Card - 236***********928 <br>Amount: $1732</p>
-                </div> --}}
+                </div>
             </div>
         </div>
         <div class="footer-shape2" style="background-color: #fff;margin-top: -45.8px;">

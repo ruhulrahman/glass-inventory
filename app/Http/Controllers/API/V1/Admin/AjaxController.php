@@ -1401,6 +1401,8 @@ class AjaxController extends Controller
 		} else if ($name == 'store_company_data') {
 			$validator = Validator::make($req->all(), [
 				'name' => 'required|unique:companies,name',
+				'phone' => 'required',
+				'email' => 'required|unique:companies,email',
 			]);
 
 			if ($validator->fails()) {
@@ -1423,6 +1425,9 @@ class AjaxController extends Controller
 
 				model('Company')::create([
 					'name' => $req->name,
+					'phone' => $req->phone,
+					'phone2' => $req->phone2,
+					'email' => $req->email,
 					'title' => $req->title,
 					'logo' => $fileName,
 					'address' => $req->address,
@@ -1442,7 +1447,9 @@ class AjaxController extends Controller
 
 			$validator = Validator::make($req->all(), [
 				'id' => 'required',
-				'name' => 'required|unique:companies,name,' . $req->id
+				'name' => 'required|unique:companies,name,' . $req->id,
+				'phone' => 'required',
+				'email' => 'required|unique:companies,email,'. $req->id,
 			]);
 
 			if ($validator->fails()) {
@@ -1469,7 +1476,9 @@ class AjaxController extends Controller
 
 				model('Company')::where('id', $req->id)->update([
 					'name' => $req->name,
-					'title' => $req->title,
+					'phone' => $req->phone,
+					'phone2' => $req->phone2,
+					'email' => $req->email,
 					'title' => $req->title,
 					'logo' => $fileName ? $fileName : $company->logo,
 					'address' => $req->address,

@@ -65,6 +65,13 @@
               <q-td key="title" :props="props">
                 {{ props.row.title }}
               </q-td>
+              <q-td key="phone" :props="props">
+                <span v-if="props.row.phone2">{{ props.row.phone }}, {{ props.row.phone2 }}</span>
+                <span v-else-if="props.row.phone">{{ props.row.phone }}</span>
+              </q-td>
+              <q-td key="email" :props="props">
+                {{ props.row.email }}
+              </q-td>
               <q-td key="address" :props="props">
                 {{ props.row.address }}
               </q-td>
@@ -124,16 +131,12 @@ const columns = [
     format: (val) => `${val}`,
     sortable: true,
   },
-  {
-    name: "title",
-    required: true,
-    align: "center",
-    label: "Title",
-    field: "title"
-  },
-  { name: "address", label: "Address", field: "address"},
-  { name: "logo", label: "Logo", field: "logo" },
-  { name: "total_emp", label: "Total Employee", field: "total_emp" },
+  { name: "title", label: "Title", field: "title", align: "left" },
+  { name: "phone", label: "phone", field: "phone", align: "left" },
+  { name: "email", label: "email", field: "email", align: "left" },
+  { name: "address", label: "Address", field: "address", align: "left" },
+  { name: "logo", label: "Logo", field: "logo", align: "center" },
+  { name: "total_emp", label: "Total Employee", field: "total_emp", align: "center" },
   {
     name: "action",
     label: "Action",
