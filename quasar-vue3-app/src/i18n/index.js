@@ -1,5 +1,7 @@
 import enUS from './en-US'
+import bnBD from './bn-BD'
 
 export default {
-  'en-US': enUS
+  'en': enUS,
+  'bn': bnBD,
 }

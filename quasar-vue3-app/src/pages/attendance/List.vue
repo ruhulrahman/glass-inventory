@@ -415,6 +415,44 @@ export default {
       try {
         this.loading = true;
         let res = await jq.get(
+          ref.apiUrl("api/v1/admin/ajax/get_attendance_employee_list_v2"),
+          ref.search_query
+        );
+        ref.calander = false;
+        if(res.data.data != null && res.data.data.length){
+          this.listData = res.data.data.map((item) => {
+            item.present = item.present == "Yes" ? "Present" : "Absent";
+            item.date = item.date
+              ? ref.dDate(item.date)
+              : ref.dDate(new Date().toISOString().slice(0, 10));
+            item.holiday = res.data.day;
+            item.holiday_name = res.data.holiday_name;
+            return item;
+          });
+
+          ref.employees = this.listData.map((item) => {
+            return {
+              id: item.id,
+              label: item.name,
+            };
+          });
+
+        }else{
+          this.listData = []
+          ref.employees = []
+        }
+      } catch (err) {
+        this.notify(this.err_msg(err), "negative");
+      } finally {
+        this.loading = false;
+      }
+    },
+    getListData2: async function () {
+      let ref = this;
+      let jq = ref.jq();
+      try {
+        this.loading = true;
+        let res = await jq.get(
           ref.apiUrl("api/v1/admin/ajax/get_attendance_employee_list"),
           ref.search_query
         );
@@ -429,7 +467,7 @@ export default {
             item.holiday_name = res.data.holiday_name;
             return item;
           });
-  
+
           ref.employees = this.listData.map((item) => {
             return {
               id: item.id,
@@ -440,7 +478,7 @@ export default {
         }else{
           this.listData = []
           ref.employees = []
-        } 
+        }
       } catch (err) {
         this.notify(this.err_msg(err), "negative");
       } finally {
@@ -534,7 +572,7 @@ export default {
         ref.search_query.from = ref.date_range.from;
         ref.search_query.to = ref.date_range.to;
         const d = new Date(ref.date_range.from);
-        ref.search_query.month = d.getMonth();  
+        ref.search_query.month = d.getMonth();
         // console.log(this.date_range.from);
         // console.log(this.date_range.to);
       } else {
@@ -543,7 +581,7 @@ export default {
         ref.search_query.from = ref.date_range;
         ref.search_query.to = null;
         const d = new Date(ref.date_range.from);
-        ref.search_query.month = d.getMonth(); 
+        ref.search_query.month = d.getMonth();
       }
     },
   },

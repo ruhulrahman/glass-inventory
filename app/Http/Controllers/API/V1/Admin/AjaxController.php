@@ -368,10 +368,114 @@ class AjaxController extends Controller
 				'totalDueAmount' => $totalDueAmount,
 			]);
 
-		}  else if ($name == 'get_attendance_employee_list') {
+		} else if ($name == 'get_attendance_employee_list') {
 			// return $req->all();
 
 			$count = model('EmployeeAttendance')::whereDate('date',Carbon::today())->count();
+
+			if ($count == 0) {
+				$employees = model('Employee')::where('active', 1)->select('id')->get();
+				foreach ($employees as $key => $value) {
+					model('EmployeeAttendance')::create([
+						'company_id' => $user->company_id,
+						'employee_id' => $value->id,
+						'date' => Carbon::today(),
+						'present' => 'No',
+						'creator_id' => $user->id,
+						'created_at' => Carbon::now()
+					]);
+				}
+			}
+
+			$query = model('EmployeeAttendance')::query();
+
+			if ($req->from && $req->to) {
+				$query->whereBetween('date',[Carbon::parse($req->from), Carbon::parse($req->to)]);
+			}else if($req->from){
+                $query->whereDate('date',Carbon::parse($req->from));
+			}else if($req->to){
+                $query->whereDate('date',Carbon::parse($req->to));
+			}
+
+			if($req->status_type){
+                $query->where('present', $req->status_type);
+			}
+
+			if(!$req->from && !$req->to){
+                $query->whereDate('date', Carbon::today());
+			}
+
+			if($req->employee_id){
+                $query->where('employee_id', $req->employee_id);
+			}
+
+			$attendances = $query->get();
+			$employees = NULL;
+
+			if($req->from || $req->to || $req->status_type && count($attendances) > 0){
+				foreach ($attendances as $key => $value) {
+					$count_present = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'Yes'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
+					$count_absent = model('EmployeeAttendance')::where(['employee_id' => $value->employee_id, 'present' => 'No'])->whereRaw("DATE(date) >= ? AND DATE(date) <=?", [$req->from, $req->to])->count();
+
+					$employees[$key] =  model('Employee')::where('active', 1)->where('id', $value->employee_id)->first();
+					$employees[$key]->present = $value->present;
+					$employees[$key]->date = $value->date;
+					$employees[$key]->count_present = $count_present;
+					$employees[$key]->count_absent = $count_absent;
+				}
+
+			}else{
+
+				if(count($attendances) > 0){
+					$employees = model('Employee')::where('active', 1)->get();
+					foreach ($attendances as $key => $value) {
+						if($employees[$key]->id == $value->employee_id){
+							$count_present = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'Yes'])->whereMonth('date', Carbon::today())->count();
+							$count_absent = model('EmployeeAttendance')::where(['employee_id' => $employees[$key]->id, 'present' => 'No'])->whereMonth('date', Carbon::today())->count();
+							$employees[$key]->present = $value->present;
+							$employees[$key]->date = $value->date;
+							$employees[$key]->count_present = $count_present;
+							$employees[$key]->count_absent = $count_absent;
+						}
+					}
+				}
+			}
+
+			$holidays = model('Holiday')::where('status',1)->get();
+
+			$day = false;
+			$holiday_name = false;
+
+			foreach ($holidays as $key => $value) {
+
+				if($value->from && $value->to){
+					$from = explode('-', $value->from);
+
+					for ($i=0; $i <$value->total ; $i++) {
+						$date = Carbon::parse($from[0].'-'.$from[1].'-'.$from[2]+$i);
+						if(Carbon::today()->eq($date)){
+                            $day = true;
+							$holiday_name = $value->name;
+						}
+
+					}
+				}
+
+				if ($day == true) {
+					break;
+				}
+			}
+
+
+			return res_msg('list Data', 200, [
+				'data' => $employees,
+				'day' => $day,
+				'holiday_name' => $holiday_name
+			]);
+		} else if ($name == 'get_attendance_employee_list_v2') {
+			// return $req->all();
+
+			$count = model('EmployeeAttendance')::whereDate('date', Carbon::today())->count();
 
 			if ($count == 0) {
 				$employees = model('Employee')::where('active', 1)->select('id')->get();
@@ -799,6 +903,7 @@ class AjaxController extends Controller
 
                 array_push($last20DaysSales, $data);
             }
+
 			return res_msg('list Data', 200, [
 				'dashboardData' => $dashboardData,
 				'last20DaysSales' => $last20DaysSales,
@@ -1963,15 +2068,25 @@ class AjaxController extends Controller
 			return res_msg('Customer deleted successfully!', 200);
 		} else if($name == 'update_attendance'){
 
-			$data = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', Carbon::today())->first();
+			$employeeAttendance = model('EmployeeAttendance')::where(['company_id' => $req->company_id, 'employee_id'=> $req->id])->whereDate('date', new Carbon($req->date))->first();
 
-			if($data){
+			if($employeeAttendance){
 
-                $data->present = $req->present == 'Present' ? 'Yes' : 'No';
-                $data->editor_id = $user->id;
-                $data->updated_at = Carbon::now();
-				$data->update();
-			}
+                $employeeAttendance->present = $req->present == 'Present' ? 'Yes' : 'No';
+                $employeeAttendance->editor_id = $user->id;
+                $employeeAttendance->updated_at = Carbon::now();
+				$employeeAttendance->update();
+
+			} else {
+                model('EmployeeAttendance')::create([
+                    'company_id' => $req->company_id,
+                    'employee_id'=> $req->id,
+                    'present'=> $req->present == 'Present' ? 'Yes' : 'No',
+                    'date'=> new Carbon($req->date),
+                    'creator_id'=> $user->id,
+                    'created_at'=> Carbon::now(),
+                ]);
+            }
 
 			return res_msg('Attendance updated successfully!', 200);
 		} else if ($name == 'store_product_invoice_data') {

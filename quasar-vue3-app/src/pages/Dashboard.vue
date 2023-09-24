@@ -11,7 +11,7 @@
                 <q-icon name="account_balance_wallet" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
-                <q-item-label>Eearning Today</q-item-label>
+                <q-item-label>{{ $t('earning_today') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_today }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -22,7 +22,7 @@
                 <q-icon name="account_balance_wallet" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
-                <q-item-label>Eearning this month</q-item-label>
+                <q-item-label>{{ $t('earning_this_month') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -33,7 +33,7 @@
                 <q-icon name="account_balance_wallet" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
-                <q-item-label>Eearning last 6th month</q-item-label>
+                <q-item-label>{{ $t('earning_last_six_month') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_last_6th_month }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -44,7 +44,7 @@
                 <q-icon name="account_balance_wallet" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-green-8">
-                <q-item-label>Eearning this year</q-item-label>
+                <q-item-label>{{ $t('earning_this_year') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_earning_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -55,7 +55,7 @@
                 <q-icon name="point_of_sale" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
-                <q-item-label>Sale Today</q-item-label>
+                <q-item-label>{{ $t('sale_today') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_today }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -66,7 +66,7 @@
                 <q-icon name="point_of_sale" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
-                <q-item-label>Sale this month</q-item-label>
+                <q-item-label>{{ $t('sale_this_month') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -77,7 +77,7 @@
                 <q-icon name="point_of_sale" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
-                <q-item-label>Sale last 6th month</q-item-label>
+                <q-item-label>{{ $t('sale_last_six_month') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_last_6th_month }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -88,7 +88,7 @@
                 <q-icon name="point_of_sale" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-pink-8">
-                <q-item-label>Sale this year</q-item-label>
+                <q-item-label>{{ $t('sale_this_year') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_sale_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -99,7 +99,7 @@
                 <q-icon name="balance" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
-                <q-item-label>Due Today</q-item-label>
+                <q-item-label>{{ $t('due_today') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_today }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -110,7 +110,7 @@
                 <q-icon name="balance" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
-                <q-item-label>Due This Month</q-item-label>
+                <q-item-label>{{ $t('due_this_month') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_month }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -132,7 +132,7 @@
                 <q-icon name="balance" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
-                <q-item-label>Due This Year</q-item-label>
+                <q-item-label>{{ $t('due_this_year') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due_this_year }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -143,7 +143,7 @@
                 <q-icon name="balance" color="white" size="24px"></q-icon>
               </q-item-section>
               <q-item-section class="q-pa-md q-ml-none text-white bg-orange-8">
-                <q-item-label>Total Due</q-item-label>
+                <q-item-label>{{ $t('total_due') }}</q-item-label>
                 <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_due }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -155,7 +155,7 @@
                   <q-icon name="people" color="white" size="24px"></q-icon>
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-purple-8">
-                  <q-item-label>Total Customers</q-item-label>
+                  <q-item-label>{{ $t('total_customers') }}</q-item-label>
                   <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_customer }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -168,7 +168,7 @@
                   <q-icon name="airport_shuttle" color="white" size="24px"></q-icon>
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-indigo-8">
-                  <q-item-label>Total Suppliers</q-item-label>
+                  <q-item-label>{{ $t('total_suppliers') }}</q-item-label>
                   <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_supplier }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -181,7 +181,7 @@
                   <q-icon name="badge" color="white" size="24px"></q-icon>
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-teal-8">
-                  <q-item-label>Total Employees</q-item-label>
+                  <q-item-label>{{ $t('total_employees') }}</q-item-label>
                   <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_employee }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -194,7 +194,7 @@
                   <q-icon name="person" color="white" size="24px"></q-icon>
                 </q-item-section>
                 <q-item-section class="q-pa-md q-ml-none text-white bg-lime-8">
-                  <q-item-label>Total Users</q-item-label>
+                  <q-item-label>{{ $t('total_users') }}</q-item-label>
                   <q-item-label class="text-white text-h6 text-weight-bolder">{{ dashboardData.total_user }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -253,7 +253,7 @@ export default defineComponent({
   },
   created () {},
   mounted () {
-    // this.getDashboardCouterList()
+    this.getDashboardCouterList()
   },
   methods: {
     getDashboardCouterList: async function () {

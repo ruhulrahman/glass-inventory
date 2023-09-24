@@ -4,10 +4,22 @@
       <q-toolbar>
         <q-btn flat dense round @click="toggleLeftDrawer" icon="menu" aria-label="Menu" />
         <q-toolbar-title class="text-green-14">
-          Welcome to Glass Garden Invetory Software
+          {{ $t('welcome_to_glass_garden') }}
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
+          <q-btn-toggle
+            size="sm"
+            name="genre"
+            v-model="lang"
+            push
+            glossy
+            toggle-color="teal"
+            :options="[
+              {label: 'BN', value: 'bn'},
+              {label: 'EN', value: 'en'},
+            ]"
+          />
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
           </q-btn>
@@ -93,7 +105,7 @@
       <q-list>
         <q-item active-class="q-item-no-link-highlighting">
           <q-item-section>
-            <q-item-label class="text-h6 text-green-13">Glass Inventory</q-item-label>
+            <q-item-label class="text-h6 text-green-13">{{ $t('glass_inventory') }}</q-item-label>
           </q-item-section>
         </q-item>
         <q-item to="/" active-class="q-item-no-link-highlighting">
@@ -101,12 +113,12 @@
             <q-icon name="dashboard" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Dashboard</q-item-label>
+            <q-item-label>{{ $t('dashboard') }}</q-item-label>
           </q-item-section>
         </q-item>
 
 
-        <q-expansion-item icon="inventory" label="Product Management">
+        <q-expansion-item icon="inventory" :label="$t('product_management')">
           <q-list class="q-pl-lg">
 
             <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
@@ -114,7 +126,7 @@
                 <q-icon name="airport_shuttle" color="light-blue" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Supplier List</q-item-label>
+                <q-item-label>{{ $t('supplier_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -123,7 +135,7 @@
                 <q-icon name="people" color="deep-purple-11" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Customer List</q-item-label>
+                <q-item-label>{{ $t('customer_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -132,7 +144,7 @@
                 <q-icon name="palette" color="warning" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Color List</q-item-label>
+                <q-item-label>{{ $t('color_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -141,7 +153,7 @@
                 <q-icon name="straighten" color="positive" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Unit List</q-item-label>
+                <q-item-label>{{ $t('unit_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -150,7 +162,7 @@
                 <q-icon name="category" color="pink" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Category List</q-item-label>
+                <q-item-label>{{ $t('category_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -159,7 +171,7 @@
                 <q-icon name="keyboard_alt" color="teal" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Product Type List</q-item-label>
+                <q-item-label>{{ $t('product_type_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -168,7 +180,7 @@
                 <q-icon name="inventory" color="accent" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Products Stock</q-item-label>
+                <q-item-label>{{ $t('products_stock') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -183,7 +195,7 @@
               <q-icon name="fab fa-sellcast" color="yellow" />
             </q-item-section>
             <q-item-section>
-              Sales Management
+              {{ $t('sales_management') }}
             </q-item-section>
           </template>
           <q-list class="q-pl-lg">
@@ -193,7 +205,7 @@
                 <q-icon name="point_of_sale" color="light-green-14" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Sales</q-item-label>
+                <q-item-label>{{ $t('sales') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -202,7 +214,7 @@
                 <q-icon name="account_balance_wallet" color="indigo-4" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Benefit & Loss</q-item-label>
+                <q-item-label>{{ $t('benefit_and_loss') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -211,7 +223,7 @@
                 <q-icon name="money" color="deep-orange-13" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Due</q-item-label>
+                <q-item-label>{{ $t('due') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -219,7 +231,7 @@
         </q-expansion-item>
 
 
-        <q-expansion-item icon="fas fa-building" label="Company Management">
+        <q-expansion-item icon="fas fa-building" :label="$t('company_management')">
           <q-list class="q-pl-lg">
 
             <q-item to="/company-list" active-class="q-item-no-link-highlighting">
@@ -227,7 +239,7 @@
                 <q-icon name="business" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Company List</q-item-label>
+                <q-item-label>{{ $t('company_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -236,7 +248,7 @@
                 <q-icon name="apartment" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Department List</q-item-label>
+                <q-item-label>{{ $t('department_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -245,7 +257,7 @@
                 <q-icon name="business_center" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Designation List</q-item-label>
+                <q-item-label>{{ $t('designation_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -254,7 +266,7 @@
                 <q-icon name="account_balance" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Bank List</q-item-label>
+                <q-item-label>{{ $t('bank_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -263,7 +275,7 @@
                 <q-icon name="watch" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Holiday List</q-item-label>
+                <q-item-label>{{ $t('holiday_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -272,7 +284,7 @@
                 <q-icon name="person" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>User List</q-item-label>
+                <q-item-label>{{ $t('user_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -280,7 +292,7 @@
         </q-expansion-item>
 
 
-        <q-expansion-item icon="far fa-address-card" label="Employee Management">
+        <q-expansion-item icon="far fa-address-card" :label="$t('employee_management')">
           <q-list class="q-pl-lg">
 
             <q-item to="/employee-list" active-class="q-item-no-link-highlighting">
@@ -288,7 +300,7 @@
                 <q-icon name="badge" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Employee List</q-item-label>
+                <q-item-label>{{ $t('employee_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -297,7 +309,7 @@
                 <q-icon name="fas fa-clipboard-user" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Attendance</q-item-label>
+                <q-item-label>{{ $t('attendance') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -568,7 +580,7 @@
       <q-card class="no-shadow" bordered>
         <q-card-section class="row q-pa-lg">
           <span class="text-body1 text-grey-8 text-weight-bold">
-            Software developed by <a href="https://www.facebook.com/Ruhul14.02/" target="_blank">
+            {{ $t('software_developed_by') }} <a href="https://www.facebook.com/Ruhul14.02/" target="_blank">
               Ruhul Amin
               <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle"
                 self="center middle">
@@ -641,7 +653,17 @@ export default defineComponent({
     return {
       showAddNewDialog: false,
       user: null,
-      showDetailsDialog: false
+      showDetailsDialog: false,
+      lang: this.$i18n.locale
+    }
+  },
+  watch: {
+    'lang': function (lang) {
+      this.$i18n.locale = lang
+      // set quasar's language too!!
+      // import(`quasar/lang/${lang}`).then(language =>
+      // {this.$q.lang.set(language.default)
+      // })
     }
   },
   created() {
