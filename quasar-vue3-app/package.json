@@ -35,6 +35,7 @@
     "sweetalert2": "^11.7.22",
     "vue": "^3.0.0",
     "vue-echarts": "^6.5.4",
+    "vue-flatpickr-component": "^11.0.3",
     "vue-i18n": "^9.0.0",
     "vue-router": "^4.0.0",
     "vue3-html2pdf": "^1.1.2",

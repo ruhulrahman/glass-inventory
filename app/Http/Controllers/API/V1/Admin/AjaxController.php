@@ -475,7 +475,7 @@ class AjaxController extends Controller
 		} else if ($name == 'get_attendance_employee_list_v2') {
 			// return $req->all();
 
-			$count = model('EmployeeAttendance')::whereDate('date', Carbon::today())->count();
+			$count = model('EmployeeAttendance')::whereDate('date', new Carbon($req->date))->count();
 
 			if ($count == 0) {
 				$employees = model('Employee')::where('active', 1)->select('id')->get();

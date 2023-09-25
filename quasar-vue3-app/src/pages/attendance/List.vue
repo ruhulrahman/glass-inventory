@@ -112,7 +112,8 @@
               <q-item-section>
                 <div class="d-flex q-mb-sm">
                   <span class="q-mr-sm">Invoice Date</span>
-                  <q-btn icon="event" round color="primary">
+                  <flat-pickr filled dense class="text-black bg-grey-3 q-m-lg" style="padding: 10px; border:none" v-model="search_query.date" :config="configFlatPickr" placeholder="Select Date"></flat-pickr>
+                  <!-- <q-btn icon="event" round color="primary">
                     <q-tooltip
                       class="bg-primary"
                       transition-show="scale"
@@ -136,15 +137,14 @@
                             flat
                             v-close-popup
                           />
-                          <!-- <q-btn label="OK" color="primary" flat @click="save" v-close-popup /> -->
                         </div>
                       </q-date>
                     </q-popup-proxy>
-                  </q-btn>
+                  </q-btn> -->
                 </div>
-                <q-badge color="teal" v-if="date_range">{{
+                <!-- <q-badge color="teal" v-if="date_range">{{
                   search_input
-                }}</q-badge>
+                }}</q-badge> -->
               </q-item-section>
             </q-item>
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -297,6 +297,8 @@ const metaData = {
 };
 // import createEmployee from "./AddOrUpdate.vue";
 import AttendanceDetails from "./Details.vue";
+import flatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 
 const columns = [
   {
@@ -346,6 +348,7 @@ export default {
   components: {
     // createEmployee,
     AttendanceDetails,
+    flatPickr
   },
   setup() {
     useMeta(metaData);
@@ -374,6 +377,11 @@ export default {
         from: null,
         to: null,
         status_type: null,
+        date: this.dDate(new Date()),
+      },
+      configFlatPickr: {
+        // wrap: true, // set wrap to true only when using 'input-group'
+        dateFormat: 'd-m-Y',
       },
       status_arr: [
         { id: "Yes", label: "Present" },
@@ -412,6 +420,11 @@ export default {
     getListData: async function () {
       let ref = this;
       let jq = ref.jq();
+      // console.log('this.search_input.date', this.search_query.date)
+      if (!this.search_query.date) {
+        return ;
+      }
+
       try {
         this.loading = true;
         let res = await jq.get(
@@ -420,11 +433,18 @@ export default {
         );
         ref.calander = false;
         if(res.data.data != null && res.data.data.length){
+          // const searchingDate = this.dDate(new Date(this.search_query.date))
+          // const searchingDate = new Date(this.search_query.date)
+          const myDate = Date.parse(this.search_query.date+'T00:00:00.000Z');
+          console.log('myDate',myDate)
+          // const searchingDate = this.dDate(this.search_query.date, 'D')
+          // console.log('searchingDate',searchingDate)
           this.listData = res.data.data.map((item) => {
             item.present = item.present == "Yes" ? "Present" : "Absent";
-            item.date = item.date
-              ? ref.dDate(item.date)
-              : ref.dDate(new Date().toISOString().slice(0, 10));
+            item.date = this.search_query.date;
+            // item.date = item.date
+            //   ? ref.dDate(item.date)
+            //   : ref.dDate(new Date().toISOString().slice(0, 10));
             item.holiday = res.data.day;
             item.holiday_name = res.data.holiday_name;
             return item;
