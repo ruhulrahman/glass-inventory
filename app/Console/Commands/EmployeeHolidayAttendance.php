@@ -29,8 +29,6 @@ class EmployeeHolidayAttendance extends Command
     {
         $holiday = model('Holiday')::whereDate('from', '>=', Carbon::now())->whereDate('to', '<=', Carbon::now())->first();
 
-        info($holiday);
-
         if ($holiday) {
             $employees = model('Employee')::where(['company_id' => $holiday->company_id, 'active' => 1])->get();
 
