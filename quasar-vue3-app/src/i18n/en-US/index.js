@@ -24,6 +24,7 @@ export default {
   department_list: 'Department List',
   designation_list: 'Designation List',
   bank_list: 'Bank List',
+  weekend_list: 'Weekend List',
   holiday_list: 'Holiday List',
   user_list: 'User List',
   employee_management: 'Employee Management',

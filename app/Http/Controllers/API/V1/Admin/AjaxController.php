@@ -54,6 +54,14 @@ class AjaxController extends Controller
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
+		} else if ($name == 'get_weekend_list') {
+
+			$list = model('Weekend')::with('creator')->where('company_id', $user->company_id)->get();
+
+			return res_msg('list Data', 200, [
+				'data' => $list
+			]);
+
 		} else if ($name == 'get_designation_list') {
 
 			$list = model('Designation')::with('department')->where('company_id', $user->company_id)->get();
@@ -1002,6 +1010,15 @@ class AjaxController extends Controller
 			$department->delete();
 
 			return res_msg('Department deleted successfully!', 200);
+
+		} else if ($name == 'delete_weekend_data') {
+
+			$weekend = model('Weekend')::find($req->id);
+
+			$weekend->delete();
+
+			return res_msg('Weekend deleted successfully!', 200);
+
 		} else if ($name == 'department_active_status_change') {
 
 			$department = model('Department')::find($req->id);
@@ -2480,6 +2497,51 @@ class AjaxController extends Controller
 			]);
 
 			return res_msg('Password updated successfully', 200, []);
+
+		}if ($name == 'store_weekend_data') {
+
+			$validator = Validator::make($req->all(), [
+				'day_name' => 'required',
+			], [
+                'day_name.required' => 'Weekend Name is required',
+            ]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			model('Weekend')::create([
+				'company_id' => $user->company_id,
+				'day_name' => $req->day_name,
+				'creator_id' => $user->id,
+				'created_at' => Carbon::now(),
+			]);
+
+			return res_msg('Weekend inserted successfully!', 200);
+
+		} else if ($name == 'update_weekend_data') {
+
+			$validator = Validator::make($req->all(), [
+				'day_name' => 'required',
+			], [
+                'day_name.required' => 'Weekend Name is required',
+            ]);
+
+			if ($validator->fails()) {
+				$errors = $validator->errors()->all();
+				return response(['msg' => $errors[0]], 422);
+			}
+
+			$weekend = model('Weekend')::find($req->id);
+
+			$weekend->update([
+				'day_name' => $req->day_name,
+				'editor_id' => $user->id,
+				'created_at' => Carbon::now(),
+			]);
+
+			return res_msg('Weekend updated successfully!', 200);
 		}
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);

@@ -24,6 +24,7 @@ export default {
   department_list: 'বিভাগের তালিকা',
   designation_list: 'পদবী তালিকা',
   bank_list: 'ব্যাংক তালিকা',
+  weekend_list: 'সাপ্তাহিক ছুটির তালিকা',
   holiday_list: 'ছুটির তালিকা',
   user_list: 'ব্যবহারকারীর তালিকা',
   employee_management: 'কর্মচারী ব্যবস্থাপনা',

@@ -270,6 +270,15 @@
               </q-item-section>
             </q-item>
 
+            <q-item to="/weekends" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="watch" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('weekend_list') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item to="/holidays" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="watch" />
