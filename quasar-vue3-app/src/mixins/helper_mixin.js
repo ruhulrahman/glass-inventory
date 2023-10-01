@@ -457,7 +457,7 @@ export default {
                 return false;
             }
         },
-        dDate: function (value, format = "D-MM-YYYY") {
+        dDate: function (value, format = "DD-MM-YYYY") {
             return moment.utc(value).local().format(format);
         },
         dDateTime: function (value, format = "D MMM YYYY LT") {

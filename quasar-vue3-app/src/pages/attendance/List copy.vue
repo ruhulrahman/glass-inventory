@@ -57,8 +57,9 @@
                   v-model="search_query.employee_id"
                   label="Employee"
                   :options="employees"
-                  emit-value map-options use-input
-                  @filter="employeefilter"
+                  emit-value
+                  map-options
+                  use-input
                 >
                   <template v-slot:no-option>
                     <q-item>
@@ -78,7 +79,7 @@
                   clearable
                   v-model="search_query.status_type"
                   label="Type"
-                  :options="attendanceStatusList"
+                  :options="status_arr"
                   emit-value
                   map-options
                   use-input
@@ -93,12 +94,57 @@
                 </q-select>
               </q-item-section>
             </q-item>
+            <!-- <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <q-item-section style="font-size: 12px !important">
+                <q-select
+                  filled
+                  borderless
+                  dense
+                  v-model="search_query.status_type"
+                  :options="status_arr"
+                  emit-value
+                  map-options
+                >
+                </q-select>
+              </q-item-section>
+            </q-item> -->
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <q-item-section>
                 <div class="d-flex q-mb-sm">
-                  <span class="q-mr-sm">Attentdance Date</span>
-                  <flat-pickr filled dense class="text-black bg-grey-3 q-m-lg" style="padding: 10px; border:none" v-model="search_query.attendance_date" :config="configFlatPickr" placeholder="Select Date"></flat-pickr>
+                  <span class="q-mr-sm">Invoice Date</span>
+                  <flat-pickr filled dense class="text-black bg-grey-3 q-m-lg" style="padding: 10px; border:none" v-model="search_query.date" :config="configFlatPickr" placeholder="Select Date"></flat-pickr>
+                  <!-- <q-btn icon="event" round color="primary">
+                    <q-tooltip
+                      class="bg-primary"
+                      transition-show="scale"
+                      transition-hide="scale"
+                      anchor="bottom middle"
+                      self="center middle"
+                    >
+                      Select Invoice Date
+                    </q-tooltip>
+                    <q-popup-proxy
+                      @before-show="updateProxy"
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date @click="get_date()" v-model="date_range" range>
+                        <div class="row items-center justify-end q-gutter-sm">
+                          <q-btn
+                            label="Cancel"
+                            color="primary"
+                            flat
+                            v-close-popup
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-btn> -->
                 </div>
+                <!-- <q-badge color="teal" v-if="date_range">{{
+                  search_input
+                }}</q-badge> -->
               </q-item-section>
             </q-item>
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -116,7 +162,7 @@
               </q-item-section>
             </q-item>
 
-            <q-btn class="q-ml-sm" icon="refresh" @click="resetData()" flat />
+            <q-btn class="q-ml-sm" icon="refresh" @click="reset()" flat />
             <!-- <q-date
               v-if="calander"
               @click="get_date()"
@@ -147,15 +193,37 @@
               <q-td key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="attendance_date" :props="props">
-                {{ props.row.attendance_date }}
+              <q-td key="date" :props="props">
+                {{ props.row.date }}
               </q-td>
-              <q-td key="attendance" :props="props">
-                <q-radio color="green" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Present" label="Present'" />
-                <q-radio color="red" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Absent" label="Absent'" />
-                <q-radio color="orange" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Leave" label="Leave" />
-                <q-radio color="teal" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Holiday" label="Holiday" />
+              <q-td key="present" :props="props">
+                <q-toggle
+                  :label="props.row.present"
+                  :color="props.row.present == false ? 'red' : 'green'"
+                  size="md"
+                  false-value="Absent"
+                  true-value="Present"
+                  v-model="props.row.present"
+                  @click="change_status(props.row)"
+                />
               </q-td>
+              <q-td key="count_attendance" :props="props">
+                <div class="q-pa-md q-gutter-md">
+                  <q-badge
+                    rounded
+                    color="orange"
+                    title="Current Month Total Present"
+                    :label="'P - ' + props.row.count_present"
+                  />
+                  <q-badge
+                    rounded
+                    color="red"
+                    title="Current Month Total Absent"
+                    :label="'Ab - ' + props.row.count_absent"
+                  />
+                </div>
+              </q-td>
+
               <q-td key="action" :props="props">
                 <q-btn
                   @click="detailsData(props.row)"
@@ -235,6 +303,7 @@ import 'flatpickr/dist/flatpickr.css';
 const columns = [
   {
     name: "sl",
+    required: true,
     label: "#SL",
     align: "left",
     field: (row) => row.sl,
@@ -243,15 +312,34 @@ const columns = [
   },
   {
     name: "name",
+    required: true,
     label: "Employee Name",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
-  { name: "attendance_date", label: "Attendance Date", field: "attendance_date", align: "center" },
-  { name: "attendance", label: "Status", field: "attendance", align: "center" },
-  { name: "action", label: "Action", field: "action", align: "center" },
+  {
+    name: "date",
+    required: true,
+    align: "center",
+    label: "Date",
+    field: "date",
+  },
+  { name: "present", label: "Status", field: "present" },
+  {
+    name: "count_attendance",
+    label: "Total Attendance",
+    field: "count_attendance",
+  },
+
+  {
+    name: "action",
+    label: "Action",
+    field: "action",
+    sortable: false,
+    align: "center",
+  },
 ];
 
 export default {
@@ -285,24 +373,23 @@ export default {
       calander: false,
       search_input: null,
       search_query: {
-        employee_id: '',
-        status_type: '',
-        attendance_date: this.dDate(new Date()),
+        employee_id: null,
+        from: null,
+        to: null,
+        status_type: null,
+        date: this.dDate(new Date()),
       },
       configFlatPickr: {
         // wrap: true, // set wrap to true only when using 'input-group'
         dateFormat: 'd-m-Y',
       },
-      attendanceStatusList: [
-        { value: "Absent", label: "Absent" },
-        { value: "Leave", label: "Leave" },
-        { value: "Present", label: "Present" },
-        { value: "Holiday", label: "Holiday" },
+      status_arr: [
+        { id: "Yes", label: "Present" },
+        { id: "No", label: "Absent" },
       ],
       alert: false,
       holiday_name: null,
       employees: [],
-      employees2: [],
     };
   },
   computed: {
@@ -311,8 +398,8 @@ export default {
         return this.listData.map((item, i) => {
           item.sl = i + 1;
           item.name = item.name;
-          item.attendance_date = item.attendance_date;
-          item.attendance = item.attendance;
+          item.date = item.date;
+          item.present = item.present;
           item.count_attendance == "";
           return Object.assign(item);
         });
@@ -321,20 +408,11 @@ export default {
       }
     },
   },
-  created () {
-    // this.getListData();
-  },
   mounted() {
     this.getListData();
     // this.getCompanytList();
   },
   methods: {
-    employeefilter(val, update, abort) {
-      update(() => {
-        const needle = val.toLowerCase()
-        this.employees = this.employees2.filter(item => item.label.toLowerCase().indexOf(needle) > -1)
-      })
-    },
     openAddNewDialog: function () {
       this.editItem = "";
       this.showAddNewDialog = true;
@@ -343,7 +421,7 @@ export default {
       let ref = this;
       let jq = ref.jq();
       // console.log('this.search_input.date', this.search_query.date)
-      if (!this.search_query.attendance_date) {
+      if (!this.search_query.date) {
         return ;
       }
 
@@ -355,19 +433,29 @@ export default {
         );
         ref.calander = false;
         if(res.data.data != null && res.data.data.length){
+          // const searchingDate = this.dDate(new Date(this.search_query.date))
+          // const searchingDate = new Date(this.search_query.date)
+          const myDate = Date.parse(this.search_query.date+'T00:00:00.000Z');
+          console.log('myDate',myDate)
+          // const searchingDate = this.dDate(this.search_query.date, 'D')
+          // console.log('searchingDate',searchingDate)
           this.listData = res.data.data.map((item) => {
-            item.attendance_date = this.dDate(item.attendance_date);
+            item.present = item.present == "Yes" ? "Present" : "Absent";
+            item.date = this.search_query.date;
+            // item.date = item.date
+            //   ? ref.dDate(item.date)
+            //   : ref.dDate(new Date().toISOString().slice(0, 10));
+            item.holiday = res.data.day;
+            item.holiday_name = res.data.holiday_name;
             return item;
           });
 
           ref.employees = this.listData.map((item) => {
             return {
-              value: item.id,
+              id: item.id,
               label: item.name,
             };
           });
-
-          this.employees2 = this.employees
 
         }else{
           this.listData = []
@@ -417,11 +505,14 @@ export default {
         this.loading = false;
       }
     },
-    resetData: async function () {
-      this.search_query.employee_id = '';
-      this.search_query.status_type = '';
-      this.search_query.attendance_date = this.dDate(new Date());
-      this.getListData();
+    reset: async function () {
+      var ref = this;
+      ref.search_input = "";
+      ref.search_query.from = null;
+      ref.search_query.to = null;
+      ref.search_query.status_type = null;
+      ref.search_query.date = this.dDate(new Date());
+      ref.getListData();
     },
     editData: async function (item) {
       this.editItem = this.clone_object(item);
@@ -467,24 +558,31 @@ export default {
       let ref = this;
       let jq = ref.jq();
 
+      if (item.holiday == true) {
+        ref.alert = true;
+        ref.holiday_name = item.holiday_name;
+        return;
+      } else {
+        ref.alert = false;
         try {
-            this.loading = true;
-            let res = await jq.post(
-              ref.apiUrl("api/v1/admin/ajax/update_employee_attendance"),
-              item
-            );
-            await this.getListData();
-            this.notify(res.msg);
-            // this.listData = res.data.data.map((item) => {
-            //   item.present = "Absent";
-            //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
-            //   return item;
-            // });
+          this.loading = true;
+          let res = await jq.post(
+            ref.apiUrl("api/v1/admin/ajax/update_attendance"),
+            item
+          );
+          await this.getListData();
+          this.notify(res.msg);
+          // this.listData = res.data.data.map((item) => {
+          //   item.present = "Absent";
+          //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
+          //   return item;
+          // });
         } catch (err) {
           this.notify(this.err_msg(err), "negative");
         } finally {
           this.loading = false;
         }
+      }
     },
     get_date() {
       var ref = this;
