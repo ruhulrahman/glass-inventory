@@ -151,8 +151,8 @@
                 {{ props.row.attendance_date }}
               </q-td>
               <q-td key="attendance" :props="props">
-                <q-radio color="green" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Present" label="Present'" />
-                <q-radio color="red" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Absent" label="Absent'" />
+                <q-radio color="green" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Present" label="Present" />
+                <q-radio color="red" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Absent" label="Absent" />
                 <q-radio color="orange" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Leave" label="Leave" />
                 <q-radio color="teal" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Holiday" label="Holiday" />
               </q-td>
