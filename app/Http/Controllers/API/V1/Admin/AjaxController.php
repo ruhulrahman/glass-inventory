@@ -636,7 +636,6 @@ class AjaxController extends Controller
 
             $attendanceWiseSalary = $perDaySalary * $attendanceCount->total_attendance;
 
-
             return res_msg('list Data', 200, [
 				'data' => $attendances,
 				'attendanceCount' => $attendanceCount,
@@ -645,6 +644,7 @@ class AjaxController extends Controller
                 'perDaySalary' => $perDaySalary,
                 'employee' => $employee,
                 'attendanceWiseSalary' => $attendanceWiseSalary,
+                'dayName' => date('l'),
 			]);
 
 		} else if ($name == 'get_benefit_and_loss_by_invoice_wise') {
@@ -2074,7 +2074,6 @@ class AjaxController extends Controller
 
 			if($employeeAttendance){
 
-                // $employeeAttendance->present = $req->present == 'Present' ? 'Yes' : 'No';
                 $employeeAttendance->attendance = $req->attendance;
                 $employeeAttendance->editor_id = $user->id;
                 $employeeAttendance->updated_at = Carbon::now();
