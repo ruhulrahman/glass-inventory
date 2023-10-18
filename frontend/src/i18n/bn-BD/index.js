@@ -50,4 +50,6 @@ export default {
   most_selling_products: 'সর্বাধিক বিক্রিত পণ্যসমূহ',
   top_10_customers: 'শীর্ষ ১০ গ্রাহক',
   top_10_valuable_customers: 'শীর্ষ ১০ মূল্যবান গ্রাহক',
+  piece_sold: 'পিছ বিক্রি',
+  pieces_sold: 'পিছ বিক্রি',
 }

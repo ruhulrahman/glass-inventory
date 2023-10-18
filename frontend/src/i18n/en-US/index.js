@@ -50,4 +50,6 @@ export default {
   most_selling_products: 'Most Selling Products',
   top_10_customers: 'Top 10 Customers',
   top_10_valuable_customers: 'Top 10 Valuable Customers',
+  piece_sold: 'piece sold',
+  pieces_sold: 'pieces sold',
 }

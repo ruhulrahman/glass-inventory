@@ -30,7 +30,7 @@
 
               <q-item-section side>
                 <div class="text-grey-8 q-gutter-xs">
-                  <span>{{ item.sale_count }} piece sold</span>
+                  <span>{{ item.sale_count }} {{ $t('piece_sold') }}</span>
                 </div>
               </q-item-section>
             </q-item>
