@@ -11,7 +11,7 @@
           <q-card-section style="min-width: 600px !important;overflow-x: hidden;">
             <div class="text-body2 text-justify row">
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Name</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('employee_name') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -20,7 +20,7 @@
                     <span class="block">{{editItem.name}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Email</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('email') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -29,7 +29,7 @@
                     <span class="block">{{editItem.email}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Primary Phone</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('phone1') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -38,7 +38,7 @@
                     <span class="block">{{editItem.phone1}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Secondary Primary Phone</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('phone2') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -47,7 +47,7 @@
                     <span class="block">{{editItem.phone2}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Date Of Birth</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('date_of_birth') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -56,7 +56,7 @@
                     <span class="block">{{editItem.dob}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">NID</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('nid') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -65,7 +65,7 @@
                     <span class="block">{{editItem.nid}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Gender</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('gender') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -74,7 +74,7 @@
                     <span class="block">{{editItem.gender}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Religion</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('religion') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -83,7 +83,7 @@
                     <span class="block">{{editItem.religion}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Present Address</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('present_address') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -92,7 +92,7 @@
                     <span class="block">{{editItem.present_address}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Permanent Address</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('permanent_address') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -101,7 +101,7 @@
                     <span class="block">{{editItem.permanent_address}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Designation</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('designation') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -110,7 +110,7 @@
                     <span class="block">{{editItem.designation}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Current Salary</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('current_salary') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -119,7 +119,7 @@
                     <span class="block">{{editItem.current_salary}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Joining Date</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('joining_date') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -128,7 +128,7 @@
                     <span class="block">{{editItem.joining_date}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Status</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('status') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>

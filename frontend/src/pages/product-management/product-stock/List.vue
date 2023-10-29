@@ -5,20 +5,20 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Products Stock" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('product_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('product_stock_list')" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Product Stock List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('product_stock_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Product Stock
+              {{ $t('add_new_product_stock') }}
             </q-btn>
           </div>
         </div>
@@ -27,15 +27,14 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <!-- <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template> -->
           <template v-slot:top-right>
-            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter"
+              placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -116,12 +115,12 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :dropdownList="dropdowns" :editItem="editItem"
-        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+      <add-or-update :dropdownList="dropdowns" :editItem="editItem" @reloadListData="getListData"
+        @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
     <q-dialog fullWidth v-model="showDetailDialog">
-        <detail-dialog :listData="detailItems" @reloadListData="getListData" @closeModal="showDetailDialog = false" />
+      <detail-dialog :listData="detailItems" @reloadListData="getListData" @closeModal="showDetailDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -209,6 +208,28 @@ export default ({
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "type_name", field: "type_name", label: this.$t('product_type'), sortable: true, align: "left" },
+        { name: "category_name", align: "center", label: this.$t('category_name'), field: "category_name", sortable: true, align: "left" },
+        { name: "color_name", label: this.$t('color_name'), field: 'color_name', sortable: true, align: "left" },
+        // { name: "unit_name", label: "unit", field: "unit_name", sortable: true, align: "center" },
+        { name: "price", label: this.$t('unit_price'), field: "price", sortable: true, align: "right" },
+        { name: "quantity", label: this.$t('quantity'), field: "quantity", sortable: true, align: "left" },
+        { name: "cost", label: this.$t('cost'), field: "cost", sortable: true, align: "right" },
+        { name: "stock", label: this.$t('stock'), field: "stock", sortable: true, align: "left" },
+        { name: "selling_price", label: this.$t('selling_price'), field: "selling_price", sortable: true, align: "right" },
+        { name: "status", label: this.$t('status'), field: "status", sortable: true, align: "center" },
+        {
+          name: "action",
+          label: this.$t('action'),
+          field: "Action",
+          sortable: false,
+          align: "center",
+        },
+      ];
     }
   },
   mounted() {
@@ -216,7 +237,7 @@ export default ({
     this.getInitialData();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -291,23 +312,24 @@ export default ({
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

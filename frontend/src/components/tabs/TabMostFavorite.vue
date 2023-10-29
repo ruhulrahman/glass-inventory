@@ -54,7 +54,7 @@
 
               <q-item-section side>
                 <div class="text-grey-8 q-gutter-xs">
-                  <span>{{ item.product_buy_count }} times buy</span>
+                  <span>{{ item.product_buy_count }} {{ $t('times_buy') }}</span>
                 </div>
               </q-item-section>
             </q-item>
@@ -78,7 +78,7 @@
 
               <q-item-section side>
                 <div class="text-grey-8 q-gutter-xs">
-                  <span>{{ item.purchase_total }} Tk. product buy</span>
+                  <span>{{ item.purchase_total }} {{ $t('tk_product_buy') }}</span>
                 </div>
               </q-item-section>
             </q-item>

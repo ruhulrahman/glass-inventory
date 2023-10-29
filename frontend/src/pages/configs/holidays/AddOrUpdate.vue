@@ -39,7 +39,7 @@
               color="white"
               round
               v-model="holiday.name"
-              label="Holiday Name *"
+              :label="$t('holiday_name')"
               :rules="[
                 (val) => (val && val.length > 0) || 'Please enter holiday name',
               ]"
@@ -52,7 +52,7 @@
           style="margin-top: 0px"
         >
           <q-item-section>
-            <label style="margin-bottom: -18px">From *</label>
+            <label style="margin-bottom: -18px">{{ $t('from') }}</label>
             <q-input type="date" dark color="white" v-model="holiday.from" />
           </q-item-section>
         </q-item>
@@ -62,7 +62,7 @@
           style="margin-top: 0px"
         >
           <q-item-section>
-            <label style="margin-bottom: -18px">To</label>
+            <label style="margin-bottom: -18px">{{ $t('to') }}</label>
             <q-input type="date" dark color="white" v-model="holiday.to" />
           </q-item-section>
         </q-item>
@@ -73,7 +73,7 @@
           type="submit"
           class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
           >
-          {{editItem.id ? 'Update' : 'Save'}}
+          {{ $t('save') }}
           </q-btn
         >
       </q-card-actions>
@@ -113,7 +113,7 @@ export default {
     saveData: async function () {
       let ref = this;
       let jq = ref.jq();
-    
+
 
     try {
         ref.wait_me(".wait_me");
@@ -126,7 +126,7 @@ export default {
         this.notify(res.msg)
         this.$emit('closeModal', true)
         this.$emit('reloadListData', true)
-      
+
      } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {

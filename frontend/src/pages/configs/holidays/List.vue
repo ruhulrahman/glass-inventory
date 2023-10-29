@@ -4,19 +4,19 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Holiday" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('company_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('holiday_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Holiday List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('holiday_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Holiday
+              {{ $t('add_new_holiday') }}
             </q-btn>
           </div>
         </div>
@@ -25,10 +25,8 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:top-right>
             <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
@@ -69,7 +67,7 @@
                 {{ props.row.to_date }}
               </q-td>
               <q-td key="total" :props="props">
-                  {{ props.row.total }}
+                {{ props.row.total }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -80,12 +78,10 @@
         </q-table>
       </q-card-section>
     </q-card>
-      <q-dialog v-model="showAddNewDialog" position="right">
-        <create-holiday
-          :title="editItem.id ? 'Update Holiday' : 'Create Holiday'" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
-      </q-dialog>
+    <q-dialog v-model="showAddNewDialog" position="right">
+      <create-holiday :title="editItem.id ? $t('update') : $t('add_new_holiday')" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -100,49 +96,6 @@ const metaData = {
 };
 import createHoliday from "./AddOrUpdate.vue";
 
-const columns = [
-    {
-    name: "sl",
-    required: true,
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "name",
-    required: true,
-    label: "Holday Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "from_date",
-    required: true,
-    align: "center",
-    label: "From",
-    field: "from_date"
-  },
-  {
-    name: "to_date",
-    required: true,
-    align: "center",
-    label: "To",
-    field: "to_date"
-  },
-  { name: "total", label: "Total", field: "total"},
-  {
-    name: "action",
-    label: "Action",
-    field: "action",
-    sortable: false,
-    align: "center",
-  },
-];
-
 export default {
   name: "HolidayList",
   mixins: [helperMixin],
@@ -156,7 +109,6 @@ export default {
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -172,7 +124,7 @@ export default {
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
-          item.sl = i+1
+          item.sl = i + 1
           item.name = item.name
           item.from_date = this.dDate(item.from)
           item.to_date = this.dDate(item.to)
@@ -182,6 +134,16 @@ export default {
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "name", required: true, label: this.$t('holiday_name'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
+        { name: "from_date", required: true, align: "center", label: this.$t('from'), field: "from_date" },
+        { name: "to_date", required: true, align: "center", label: this.$t('to'), field: "to_date" },
+        { name: "total", label: this.$t('total'), field: "total" },
+        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" },
+      ];
     }
   },
   mounted() {
@@ -189,7 +151,7 @@ export default {
     // this.getCompanytList();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -245,23 +207,24 @@ export default {
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

@@ -5,20 +5,20 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Color" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('product_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('color_list')" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Color List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('color_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Color
+              {{ $t('add_new_color') }}
             </q-btn>
           </div>
         </div>
@@ -27,15 +27,14 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
           <template v-slot:top-right>
-            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter"
+              placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -84,8 +83,7 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :editItem="editItem"
-        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+      <add-or-update :editItem="editItem" @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -100,27 +98,6 @@ import AddOrUpdate from "./AddOrUpdate.vue";
 
 const metaData = { title: 'Color List' }
 
-const columns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  {
-    name: "name",
-    required: true,
-    label: "Color Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  { name: "status", label: "Status", field: "status", sortable: true },
-  {
-    name: "action",
-    label: "Action",
-    field: "Action",
-    sortable: false,
-    align: "center",
-  },
-];
-
 export default ({
   name: "ColorList",
   mixins: [helperMixin],
@@ -134,7 +111,6 @@ export default ({
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -159,13 +135,35 @@ export default ({
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        {
+          name: "name",
+          required: true,
+          label: this.$t('color_name'),
+          align: "left",
+          field: (row) => row.name,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        { name: "status", label: this.$t('status'), field: "status", sortable: true },
+        {
+          name: "action",
+          label: this.$t('action'),
+          field: "Action",
+          sortable: false,
+          align: "center",
+        },
+      ];
     }
   },
   mounted() {
     this.getListData();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -221,23 +219,24 @@ export default ({
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

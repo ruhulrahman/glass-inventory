@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ department.id ? 'Update' : 'Add New' }} Department</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ department.id ? $t('update'): $t('add_new_department') }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -34,20 +34,20 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="department.name" label="Department Name"
+              <q-input dark color="white" dense v-model="department.name" :label="$t('department_name')"
                 :rules="[val => val && val.length > 0 || 'Please enter department name']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="department.active" val="md" label="Is Active" />
+              <q-toggle color="green" size="md" v-model="department.active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
         </q-list>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
+        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">{{ $t('save') }}</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>

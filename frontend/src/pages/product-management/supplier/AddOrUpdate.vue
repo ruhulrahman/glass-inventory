@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }} Supplier</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? $t('update') : $t('add_new') }} {{ $t('supplier') }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -17,51 +17,51 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="submitForm.name" label="Supplier name"
+              <q-input dark color="white" dense v-model="submitForm.name" :label="$t('supplier_name')"
                 :rules="[val => val && val.length > 0 || 'Please enter supplier name']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="submitForm.address" label="Supplier address"/>
+              <q-input dark color="white" dense v-model="submitForm.address" :label="$t('address')"/>
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="email" dark color="white" dense v-model="submitForm.email" label="Supplier email" />
+              <q-input type="email" dark color="white" dense v-model="submitForm.email" :label="$t('email')" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="text" dark color="white" dense v-model="submitForm.phone1" label="Supplier phone 1"
+              <q-input type="text" dark color="white" dense v-model="submitForm.phone1" :label="$t('phone1')"
                 :rules="[val => val && val.length > 0 || 'Please enter supplier phone 1']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="text" dark color="white" dense v-model="submitForm.phone2" label="Supplier phone 2"/>
+              <q-input type="text" dark color="white" dense v-model="submitForm.phone2" :label="$t('phone2')"/>
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="textarea" dark color="white" dense v-model="submitForm.note" label="Note"/>
+              <q-input type="textarea" dark color="white" dense v-model="submitForm.note" :label="$t('note')"/>
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" label="Is Active" />
+              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
         </q-list>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
+        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">{{ $t('save') }}</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>

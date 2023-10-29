@@ -606,7 +606,7 @@
       </q-card>
 
       <q-dialog v-model="showAddNewDialog" position="right">
-        <forgot-pass :title="'Reset Password'" :editItem="user" @closeModal="showAddNewDialog = false" />
+        <forgot-pass :title="$t('reset_password')" :editItem="user" @closeModal="showAddNewDialog = false" />
       </q-dialog>
 
       <div class="q-pa-md q-gutter-sm">

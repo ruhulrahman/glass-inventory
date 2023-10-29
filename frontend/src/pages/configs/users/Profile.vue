@@ -11,7 +11,7 @@
           <q-card-section style="min-width: 600px !important;overflow-x: hidden;">
             <div class="text-body2 text-justify row">
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Name</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('name') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -20,7 +20,7 @@
                     <span class="block">{{editItem.name}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Email</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('email') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -29,7 +29,7 @@
                     <span class="block">{{editItem.email}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Type</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('user_type') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>
@@ -38,7 +38,7 @@
                     <span class="block">{{editItem.user_type}}</span>
                 </div>
                 <div class="col-5">
-                    <span class="block" style="margin-left: 2rem;">Status</span>
+                    <span class="block" style="margin-left: 2rem;">{{ $t('status') }}</span>
                 </div>
                 <div class="col-1">
                     <span>:</span>

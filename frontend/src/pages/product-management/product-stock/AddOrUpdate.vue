@@ -4,8 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }}
-              Product Stock</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? $t('update') : $t('add_new_product_stock') }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -18,7 +17,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.product_type_id" label="Product Type"
+              <q-select dark clearable color="white" v-model="submitForm.product_type_id" :label="$t('product_type')"
                 :options="dropdownList.productTypes" emit-value map-options
                 :rules="[val => val > 0 || 'Please select type']">
               </q-select>
@@ -27,7 +26,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.category_id" label="Category" :options="options"
+              <q-select dark clearable color="white" v-model="submitForm.category_id" :label="$t('category')" :options="options"
                 use-input @filter="filterFn" emit-value map-options :rules="[val => val > 0 || 'Please select category']">
               </q-select>
             </q-item-section>
@@ -35,7 +34,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.color_id" label="Color"
+              <q-select dark clearable color="white" v-model="submitForm.color_id" :label="$t('color')"
                 :options="dropdownList.productColors" emit-value map-options
                 :rules="[val => val > 0 || 'Please select color']">
               </q-select>
@@ -44,7 +43,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.unit_id" label="Unit"
+              <q-select dark clearable color="white" v-model="submitForm.unit_id" :label="$t('unit')"
                 :options="dropdownList.productUnits" emit-value map-options
                 :rules="[val => val > 0 || 'Please select unit']">
               </q-select>
@@ -53,7 +52,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" label="Unit Price"
+              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" :label="$t('unit_price')"
                 :rules="[val => val > 0 || 'Please enter price']" />
             </q-item-section>
           </q-item>
@@ -61,13 +60,13 @@
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
               <q-input type="number" :disable="submitForm.id ? true : false" min="0" dark color="white" dense v-model="submitForm.quantity"
-                label="Product quantity" :rules="[val => val > 0 || 'Please enter quantity']" />
+              :label="$t('product_quantity')" :rules="[val => val > 0 || 'Please enter quantity']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label caption class="text-green">Total Cost</q-item-label>
+              <q-item-label caption class="text-green">{{ $t('total_cost') }}</q-item-label>
               <q-item-label>{{ totalCost }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -75,13 +74,13 @@
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
               <q-input type="number" min="0" dark color="blue" dense v-model="submitForm.selling_price"
-                label="Product selling price" :rules="[val => val > 0 || 'Please enter selling price']" />
+                :label="$t('product_selling_price')" :rules="[val => val > 0 || 'Please enter selling price']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select dark clearable color="white" v-model="submitForm.supplier_id" label="Supplier"
+              <q-select dark clearable color="white" v-model="submitForm.supplier_id" :label="$t('supplier')"
                 :options="dropdownList.suppliers" emit-value map-options>
               </q-select>
             </q-item-section>
@@ -89,7 +88,7 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" label="Is Active" />
+              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
         </q-list>

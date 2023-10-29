@@ -5,16 +5,16 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Benefits" icon="widgets" to="/benefit-list" />
-      <q-breadcrumbs-el>Benefit & Loss Details</q-breadcrumbs-el>
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('sales_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('benefit_and_loss')" icon="widgets" to="/benefit-or-loss-list"/>
+      <q-breadcrumbs-el :label="$t('benefit_and_loss_details')"/>
     </q-breadcrumbs>
 
     <q-card class="no-shadow q-mb-xl" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Benefit & Loss Details</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('benefit_and_loss_details') }}</div>
           <div class="col-2 text-right">
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
@@ -30,7 +30,7 @@
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Customer</q-item-label>
+              <q-item-label>{{ $t('customer') }}</q-item-label>
               <q-item-label caption>{{ submitForm.customer ? submitForm.customer.name : '' }}</q-item-label>
               <q-item-label caption>{{ submitForm.customer ? submitForm.customer.phone : '' }}</q-item-label>
             </q-item-section>
@@ -38,14 +38,14 @@
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Code</q-item-label>
+              <q-item-label>{{ $t('invoice_code') }}</q-item-label>
               <q-item-label caption><router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(submitForm.id)}`">#{{ submitForm.invoice_code }}</router-link></q-item-label>
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Date</q-item-label>
+              <q-item-label>{{ $t('invoice_date') }}</q-item-label>
               <q-item-label caption>{{ dDate(submitForm.invoice_date) }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -102,7 +102,7 @@
           <template v-slot:bottom-row>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="7" class="text-right">
-                <b>Total</b>
+                <b>{{ $t('total') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-badge color="black">{{ totalAmount }}</q-badge>
@@ -192,18 +192,18 @@ export default {
   computed: {
     columns: function () {
       return [
-        { name: "sl", field: "sl", label: "SL.", align: "left" },
-        { name: "product_type", field: "product_type", label: "Product Type", align: "left" },
-        { name: "category", align: "center", label: "Category", field: "category", align: "left" },
-        { name: "color", label: "Color", field: "color", align: "left" },
-        { name: "unit", label: "Unit", field: "unit", align: "left" },
-        { name: "price", label: "Unit price", field: "price", align: "center" },
-        { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
-        { name: "amount", label: "Amount", field: "amount", align: "right" },
-        { name: "benefit_per_product", label: "Benefit per product", field: "benefit_per_product", align: "right" },
-        { name: "benefit_amount", label: "Benefit amount", field: "benefit_amount", align: "right" },
-        { name: "loss_per_product", label: "Loss per product", field: "loss_per_product", align: "right" },
-        { name: "loss_amount", label: "Loss amount", field: "loss_amount", align: "right" },
+        { name: "sl", field: "sl", label: this.$t('sl'), align: "left" },
+        { name: "product_type", field: "product_type", label: this.$t('product_type'), align: "left" },
+        { name: "category", align: "center", label: this.$t('category'), field: "category", align: "left" },
+        { name: "color", label: this.$t('color'), field: "color", align: "left" },
+        { name: "unit", label: this.$t('unit'), field: "unit", align: "left" },
+        { name: "price", label: this.$t('unit_price'), field: "price", align: "center" },
+        { name: "quantity", label: this.$t('quantity'), field: "quantity", align: "center" },
+        { name: "amount", label: this.$t('amount'), field: "amount", align: "right" },
+        { name: "benefit_per_product", label: this.$t('benefit_per_product'), field: "benefit_per_product", align: "right" },
+        { name: "benefit_amount", label: this.$t('benefit_amount'), field: "benefit_amount", align: "right" },
+        { name: "loss_per_product", label: this.$t('loss_per_product'), field: "loss_per_product", align: "right" },
+        { name: "loss_amount", label: this.$t('loss_amount'), field: "loss_amount", align: "right" },
       ]
     },
     totalAmount: function () {

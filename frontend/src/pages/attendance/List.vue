@@ -4,32 +4,22 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Attendance" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('employee_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('attendance_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Attendance List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('attendance_list') }}</div>
         </div>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
-        <q-table
-          :dense="$q.screen.lt.md"
-          flat
-          bordered
-          class="no-shadow wait_me"
-          :rows="tableRow"
-          :columns="columns"
-          row-key="name"
-          no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter"
-        >
+        <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:top-right>
             <!-- <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-item-section
@@ -50,16 +40,8 @@
         </q-item> -->
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <q-item-section style="font-size: 12px !important">
-                <q-select
-                  filled
-                  dense
-                  clearable
-                  v-model="search_query.employee_id"
-                  label="Employee"
-                  :options="employees"
-                  emit-value map-options use-input
-                  @filter="employeefilter"
-                >
+                <q-select filled dense clearable v-model="search_query.employee_id" :label="$t('employee_name')" :options="employees"
+                  emit-value map-options use-input @filter="employeefilter">
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -72,17 +54,8 @@
             </q-item>
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <q-item-section style="font-size: 12px !important">
-                <q-select
-                  filled
-                  dense
-                  clearable
-                  v-model="search_query.status_type"
-                  label="Type"
-                  :options="attendanceStatusList"
-                  emit-value
-                  map-options
-                  use-input
-                >
+                <q-select filled dense clearable v-model="search_query.status_type" :label="$t('type')"
+                  :options="attendanceStatusList" emit-value map-options use-input>
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -96,21 +69,17 @@
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <q-item-section>
                 <div class="d-flex q-mb-sm">
-                  <span class="q-mr-sm">Attentdance Date</span>
-                  <flat-pickr filled dense class="text-black bg-grey-3 q-m-lg" style="padding: 10px; border:none" v-model="search_query.attendance_date" :config="configFlatPickr" placeholder="Select Date"></flat-pickr>
+                  <span class="q-mr-sm">{{ $t('attendance_date') }}</span>
+                  <flat-pickr filled dense class="text-black bg-grey-3 q-m-lg" style="padding: 10px; border:none"
+                    v-model="search_query.attendance_date" :config="configFlatPickr"
+                    placeholder="Select Date"></flat-pickr>
                 </div>
               </q-item-section>
             </q-item>
             <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <q-item-section>
-                <q-btn
-                  glossy
-                  @click="getListData()"
-                  flat
-                  color="white"
-                  class="bg-green-7"
-                  style="text-transform: capitalize; padding: 0px 10px 0 19px"
-                >
+                <q-btn glossy @click="getListData()" flat color="white" class="bg-green-7"
+                  style="text-transform: capitalize; padding: 0px 10px 0 19px">
                   Search
                 </q-btn>
               </q-item-section>
@@ -151,28 +120,18 @@
                 {{ props.row.attendance_date }}
               </q-td>
               <q-td key="attendance" :props="props">
-                <q-radio color="green" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Present" label="Present" />
-                <q-radio color="red" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Absent" label="Absent" />
-                <q-radio color="orange" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Leave" label="Leave" />
-                <q-radio color="teal" size="xs" v-model="props.row.attendance" @click="change_status(props.row)" val="Holiday" label="Holiday" />
+                <q-radio color="green" size="xs" v-model="props.row.attendance" @click="change_status(props.row)"
+                  val="Present" label="Present" />
+                <q-radio color="red" size="xs" v-model="props.row.attendance" @click="change_status(props.row)"
+                  val="Absent" label="Absent" />
+                <q-radio color="orange" size="xs" v-model="props.row.attendance" @click="change_status(props.row)"
+                  val="Leave" label="Leave" />
+                <q-radio color="teal" size="xs" v-model="props.row.attendance" @click="change_status(props.row)"
+                  val="Holiday" label="Holiday" />
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn
-                  @click="detailsData(props.row)"
-                  class="text-blue"
-                  icon="visibility"
-                  size="sm"
-                  flat
-                  dense
-                ></q-btn>
-                <q-btn
-                  @click="deleteData(props.row)"
-                  icon="delete"
-                  size="sm"
-                  class="q-ml-sm"
-                  flat
-                  dense
-                />
+                <q-btn @click="detailsData(props.row)" class="text-blue" icon="visibility" size="sm" flat dense></q-btn>
+                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -196,23 +155,14 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn
-            flat
-            label="OK"
-            color="primary"
-            @click="getListData()"
-            v-close-popup
-          />
+          <q-btn flat label="OK" color="primary" @click="getListData()" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <div class="q-pa-md q-gutter-sm">
       <q-dialog v-model="showDetailsDialog">
-        <attendance-details
-          :title="editItem.name + ' Attendance list'"
-          :editItem="editItem"
-          @closeModal="showDetailsDialog = false"
-        />
+        <attendance-details :title="editItem.name + ' Attendance list'" :editItem="editItem"
+          @closeModal="showDetailsDialog = false" />
       </q-dialog>
     </div>
   </q-page>
@@ -232,28 +182,6 @@ import AttendanceDetails from "./Details.vue";
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
-const columns = [
-  {
-    name: "sl",
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "name",
-    label: "Employee Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  { name: "attendance_date", label: "Attendance Date", field: "attendance_date", align: "center" },
-  { name: "attendance", label: "Status", field: "attendance", align: "center" },
-  { name: "action", label: "Action", field: "action", align: "center" },
-];
-
 export default {
   name: "AttendanceList",
   mixins: [helperMixin],
@@ -269,7 +197,6 @@ export default {
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -320,8 +247,17 @@ export default {
         return [];
       }
     },
+    columns: function () {
+      return [
+        { name: "sl", required: true, label: this.$t('sl'), align: "left", field: (row) => row.sl, format: (val) => `${val}`, sortable: true },
+        { name: "name", required: true, label: this.$t('employee_name'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
+        { name: "attendance_date", label: this.$t('attendance_date'), field: "attendance_date", align: "center" },
+        { name: "attendance", label: this.$t('status'), field: "attendance", align: "center" },
+        { name: "action", label: this.$t('action'), field: "action", align: "center" },
+      ];
+    }
   },
-  created () {
+  created() {
     // this.getListData();
   },
   mounted() {
@@ -344,7 +280,7 @@ export default {
       let jq = ref.jq();
       // console.log('this.search_input.date', this.search_query.date)
       if (!this.search_query.attendance_date) {
-        return ;
+        return;
       }
 
       try {
@@ -354,7 +290,7 @@ export default {
           ref.search_query
         );
         ref.calander = false;
-        if(res.data.data != null && res.data.data.length){
+        if (res.data.data != null && res.data.data.length) {
           this.listData = res.data.data.map((item) => {
             item.attendance_date = this.dDate(item.attendance_date);
             return item;
@@ -369,7 +305,7 @@ export default {
 
           this.employees2 = this.employees
 
-        }else{
+        } else {
           this.listData = []
           ref.employees = []
         }
@@ -389,7 +325,7 @@ export default {
           ref.search_query
         );
         ref.calander = false;
-        if(res.data.data.length > 0){
+        if (res.data.data.length > 0) {
           this.listData = res.data.data.map((item) => {
             item.present = item.present == "Yes" ? "Present" : "Absent";
             item.date = item.date
@@ -407,7 +343,7 @@ export default {
             };
           });
 
-        }else{
+        } else {
           this.listData = []
           ref.employees = []
         }
@@ -467,24 +403,24 @@ export default {
       let ref = this;
       let jq = ref.jq();
 
-        try {
-            this.loading = true;
-            let res = await jq.post(
-              ref.apiUrl("api/v1/admin/ajax/update_employee_attendance"),
-              item
-            );
-            await this.getListData();
-            this.notify(res.msg);
-            // this.listData = res.data.data.map((item) => {
-            //   item.present = "Absent";
-            //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
-            //   return item;
-            // });
-        } catch (err) {
-          this.notify(this.err_msg(err), "negative");
-        } finally {
-          this.loading = false;
-        }
+      try {
+        this.loading = true;
+        let res = await jq.post(
+          ref.apiUrl("api/v1/admin/ajax/update_employee_attendance"),
+          item
+        );
+        await this.getListData();
+        this.notify(res.msg);
+        // this.listData = res.data.data.map((item) => {
+        //   item.present = "Absent";
+        //   item.date = ref.dDate(new Date().toISOString().slice(0, 10));
+        //   return item;
+        // });
+      } catch (err) {
+        this.notify(this.err_msg(err), "negative");
+      } finally {
+        this.loading = false;
+      }
     },
     get_date() {
       var ref = this;
@@ -521,6 +457,7 @@ export default {
   font-size: 1em;
   padding: 6px 21px !important;
 }
+
 .swal2-cancel {
   border: 0;
   border-radius: 0.25em;

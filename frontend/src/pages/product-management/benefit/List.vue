@@ -5,9 +5,9 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Benefit & Loss" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('sales_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('benefit_and_loss')" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
@@ -15,8 +15,8 @@
         <div class="">
           <div style="max-width: 600px">
             <q-tabs v-model="tab" align="justify" narrow-indicator class="q-mb-xs">
-              <q-tab class="text-purple" name="invoice_wise" label="Invoice Wise" />
-              <q-tab class="text-orange" name="product_wise" label="Product Wise" />
+              <q-tab class="text-purple" name="invoice_wise" :label="$t('invoice_wise')" />
+              <q-tab class="text-orange" name="product_wise" :label="$t('product_wise')" />
               <!-- <q-tab class="text-orange" name="item_wise" label="Item Wise" /> -->
             </q-tabs>
           </div>
@@ -102,7 +102,7 @@
                   <q-list class="row q-mt-md">
                     <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.product_type_id" label="Product Type"
+                        <q-select filled dense clearable v-model="search.product_type_id" :label="$t('product_type')"
                           :options="dropdownList.productTypes" emit-value map-options use-input
                           @filter="productTypefilter">
                           <template v-slot:no-option>
@@ -117,7 +117,7 @@
                     </q-item>
                     <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.category_id" label="Product Category"
+                        <q-select filled dense clearable v-model="search.category_id" :label="$t('product_category')"
                           :options="dropdownList.categories" emit-value map-options use-input @filter="categoryfilter">
                           <template v-slot:no-option>
                             <q-item>
@@ -131,7 +131,7 @@
                     </q-item>
                     <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.color_id" label="Product Color"
+                        <q-select filled dense clearable v-model="search.color_id" :label="$t('product_color')"
                           :options="dropdownList.productColors" emit-value map-options use-input @filter="colorfilter">
                           <template v-slot:no-option>
                             <q-item>
@@ -145,7 +145,7 @@
                     </q-item>
                     <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-                        <q-select filled dense clearable v-model="search.unit_id" label="Product Unit"
+                        <q-select filled dense clearable v-model="search.unit_id" :label="$t('product_unit')"
                           :options="dropdownList.productUnits" emit-value map-options use-input @filter="unitfilter">
                           <template v-slot:no-option>
                             <q-item>
@@ -160,13 +160,14 @@
                     <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <q-item-section>
                         <div class="d-flex q-mb-sm">
-                          <span class="q-mr-sm">Invoice Date</span>
+                          <span class="q-mr-sm">{{ $t('invoice_date') }}</span>
                           <q-btn icon="event" round color="primary">
                             <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale"
-                          anchor="bottom middle" self="center middle">
-                          Select Invoice Date
-                        </q-tooltip>
-                            <q-popup-proxy @before-show="updateProxy" cover transition-show="scale" transition-hide="scale">
+                              anchor="bottom middle" self="center middle">
+                              Select Invoice Date
+                            </q-tooltip>
+                            <q-popup-proxy @before-show="updateProxy" cover transition-show="scale"
+                              transition-hide="scale">
                               <q-date v-model="search.invoice_date" range>
                                 <div class="row items-center justify-end q-gutter-sm">
                                   <q-btn label="Cancel" color="primary" flat v-close-popup />
@@ -324,7 +325,8 @@
     </q-card>
 
     <q-dialog fullWidth v-model="showDetailDialog">
-      <detail-dialog :listData="detailItems" @reloadListData="getInvoiceWiseList" @closeModal="showDetailDialog = false" />
+      <detail-dialog :listData="detailItems" @reloadListData="getInvoiceWiseList"
+        @closeModal="showDetailDialog = false" />
     </q-dialog>
 
   </q-page>
@@ -340,29 +342,6 @@ import DetailDialog from "./DetailDialog.vue"
 // import { VueFlatPickr } from 'datetimerangepicker'
 
 const metaData = { title: 'Benefit List' }
-
-const columns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  { name: "invoice_code", field: "invoice_code", label: "Invoice Code", sortable: true, align: "left" },
-  { name: "invoice_date", field: "invoice_date", label: "Invoice Date", sortable: true, align: "left" },
-  { name: "benefit_amount", field: "benefit_amount", label: "Benefit Amount", sortable: true, align: "right" },
-  { name: "loss_amount", field: "loss_amount", label: "Loss Amount", sortable: true, align: "right" },
-  { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
-];
-
-const productWisecolumns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  { name: "invoice_date", field: "invoice_date", label: "Invoice Date", sortable: true, align: "left" },
-  { name: "product_type_name", field: "product_type_name", label: "Product Name", sortable: true, align: "left" },
-  { name: "category_name", field: "category_name", label: "Category", sortable: true, align: "left" },
-  { name: "color_name", field: "color_name", label: "Color", sortable: true, align: "left" },
-  { name: "unit_name", field: "unit_name", label: "Unit", sortable: true, align: "left" },
-  { name: "benefit_per_product", field: "benefit_per_product", label: "Benefit Per Product", sortable: true, align: "right" },
-  { name: "benefit_amount", field: "benefit_amount", label: "Benefit Amount", sortable: true, align: "right" },
-  { name: "loss_per_product", field: "loss_per_product", label: "Loss Per Product", sortable: true, align: "right" },
-  { name: "loss_amount", field: "loss_amount", label: "Loss Amount", sortable: true, align: "right" },
-  { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
-];
 
 const itemWiseColumns = [
   { name: "item_name", field: "item_name", label: "Item Name", sortable: true, align: "left" },
@@ -385,8 +364,6 @@ export default ({
     return {
       filter: ref(""),
       show_filter,
-      columns,
-      productWisecolumns,
       itemWiseColumns,
       tab: ref('invoice_wise')
     };
@@ -453,6 +430,31 @@ export default ({
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "invoice_code", field: "invoice_code", label: this.$t('invoice_code'), sortable: true, align: "left" },
+        { name: "invoice_date", field: "invoice_date", label: this.$t('invoice_date'), sortable: true, align: "left" },
+        { name: "benefit_amount", field: "benefit_amount", label: this.$t('benefit_amount'), sortable: true, align: "right" },
+        { name: "loss_amount", field: "loss_amount", label: this.$t('loss_amount'), sortable: true, align: "right" },
+        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" },
+      ];
+    },
+    productWisecolumns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "invoice_date", field: "invoice_date", label: this.$t('invoice_date'), sortable: true, align: "left" },
+        { name: "product_type_name", field: "product_type_name", label: this.$t('product_type'), sortable: true, align: "left" },
+        { name: "category_name", field: "category_name", label: this.$t('category'), sortable: true, align: "left" },
+        { name: "color_name", field: "color_name", label: this.$t('color'), sortable: true, align: "left" },
+        { name: "unit_name", field: "unit_name", label: this.$t('unit'), sortable: true, align: "left" },
+        { name: "benefit_per_product", field: "benefit_per_product", label: this.$t('benefit_per_product'), sortable: true, align: "right" },
+        { name: "benefit_amount", field: "benefit_amount", label: this.$t('benefit_amount'), sortable: true, align: "right" },
+        { name: "loss_per_product", field: "loss_per_product", label: this.$t('loss_per_product'), sortable: true, align: "right" },
+        { name: "loss_amount", field: "loss_amount", label: this.$t('loss_amount'), sortable: true, align: "right" },
+        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" },
+      ];
     },
     productWiseTableRow: function () {
       if (this.productWiselistData.length) {
@@ -577,8 +579,8 @@ export default ({
       try {
         this.loading = true
         const params = Object.assign(this.search, {
-          invoice_start_date: typeof(this.search.invoice_date) == 'object' ? this.search.invoice_date.from : this.search.invoice_date,
-          invoice_end_date: typeof(this.search.invoice_date) == 'object' ? this.search.invoice_date.to : this.search.invoice_date,
+          invoice_start_date: typeof (this.search.invoice_date) == 'object' ? this.search.invoice_date.from : this.search.invoice_date,
+          invoice_end_date: typeof (this.search.invoice_date) == 'object' ? this.search.invoice_date.to : this.search.invoice_date,
         })
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_benefit_and_loss_by_product_wise'), params);
         this.productWiselistData = res.data.data

@@ -4,19 +4,19 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="User" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('company_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('user_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">User List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('user_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New User
+              {{ $t('add_new_user') }}
             </q-btn>
           </div>
         </div>
@@ -25,10 +25,8 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:top-right>
             <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
@@ -69,11 +67,12 @@
                 {{ props.row.email }}
               </q-td>
               <q-td key="user_type" :props="props">
-                  {{ props.row.user_type }}
+                {{ props.row.user_type }}
               </q-td>
               <q-td key="photo" :props="props">
-                  <img v-if="props.row.photo != 'NA'" style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/photo/'+props.row.photo)">
-                  <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+                <img v-if="props.row.photo != 'NA'" style="width: 50px;border-radius: 50px;"
+                  :src="apiUrl('uploads/photo/' + props.row.photo)">
+                <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
@@ -85,24 +84,18 @@
         </q-table>
       </q-card-section>
     </q-card>
-      <q-dialog v-model="showAddNewDialog" position="right">
-        <create-user
-          :title="editItem.id ? 'Update User' : 'Create User'"
-          :companies="companies" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
+    <q-dialog v-model="showAddNewDialog" position="right">
+      <create-user :title="editItem.id ? $t('update') : $t('add_new_user')" :companies="companies" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
+
+    <div class="q-pa-md q-gutter-sm">
+      <q-dialog v-model="showDetailsDialog">
+
+        <details-component :title="editItem.name + ' Details'" :editItem="editItem"
+          @closeModal="showDetailsDialog = false" />
       </q-dialog>
-
-      <div class="q-pa-md q-gutter-sm">
-        <q-dialog v-model="showDetailsDialog">
-
-        <details-component
-          :title="editItem.name+' Details'"
-          :editItem="editItem"
-          @closeModal="showDetailsDialog = false"
-        />
-        </q-dialog>
-      </div>
+    </div>
 
   </q-page>
 </template>
@@ -119,44 +112,6 @@ const metaData = {
 import createUser from "./AddOrUpdate.vue";
 import DetailsComponent from "./Profile.vue";
 
-const columns = [
-    {
-    name: "sl",
-    required: true,
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "name",
-    required: true,
-    label: "Company Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "username",
-    required: true,
-    align: "center",
-    label: "Username",
-    field: "username"
-  },
-  { name: "email", label: "Email", field: "email"},
-  { name: "user_type", label: "User Type", field: "user_type" },
-  { name: "photo", label: "Photo", field: "photo" },
-  {
-    name: "action",
-    label: "Action",
-    field: "action",
-    sortable: false,
-    align: "center",
-  },
-];
-
 export default {
   name: "CompanyList",
   mixins: [helperMixin],
@@ -171,7 +126,6 @@ export default {
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -189,7 +143,7 @@ export default {
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
-          item.sl = i+1
+          item.sl = i + 1
           item.name = item.name
           item.username = item.username
           item.emaill = item.emaill
@@ -200,6 +154,17 @@ export default {
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "name", required: true, label: this.$t('name'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
+        { name: "username", required: true, align: "center", label: this.$t('username'), field: "username" },
+        { name: "email", label: this.$t('email'), field: "email" },
+        { name: "user_type", label: this.$t('user_type'), field: "user_type" },
+        { name: "photo", label: this.$t('photo'), field: "photo" },
+        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" }
+      ];
     }
   },
   mounted() {
@@ -207,7 +172,7 @@ export default {
     // this.getCompanytList();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -257,7 +222,7 @@ export default {
         ref.wait_me(".wait_me", "hide");
       }
     },
-    detailsData: async function(item){
+    detailsData: async function (item) {
       this.editItem = this.clone_object(item)
       // console.log(this.editItem);
       this.showDetailsDialog = true
@@ -268,23 +233,24 @@ export default {
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

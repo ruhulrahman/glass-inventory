@@ -39,7 +39,7 @@
               color="white"
               round
               v-model="customer.name"
-              label="Full Name *"
+              :label="$t('name')"
               :rules="[(val) => (val && val != '') || 'Please enter your name']"
             />
           </q-item-section>
@@ -53,7 +53,7 @@
               color="white"
               round
               v-model="customer.email"
-              label="Email"
+              :label="$t('email')"
             />
           </q-item-section>
         </q-item>
@@ -65,7 +65,7 @@
               dark
               color="white"
               v-model="customer.phone"
-              label="Phone *"
+              :label="$t('phone')"
               :rules="[(val) => (val && val != '') || 'Please enter your phone']"
             />
           </q-item-section>
@@ -78,7 +78,7 @@
               dark
               color="white"
               v-model="customer.website"
-              label="Website"
+              :label="$t('website')"
             />
           </q-item-section>
         </q-item>
@@ -93,14 +93,14 @@
               dark
               color="white"
               v-model="customer.address"
-              label="Present Address"
+              :label="$t('address')"
             />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="customer.is_active" val="md" label="Is Active" />
+              <q-toggle color="green" size="md" v-model="customer.is_active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
       </q-card-section>
@@ -110,7 +110,7 @@
           type="submit"
           class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
           >
-          {{editItem.id ? 'Update' : 'Save'}}
+          {{ $t('save') }}
           </q-btn
         >
       </q-card-actions>

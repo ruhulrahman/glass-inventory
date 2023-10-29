@@ -4,19 +4,19 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Company Bank" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('company_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('company_bank_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Company Bank List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('company_bank_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Bank
+              {{ $t('add_new_bank') }}
             </q-btn>
           </div>
         </div>
@@ -25,10 +25,8 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:top-right>
             <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
@@ -61,25 +59,25 @@
               </q-td>
               <q-td key="bank_name" :props="props">
                 <span>{{ props.row.bank_name }}</span>
-                <span v-if="props.row.branch_name"><br/></span>
+                <span v-if="props.row.branch_name"><br /></span>
                 <span>{{ props.row.branch_name }} Branch</span>
-                <span v-if="props.row.address"><br/></span>
+                <span v-if="props.row.address"><br /></span>
                 <span>{{ props.row.address }}</span>
               </q-td>
               <!-- <q-td key="branch_name" :props="props">
                 {{ props.row.branch_name }}
               </q-td> -->
               <q-td key="account_name" :props="props">
-                  {{ props.row.account_name }}
+                {{ props.row.account_name }}
               </q-td>
               <q-td key="account_number" :props="props">
-                  {{ props.row.account_number }}
+                {{ props.row.account_number }}
               </q-td>
               <q-td key="swift_code" :props="props">
-                  {{ props.row.swift_code }}
+                {{ props.row.swift_code }}
               </q-td>
               <q-td key="routing_number" :props="props">
-                  {{ props.row.routing_number }}
+                {{ props.row.routing_number }}
               </q-td>
               <q-td key="status" :props="props">
                 <q-badge :color="props.row.status_color">
@@ -95,13 +93,10 @@
         </q-table>
       </q-card-section>
     </q-card>
-      <q-dialog v-model="showAddNewDialog" position="right">
-        <create-bank
-          :title="editItem.id ? 'Update Bank' : 'Create Bank'"
-          :companies="companies" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
-      </q-dialog>
+    <q-dialog v-model="showAddNewDialog" position="right">
+      <create-bank :title="editItem.id ? $t('update') : $t('add_new_bank')" :companies="companies" :editItem="editItem"
+        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -116,46 +111,6 @@ const metaData = {
 };
 import createBank from "./AddOrUpdate.vue";
 
-const columns = [
-  {
-    name: "sl",
-    required: true,
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "bank_name",
-    required: true,
-    label: "Bank Info",
-    align: "left",
-    field: (row) => row.bank_name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  // {
-  //   name: "branch_name",
-  //   required: true,
-  //   align: "center",
-  //   label: "Branch Name",
-  //   field: "branch_name"
-  // },
-  { name: "account_name", label: "Account Name", field: "account_name"},
-  { name: "account_number", label: "Account Number", field: "account_number"},
-  { name: "swift_code", label: "Swift Code", field: "swift_code"},
-  { name: "routing_number", label: "Routing Number", field: "routing_number"},
-  { name: "status", label: "status", field: "status"},
-  {
-    name: "action",
-    label: "Action",
-    field: "action",
-    sortable: false,
-    align: "center",
-  },
-];
-
 export default {
   name: "CompanyList",
   mixins: [helperMixin],
@@ -169,7 +124,6 @@ export default {
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -186,7 +140,7 @@ export default {
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
-          item.sl = i+1
+          item.sl = i + 1
           item.bank_name = item.bank_name
           item.branch_name = item.branch_name
           item.account_name = item.account_name
@@ -202,6 +156,18 @@ export default {
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", required: true, label: this.$t('sl'), align: "left", field: (row) => row.sl, format: (val) => `${val}`, sortable: true },
+        { name: "bank_name", required: true, label: this.$t('bank_info'), align: "left", field: (row) => row.bank_name, format: (val) => `${val}`, sortable: true },
+        { name: "account_name", label: this.$t('account_name'), field: "account_name" },
+        { name: "account_number", label: this.$t('account_number'), field: "account_number" },
+        { name: "swift_code", label: this.$t('swift_code'), field: "swift_code" },
+        { name: "routing_number", label: this.$t('routing_number'), field: "routing_number" },
+        { name: "status", label: this.$t('status'), field: "status" },
+        { name: "action", label: this.$t('action'), field: "action", sortable: false, align: "center" },
+      ];
     }
   },
   mounted() {
@@ -209,7 +175,7 @@ export default {
     // this.getCompanytList();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -265,23 +231,24 @@ export default {
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

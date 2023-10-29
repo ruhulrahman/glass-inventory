@@ -5,16 +5,16 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Sales" icon="widgets" to="/sale-list" />
-      <q-breadcrumbs-el>Invoice Details</q-breadcrumbs-el>
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('sales_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('sales')" icon="widgets" to="/sale-list" />
+      <q-breadcrumbs-el>{{ $t('invoice_details') }}</q-breadcrumbs-el>
     </q-breadcrumbs>
 
     <q-card class="no-shadow q-mb-xl" bordered id="element-to-convert">
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Invoice Details</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('invoice_details') }}</div>
           <div class="col-2 text-right">
 
             <!-- <q-btn glossy @click="printDocument()" flat color="white" class="bg-secondary d-block" -->
@@ -37,7 +37,7 @@
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Customer</q-item-label>
+              <q-item-label>{{ $t('customer') }}</q-item-label>
               <q-item-label caption>{{ submitForm.customer ? submitForm.customer.name : '' }}</q-item-label>
               <q-item-label caption>{{ submitForm.customer ? submitForm.customer.phone : '' }}</q-item-label>
             </q-item-section>
@@ -58,14 +58,14 @@
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Code</q-item-label>
+              <q-item-label>{{ $t('invoice_code') }}</q-item-label>
               <q-item-label caption>#{{ submitForm.invoice_code }}</q-item-label>
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Date</q-item-label>
+              <q-item-label>{{ $t('invoice_date') }}</q-item-label>
               <q-item-label caption>{{ dDate(submitForm.invoice_date) }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -111,7 +111,7 @@
           <template v-slot:bottom-row>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="7" class="text-right">
-                <b>Sub-Total</b>
+                <b>{{ $t('sub_total') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ subTotalAmount }}
@@ -119,7 +119,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Discount</b>
+                <b>{{ $t('discount') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.discount_amount }}
@@ -127,7 +127,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Vat ({{ submitForm.vat_percentage }}%)</b>
+                <b>{{ $t('vat') }} ({{ submitForm.vat_percentage }}%)</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.vat_amount }}
@@ -135,7 +135,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Tax ({{ submitForm.tax_percentage }}%)</b>
+                <b>{{ $t('tax') }} ({{ submitForm.tax_percentage }}%)</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.tax_amount }}
@@ -143,7 +143,7 @@
             </q-tr>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="7" class="text-right">
-                <b>Total Payable Amount</b>
+                <b>{{ $t('total_payable_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.total_payable_amount }}
@@ -151,7 +151,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Paid Amount</b>
+                <b>{{ $t('paid_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.paid_amount }}
@@ -159,7 +159,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Due Amount</b>
+                <b>{{ $t('due_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-badge :color="submitForm.due_amount > 0 ? 'red' : 'black'">
@@ -171,7 +171,7 @@
               <q-td :colspan="showDueAmount ? '7' : '8'" class="text-right">
                 <q-btn glossy @click="showDueAmount = !showDueAmount" flat color="white" class="bg-red d-block"
                   style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                  Pay Now
+                  {{ $t('pay_now') }}
                 </q-btn>
               </q-td>
               <q-td v-if="showDueAmount" class="text-right">
@@ -181,7 +181,7 @@
             </q-tr>
             <q-tr v-if="showDueAmount">
               <q-td colspan="7" class="text-right">
-                <b>Payable Later</b>
+                <b>{{ $t('payable_later') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.due_amount - pay_due_amount }}{{ submitForm.due_amount - pay_due_amount ? '' : '.00' }}
@@ -189,7 +189,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>Payment Status</b>
+                <b>{{ $t('payment_status') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-select :bg-color="submitForm.due_amount > 0 ? 'red-3' : 'green-3'"
@@ -202,7 +202,7 @@
               <q-td colspan="8" class="text-right">
                 <q-btn glossy @click="saveInvoicePayment()" flat color="white" class="bg-green-7 d-block"
                   style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                  Payment Update
+                  {{ $t('payment_update') }}
                 </q-btn>
               </q-td>
             </q-tr>

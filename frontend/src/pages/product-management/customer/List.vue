@@ -4,19 +4,19 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Customers" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('product_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('customer_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Customer List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('customer_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Customer
+              {{ $t('add_new_customer') }}
             </q-btn>
           </div>
         </div>
@@ -25,10 +25,8 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
@@ -72,15 +70,15 @@
                 {{ props.row.phone }}
               </q-td>
               <q-td key="address" :props="props">
-                  {{ props.row.address }}
+                {{ props.row.address }}
               </q-td>
               <q-td key="website" :props="props">
-                  {{ props.row.website }}
+                {{ props.row.website }}
               </q-td>
               <q-td key="status" :props="props">
-                  <q-badge :color="props.row.status_color">
-                    {{ props.row.status }}
-                  </q-badge>
+                <q-badge :color="props.row.status_color">
+                  {{ props.row.status }}
+                </q-badge>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
@@ -91,13 +89,10 @@
         </q-table>
       </q-card-section>
     </q-card>
-      <q-dialog v-model="showAddNewDialog" position="right">
-        <create-customer
-          :title="editItem.id ? 'Update Customer' : 'Create Customer'"
-          :companies="companies" :editItem="editItem"
-          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
-        />
-      </q-dialog>
+    <q-dialog v-model="showAddNewDialog" position="right">
+      <create-customer :title="editItem.id ? $t('update_customer') : $t('add_new_customer')" :companies="companies"
+        :editItem="editItem" @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -112,44 +107,6 @@ const metaData = {
 };
 import createCustomer from "./AddOrUpdate.vue";
 
-const columns = [
-    {
-    name: "sl",
-    required: true,
-    label: "#SL",
-    align: "left",
-    field: (row) => row.sl,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "name",
-    required: true,
-    label: "Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "email",
-    required: true,
-    align: "center",
-    label: "Email",
-    field: "email"
-  },
-  { name: "phone", label: "Phone", field: "phone" },
-  { name: "address", label: "Address", field: "address" },
-  { name: "website", label: "Website", field: "website" },
-  { name: "status", label: "Status", field: "status" },
-  {
-    name: "action",
-    label: "Action",
-    field: "action",
-    sortable: false,
-    align: "center",
-  },
-];
 
 export default {
   name: "CustomerList",
@@ -164,7 +121,6 @@ export default {
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -181,7 +137,7 @@ export default {
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
-          item.sl = i+1
+          item.sl = i + 1
           item.name = item.name
           item.emaill = item.emaill
           item.phone = item.phone
@@ -193,6 +149,46 @@ export default {
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        {
+          name: "sl",
+          required: true,
+          label: this.$t('sl'),
+          align: "left",
+          field: (row) => row.sl,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "name",
+          required: true,
+          label: this.$t('name'),
+          align: "left",
+          field: (row) => row.name,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "email",
+          required: true,
+          align: "center",
+          label: this.$t('email'),
+          field: "email"
+        },
+        { name: "phone", label: this.$t('phone'), field: "phone" },
+        { name: "address", label: this.$t('address'), field: "address" },
+        { name: "website", label: this.$t('website'), field: "website" },
+        { name: "status", label: this.$t('status'), field: "status" },
+        {
+          name: "action",
+          label: this.$t('action'),
+          field: "action",
+          sortable: false,
+          align: "center",
+        },
+      ];
     }
   },
   mounted() {
@@ -200,7 +196,7 @@ export default {
     // this.getCompanytList();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -256,23 +252,24 @@ export default {
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

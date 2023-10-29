@@ -18,55 +18,55 @@
       <q-card-section class="q-pa-sm row">
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="text" dark color="white" v-model="bank_info.bank_name" label="Bank Name" />
+            <q-input type="text" dark color="white" v-model="bank_info.bank_name" :label="$t('bank_name')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="text" dark color="white" v-model="bank_info.branch_name" label="Branch Name" />
+            <q-input type="text" dark color="white" v-model="bank_info.branch_name" :label="$t('branch_name')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="text" dark color="white" v-model="bank_info.account_name" label="Account Name" />
+            <q-input type="text" dark color="white" v-model="bank_info.account_name" :label="$t('account_name')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="number" dark color="white" v-model="bank_info.account_number" label="Account Number" />
+            <q-input type="number" dark color="white" v-model="bank_info.account_number" :label="$t('account_number')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="number" dark color="white" v-model="bank_info.routing_number" label="Routing Number" />
+            <q-input type="number" dark color="white" v-model="bank_info.routing_number" :label="$t('routing_number')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="text" dark color="white" v-model="bank_info.swift_code" label="Swift Code" />
+            <q-input type="text" dark color="white" v-model="bank_info.swift_code" :label="$t('swift_code')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
           <q-item-section>
-            <q-toggle color="green" size="md" v-model="bank_info.status" val="md" label="Is Active" />
+            <q-toggle color="green" size="md" v-model="bank_info.status" val="md" :label="$t('is_active')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: -18px">
           <q-item-section>
-            <q-input type="text" dark color="white" v-model="bank_info.address" label="Address" />
+            <q-input type="text" dark color="white" v-model="bank_info.address" :label="$t('address')" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
-            <q-input type="textarea" dark color="white" v-model="bank_info.details" label="Details" />
+            <q-input type="textarea" dark color="white" v-model="bank_info.details" :label="$t('details')" />
           </q-item-section>
         </q-item>
 
@@ -79,7 +79,7 @@
         </q-item> -->
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
+        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">{{ $t('save') }}</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>

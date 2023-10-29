@@ -4,7 +4,7 @@
       <q-card-section class="row q-pa-sm">
         <q-item class="full-width">
           <q-item-section>
-            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? 'Update' : 'Add New' }} Category</q-item-label>
+            <q-item-label class="text-h6 text-weight-bolder" lines="1">{{ submitForm.id ? $t('update_category') : $t('add_new_category') }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-icon name="cancel" color="white" clickable style="cursor: pointer;"
@@ -23,7 +23,7 @@
               dark
               color="white"
               v-model="submitForm.parent_id"
-              label="Parent Category"
+              :label="$t('parent_category')"
               :options="categories"
               emit-value
               map-options
@@ -34,20 +34,20 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input dark color="white" dense v-model="submitForm.name" label="Category Name"
+              <q-input dark color="white" dense v-model="submitForm.name" :label="$t('category_name')"
                 :rules="[val => val && val.length > 0 || 'Please enter category name']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" label="Is Active" />
+              <q-toggle color="green" size="md" v-model="submitForm.active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
         </q-list>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">Save</q-btn>
+        <q-btn type="submit" glossy class="text-capitalize bg-white text-primary q-mr-md q-mb-md q-pa-md ">{{ $t('save') }}</q-btn>
       </q-card-actions>
     </q-form>
   </q-card>

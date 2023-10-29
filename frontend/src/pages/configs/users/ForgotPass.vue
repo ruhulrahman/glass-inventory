@@ -40,7 +40,7 @@
               round
               readonly
               v-model="user.email"
-              label="Email"
+              :label="$t('email')"
             />
           </q-item-section>
         </q-item>
@@ -53,7 +53,7 @@
               color="white"
               round
               v-model="user.old_password"
-              label="Old Password *"
+              :label="$t('old_password')"
               :rules="[(val) => (val && val != '') || 'Please enter old password']"
             />
           </q-item-section>
@@ -66,7 +66,7 @@
               dark
               color="white"
               v-model="user.password"
-              label="New Password *"
+              :label="$t('new_password')"
               :rules="[(val) => (val && val != '') || 'Please enter new password']"
             />
           </q-item-section>
@@ -79,7 +79,7 @@
               dark
               color="white"
               v-model="user.confirm_password"
-              label="Confirm Password *"
+              :label="$t('confirm_password')"
               :rules="[(val) => (val && val != '') || 'Please enter confirm password']"
             />
           </q-item-section>
@@ -91,7 +91,7 @@
           type="submit"
           class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
           >
-          {{'Update'}}
+          {{ $t('update') }}
           </q-btn
         >
       </q-card-actions>
@@ -135,7 +135,7 @@ export default {
         let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/forgot_password'), this.user);
         ref.notify(res.msg)
         ref.$emit('closeModal', true)
-      
+
      } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {

@@ -5,20 +5,20 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Sales" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('sales_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('sales')" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Sales</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('sales') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy to="/add-or-update-invoice" flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Sale
+              {{ $t('add_new_sale') }}
             </q-btn>
           </div>
         </div>
@@ -27,15 +27,14 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
           <template v-slot:top-right>
-            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter"
+              placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -65,10 +64,11 @@
                 {{ props.pageIndex + 1 }}
               </q-td>
               <q-td key="invoice_code" :props="props">
-                <router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(props.row.id)}`">#{{ props.row.invoice_code }}</router-link>
+                <router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(props.row.id)}`">#{{
+                  props.row.invoice_code }}</router-link>
               </q-td>
               <q-td key="customer" :props="props">
-                {{ props.row.customer_name }} <br/>
+                {{ props.row.customer_name }} <br />
                 <small>{{ props.row.customer_phone }}</small>
               </q-td>
               <q-td key="invoice_date" :props="props">
@@ -90,12 +90,14 @@
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="downloadInvoice(props.row)" icon="cloud_download" size="sm" class="text-green" flat dense>
-                <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                  <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle"
+                    self="center middle">
                     Download
                   </q-tooltip>
                 </q-btn>
                 <q-btn @click="viewDetails(props.row)" icon="visibility" size="sm" class="text-blue" flat dense>
-                  <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle" self="center middle">
+                  <q-tooltip class="bg-primary" transition-show="scale" transition-hide="scale" anchor="bottom middle"
+                    self="center middle">
                     View Details
                   </q-tooltip>
                 </q-btn>
@@ -132,7 +134,7 @@
                 </section>
             </vue-html2pdf> -->
 
-            <!-- <vue3-html2pdf
+    <!-- <vue3-html2pdf
             :show-layout="false"
         :float-layout="true"
         :enable-download="true"
@@ -153,7 +155,7 @@
                     />
               </template>
           </vue3-html2pdf> -->
-            <!-- <invoice-details-pdf
+    <!-- <invoice-details-pdf
                     :invoiceDetails="invoiceDetails"
                     /> -->
   </q-page>
@@ -172,18 +174,6 @@ import InvoiceDetailsPdf from './InvoiceDetailsPdf.vue'
 
 const metaData = { title: 'Sale List' }
 
-const columns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  { name: "invoice_code", field: "invoice_code", label: "Invoice Code", sortable: true, align: "left" },
-  { name: "customer", field: "customer",  label: "Customer", sortable: true, align: "left" },
-  { name: "invoice_date", field: "invoice_date",  label: "Invoice Date", sortable: true, align: "left" },
-  { name: "total_payable_amount", field: "total_payable_amount",  label: "Payable Amount", sortable: true, align: "right" },
-  { name: "paid_amount", field: "paid_amount",  label: "Paid Amount", sortable: true, align: "right" },
-  { name: "due_amount", field: "due_amount",  label: "Due Amount", sortable: true, align: "right" },
-  { name: "payment_status", field: "payment_status", label: "Payment Status", sortable: true, align: "center" },
-  { name: "action", field: "Action", label: "Action", sortable: false, align: "center" },
-];
-
 export default ({
   name: "SaleList",
   mixins: [helperMixin],
@@ -198,7 +188,6 @@ export default ({
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -233,6 +222,19 @@ export default ({
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        { name: "invoice_code", field: "invoice_code", label: this.$t('invoice_code'), sortable: true, align: "left" },
+        { name: "customer", field: "customer", label: this.$t('customer'), sortable: true, align: "left" },
+        { name: "invoice_date", field: "invoice_date", label: this.$t('sl'), sortable: true, align: "left" },
+        { name: "total_payable_amount", field: "total_payable_amount", label: this.$t('payable_amount'), sortable: true, align: "right" },
+        { name: "paid_amount", field: "paid_amount", label: this.$t('paid_amount'), sortable: true, align: "right" },
+        { name: "due_amount", field: "due_amount", label: this.$t('due_amount'), sortable: true, align: "right" },
+        { name: "payment_status", field: "payment_status", label: this.$t('payment_status'), sortable: true, align: "center" },
+        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" },
+      ];
     }
   },
   mounted() {
@@ -240,7 +242,7 @@ export default ({
     // this.getInitialData();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -298,7 +300,7 @@ export default ({
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId });
         this.invoiceDetails = res.data.productInvoice
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -307,8 +309,8 @@ export default ({
       }
     },
     downloadInvoice: function (item) {
-      var ref=this;
-      var jq=this.jq();
+      var ref = this;
+      var jq = this.jq();
       this.download_url = ref.apiUrl('api/v1/admin/download/generate_invoice_pdf');
       const search = {
         auth_user_id: localStorage.getItem('auth_user_id'),
@@ -324,23 +326,24 @@ export default ({
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

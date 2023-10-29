@@ -5,20 +5,20 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/"/>
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Supplier" />
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('product_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('supplier_list')" />
     </q-breadcrumbs>
 
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">Supplier List</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('supplier_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              Add New Supplier
+              {{ $t('add_new') }}
             </q-btn>
           </div>
         </div>
@@ -27,15 +27,14 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you"
-          :loading="loading"
-          :pagination="initialPagination"
-          :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
+          :pagination="initialPagination" :filter="filter">
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
           <template v-slot:top-right>
-            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input v-if="show_filter" clearable filled borderless dense debounce="300" v-model="filter"
+              placeholder="Search">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -68,7 +67,7 @@
                 {{ props.row.name }}
               </q-td>
               <q-td key="phone1" :props="props">
-                {{ props.row.phone1 }}<br/>
+                {{ props.row.phone1 }}<br />
                 {{ props.row.phone2 }}
               </q-td>
               <q-td key="phone2" :props="props">
@@ -100,46 +99,30 @@
     </q-card>
 
     <q-dialog v-model="showAddNewDialog" position="right">
-      <add-or-update :editItem="editItem"
-        @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+      <add-or-update :editItem="editItem" @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
     </q-dialog>
 
   </q-page>
 </template>
 
 <script>
-import { useMeta, useQuasar, Dialog, Loading } from 'quasar'
+import { useMeta, useQuasar, Dialog, Loading, Quasar } from 'quasar'
 import helperMixin from 'src/mixins/helper_mixin.js'
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from 'vue'
 import AddOrUpdate from "./AddOrUpdate.vue";
+// import boot from 'src/boot/i18n.js'
+// import i18n from 'boot/i18n.js'
+// import messages from 'src/i18n'
+
+// console.log('i18n', i18n)
+// console.log('messages', messages)
+// console.log('boot', boot)
 
 const metaData = { title: 'Supplier List' }
+// const metaData = { title: Quasar.lang.getLocale('supplier_list') }
 
-const columns = [
-  { name: "sl", label: "Sl.", field: "sl", sortable: true, align: "left" },
-  {
-    name: "name",
-    required: true,
-    label: "Supplier Name",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  { name: "phone1", label: "Phone", field: "phone1", sortable: true, align: "left" },
-  { name: "email", label: "Email", field: "email", sortable: true, align: "left" },
-  { name: "address", label: "Address", field: "address", sortable: true, align: "left" },
-  { name: "note", label: "Note", field: "note", sortable: true , align: "left"},
-  { name: "status", label: "Status", field: "status", sortable: true, align: "left" },
-  {
-    name: "action",
-    label: "Action",
-    field: "Action",
-    sortable: false,
-    align: "center",
-  },
-];
+
 
 export default ({
   // name: "SupplierList",
@@ -154,7 +137,6 @@ export default ({
     return {
       filter: ref(""),
       show_filter,
-      columns,
     };
   },
   data() {
@@ -171,20 +153,46 @@ export default ({
       if (this.listData.length) {
         return this.listData.map(item => {
           item.active = item.active ? true : false
-          item.status = item.active ? 'Active' : 'Inactive'
+          item.status = item.active ? this.$t('active') : this.$t('inactive')
           item.status_color = item.active ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {
         return []
       }
+    },
+    columns: function () {
+      return [
+        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
+        {
+          name: "name",
+          required: true,
+          label: this.$t('supplier_name'),
+          align: "left",
+          field: (row) => row.name,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        { name: "phone1", label: this.$t('supplier_name'), field: "phone1", sortable: true, align: "left" },
+        { name: "email", label: this.$t('email'), field: "email", sortable: true, align: "left" },
+        { name: "address", label: this.$t('address'), field: "address", sortable: true, align: "left" },
+        { name: "note", label: this.$t('note'), field: "note", sortable: true, align: "left" },
+        { name: "status", label: this.$t('status'), field: "status", sortable: true, align: "left" },
+        {
+          name: "action",
+          label: this.$t('action'),
+          field: "Action",
+          sortable: false,
+          align: "center",
+        },
+      ];
     }
   },
   mounted() {
     this.getListData();
   },
   methods: {
-    openAddNewDialog: function() {
+    openAddNewDialog: function () {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -240,23 +248,24 @@ export default ({
 
 <style scoped>
 .swal2-confirm {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    background-color: #28a745 !important;
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #28a745 !important;
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
+
 .swal2-cancel {
-    border: 0;
-    border-radius: 0.25em;
-    background: initial;
-    /* background-color: #dc3741; */
-    background-color: rgb(244 67 54);
-    color: #fff;
-    font-size: 1em;
-    padding: 6px 21px !important;
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  /* background-color: #dc3741; */
+  background-color: rgb(244 67 54);
+  color: #fff;
+  font-size: 1em;
+  padding: 6px 21px !important;
 }
 </style>
 

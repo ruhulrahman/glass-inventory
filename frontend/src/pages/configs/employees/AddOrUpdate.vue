@@ -43,7 +43,7 @@
               <q-file
                 class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 v-model="file"
-                label="Choose Photo"
+                :label="$t('choose_photo')"
                 dark
                 color="white"
                 clearable
@@ -69,7 +69,7 @@
               dark
               color="white"
               v-model="employee.name"
-              label="Full Name"
+              :label="$t('employee_name')"
             />
           </q-item-section>
         </q-item>
@@ -84,7 +84,7 @@
               dark
               color="white"
               v-model="employee.email"
-              label="Email"
+              :label="$t('email')"
             />
           </q-item-section>
         </q-item>
@@ -99,7 +99,7 @@
               dark
               color="white"
               v-model="employee.phone1"
-              label="Phone Number"
+              :label="$t('phone')"
             />
           </q-item-section>
         </q-item>
@@ -114,7 +114,7 @@
               dark
               color="white"
               v-model="employee.phone2"
-              label="Secondary Phone Number"
+              :label="$t('phone2')"
             />
           </q-item-section>
         </q-item>
@@ -129,7 +129,7 @@
               dark
               color="white"
               v-model="employee.nid"
-              label="NID"
+              :label="$t('nid')"
             />
           </q-item-section>
         </q-item>
@@ -139,7 +139,7 @@
           style="margin-top: 0px"
         >
           <q-item-section>
-            <label style="margin-bottom: -18px">Date Of Birth</label>
+            <label style="margin-bottom: -18px">{{ $t('date_of_birth') }}</label>
             <q-input type="date" dark color="white" v-model="employee.dob" />
           </q-item-section>
         </q-item>
@@ -154,7 +154,7 @@
               dark
               color="white"
               v-model="employee.religion"
-              label="Religion"
+              :label="$t('religion')"
             />
           </q-item-section>
         </q-item>
@@ -171,14 +171,14 @@
                   color="white"
                   v-model="employee.gender"
                   val="Male"
-                  label="Male"
+                  :label="$t('male')"
                 />
                 <q-radio
                   dark
                   color="white"
                   v-model="employee.gender"
                   val="Female"
-                  label="Female"
+                  :label="$t('female')"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@
               dark
               color="white"
               v-model="employee.present_address"
-              label="Present Address"
+              :label="$t('present_address')"
             />
           </q-item-section>
         </q-item>
@@ -210,7 +210,7 @@
               dark
               color="white"
               v-model="employee.permanent_address"
-              label="Permanent Address"
+              :label="$t('permanent_address')"
             />
           </q-item-section>
         </q-item>
@@ -220,8 +220,7 @@
           style="margin-top: -18px"
         >
           <q-item-section>
-            <label style="margin-bottom: -18px; margin-top: 15px"
-              >Joining Date</label
+            <label style="margin-bottom: -18px; margin-top: 15px">{{ $t('joining_date') }}</label
             >
             <q-input
               type="date"
@@ -243,7 +242,7 @@
               dark
               color="white"
               v-model="employee.current_salary"
-              label="Salary"
+              :label="$t('salary')"
             />
           </q-item-section>
         </q-item>
@@ -256,7 +255,7 @@
               dark
               color="white"
               v-model="employee.designation_id"
-              label="Designation"
+              :label="$t('designation')"
               :options="designations"
               emit-value
               map-options
@@ -272,26 +271,14 @@
               size="md"
               v-model="employee.active"
               val="md"
-              label="Is Active"
+              :label="$t('is_active')"
             />
           </q-item-section>
         </q-item>
-
-        <q-item
-          class="col-lg-8 col-md-12 col-sm-12 col-xs-12"
-          style="float: right"
-        >
-          <q-item-section>
-            <q-btn
-              type="submit"
-              color="green"
-              style="width: 10%; margin-left: 90%"
-            >
-              {{ editItem.id ? "Update" : "Save" }}
-            </q-btn>
-          </q-item-section>
-        </q-item>
       </q-card-section>
+      <q-card-actions align="right">
+        <q-btn glossy type="submit" class="text-capitalize bg-white q-mr-md q-mb-md text-primary">{{ $t('save') }}</q-btn>
+      </q-card-actions>
     </q-form>
   </q-card>
 </template>
@@ -319,7 +306,7 @@ export default {
         designation_id: null,
         joining_date: null,
         current_salary: null,
-        active: null,
+        active: true,
         photo: null,
       },
       designations: [],

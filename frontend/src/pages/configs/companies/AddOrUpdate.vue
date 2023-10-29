@@ -39,7 +39,7 @@
               color="white"
               round
               v-model="company.name"
-              label="Company Name *"
+              :label="$t('company_name')"
               :rules="[
                 (val) => (val && val.length > 0) || 'Please enter company name',
               ]"
@@ -55,7 +55,7 @@
               color="white"
               round
               v-model="company.title"
-              label="Title"
+              :label="$t('title')"
             />
           </q-item-section>
         </q-item>
@@ -68,7 +68,7 @@
               color="white"
               round
               v-model="company.phone"
-              label="Phone 1"
+              :label="$t('phone')"
             />
           </q-item-section>
         </q-item>
@@ -81,7 +81,7 @@
               color="white"
               round
               v-model="company.phone2"
-              label="Phone 2"
+              :label="$t('phone2')"
             />
           </q-item-section>
         </q-item>
@@ -94,7 +94,7 @@
               color="white"
               round
               v-model="company.email"
-              label="Email"
+              :label="$t('email')"
             />
           </q-item-section>
         </q-item>
@@ -106,7 +106,7 @@
               dark
               color="white"
               v-model="company.number_of_employees"
-              label="Total Employees"
+              :label="$t('total_employee')"
             />
           </q-item-section>
         </q-item>
@@ -115,7 +115,7 @@
           <q-file
             class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
             v-model="files"
-            label="Choose Company Logo"
+            :label="$t('choose_company_logo')"
             dark
             color="white"
             clearable
@@ -134,7 +134,7 @@
               dark
               color="white"
               v-model="company.address"
-              label="Address"
+              :label="$t('address')"
             />
           </q-item-section>
         </q-item>
@@ -146,7 +146,7 @@
               dark
               color="white"
               v-model="company.description"
-              label="Description"
+              :label="$t('description')"
             />
           </q-item-section>
         </q-item>
@@ -171,7 +171,7 @@
           type="submit"
           class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
           >
-          {{editItem.id ? 'Update' : 'Save'}}
+          {{ $t('save') }}
           </q-btn
         >
       </q-card-actions>
@@ -226,6 +226,9 @@ export default {
       const formData = new FormData()
       formData.append('id',ref.company.id);
       formData.append('name',ref.company.name);
+      formData.append('email',ref.company.email);
+      formData.append('phone',ref.company.phone);
+      formData.append('phone2',ref.company.phone2);
       formData.append('title',ref.company.title);
       formData.append('number_of_employees',ref.company.number_of_employees);
       formData.append('logo',ref.files);

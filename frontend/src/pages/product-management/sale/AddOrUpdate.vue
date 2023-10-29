@@ -5,16 +5,16 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
-      <q-breadcrumbs-el label="Product Management" icon="widgets" to="/" />
-      <q-breadcrumbs-el label="Sales" icon="widgets" to="/sale-list" />
-      <q-breadcrumbs-el>{{ submitForm.id ? 'Update' : 'Add New' }} Sale</q-breadcrumbs-el>
+      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
+      <q-breadcrumbs-el :label="$t('sales_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('sales')" icon="widgets" to="/sale-list" />
+      <q-breadcrumbs-el>{{ submitForm.id ? $t('update_sale') : $t('add_new_sale') }}</q-breadcrumbs-el>
     </q-breadcrumbs>
 
     <q-card class="no-shadow q-mb-xl" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">{{ submitForm.id ? 'Update' : 'Add New' }} Sale</div>
+          <div class="text-h6 col-10 text-grey-8">{{ submitForm.id ? $t('update_sale') : $t('add_new_sale') }}</div>
           <div class="col-2 text-right">
             <!-- <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
@@ -35,14 +35,14 @@
 
           <q-item v-if="!showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section style="margin-top: -20px !important; font-size: 12px !important">
-              <q-select :disable="submitForm.id ? true : false" filled dense clearable v-model="submitForm.customer_id" label="Customer"
+              <q-select :disable="submitForm.id ? true : false" filled dense clearable v-model="submitForm.customer_id" :label="$t('customer')"
                 :options="dropdownList.customerList" emit-value map-options use-input @filter="filterFn">
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
                       No results
                       <q-btn glossy @click="toggleCustomerAddField()" flat color="white" size="sm" class="bg-red-12 d-block">
-                        Add New customer
+                        {{ $t('add_new_customer') }}
                       </q-btn>
                     </q-item-section>
                   </q-item>
@@ -53,13 +53,13 @@
 
           <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input filled dense v-model="submitForm.customer_name" label="Customer name" />
+              <q-input filled dense v-model="submitForm.customer_name" :label="$t('customer_name')" />
             </q-item-section>
           </q-item>
 
           <q-item v-if="showCustomerAddField" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input filled dense v-model="submitForm.customer_phone" label="Customer phone"
+              <q-input filled dense v-model="submitForm.customer_phone" :label="$t('customer_phone')"
                 :rules="[val => val && val.length > 0 && showCustomerAddField==true || 'Please enter customer phone']" />
             </q-item-section>
           </q-item>
@@ -91,14 +91,14 @@
 
           <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Code</q-item-label>
+              <q-item-label>{{ $t('invoice_code') }}</q-item-label>
               <q-item-label caption><router-link class="text-blue text-weight-bold" :to="`/invoice-details/${hash_id(submitForm.id)}`">#{{ submitForm.invoice_code }}</router-link></q-item-label>
             </q-item-section>
           </q-item>
 
           <q-item v-if="submitForm.id" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-item-label>Invoice Date</q-item-label>
+              <q-item-label>{{ $t('invoice_date') }}</q-item-label>
               <q-item-label caption>{{ dDate(submitForm.invoice_date) }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -118,40 +118,40 @@
                 {{ props.pageIndex + 1 }}
               </q-td> -->
               <q-td key="product_type" :props="props" class="q-mt-md">
-                <q-select filled dense v-model="props.row.product_type_id" label="Product Type" style="min-width: 120px; max-width: 150px"
+                <q-select filled dense v-model="props.row.product_type_id" :label="$t('product_type')" style="min-width: 120px; max-width: 150px"
                   :options="dropdownList.productTypes" emit-value map-options
                   :rules="[val => val > 0 || 'Please select product type']">
                 </q-select>
               </q-td>
               <q-td key="category" :props="props" class="q-mt-md">
                 <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
-                  v-model="props.row.category_id" label="Product Category" style="min-width: 120px; max-width: 150px"
+                  v-model="props.row.category_id" :label="$t('product_category')" style="min-width: 120px; max-width: 150px"
                   :options="dropdownList.categories" emit-value map-options
                   :rules="[val => val > 0 || 'Please select category']">
                 </q-select>
               </q-td>
               <q-td key="color" :props="props" class="q-mt-md">
                 <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
-                  v-model="props.row.color_id" label="Product color" style="min-width: 120px; max-width: 150px"
+                  v-model="props.row.color_id" :label="$t('color')" style="min-width: 120px; max-width: 150px"
                   :options="dropdownList.productColors" emit-value map-options
                   :rules="[val => val > 0 || 'Please select color']">
                 </q-select>
               </q-td>
               <q-td key="unit" :props="props" class="q-mt-md">
                 <q-select @update:model-value="getProductPrice(props.row, props.pageIndex)" filled dense
-                  v-model="props.row.unit_id" label="Product unit" style="min-width: 120px; max-width: 150px"
+                  v-model="props.row.unit_id" :label="$t('product_unit')" style="min-width: 120px; max-width: 150px"
                   :options="dropdownList.productUnits" emit-value map-options
                   :rules="[val => val > 0 || 'Please select unit']">
                 </q-select>
               </q-td>
               <q-td key="price" :props="props" class="q-mt-md">
-                <q-input type="number" filled dense v-model="props.row.price" label="Price" input-class="text-right"
+                <q-input type="number" filled dense v-model="props.row.price" :label="$t('price')" input-class="text-right"
                   style="max-width: 130px" :rules="[val => val && val.length > 0 || 'Please enter price']" />
               </q-td>
               <q-td key="quantity" :props="props" class="q-mt-md">
                 <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)"
                   @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense
-                  v-model="props.row.quantity" label="Quantity" input-class="text-right" style="max-width: 130px"
+                  v-model="props.row.quantity" :label="$t('quantity')" input-class="text-right" style="max-width: 130px"
                   :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
               </q-td>
               <q-td key="amount" :props="props" class="q-mt-md">
@@ -167,7 +167,7 @@
           <template v-slot:bottom-row>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="6" class="text-right">
-                <b>Sub-Total</b>
+                <b>{{ $t('sub_total') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ subTotalAmount }}
@@ -177,7 +177,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Discount</b>
+                <b>{{ $t('discount') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount"
@@ -198,7 +198,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Vat</b>
+                <b>{{ $t('vat') }}</b>
               </q-td>
               <q-td class="text-right">
                 <div class="row">
@@ -215,7 +215,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Tax</b>
+                <b>{{ $t('tax') }}</b>
               </q-td>
               <q-td class="text-right">
                 <div class="row">
@@ -232,7 +232,7 @@
             </q-tr>
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="6" class="text-right">
-                <b>Total Payable Amount</b>
+                <b>{{ $t('total_payable_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.total_payable_amount }}
@@ -241,7 +241,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Paid Amount</b>
+                <b>{{ $t('paid_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-input bg-color="green-1" type="number" filled dense v-model="submitForm.paid_amount"
@@ -251,7 +251,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Due Amount</b>
+                <b>{{ $t('due_amount') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-input :bg-color="submitForm.due_amount > 0 ? 'red-1' : ''" :disable="true" type="number" filled dense
@@ -261,7 +261,7 @@
             </q-tr>
             <q-tr>
               <q-td colspan="6" class="text-right">
-                <b>Payment Status</b>
+                <b>{{ $t('payment_status') }}</b>
               </q-td>
               <q-td class="text-right">
                 <q-select filled dense v-model="submitForm.payment_status_id" label="Status"
@@ -275,7 +275,7 @@
 
                 <q-btn glossy @click="saveInvoiceData()" flat color="white" class="bg-green-7 d-block"
                   style="text-transform: capitalize; padding: 0px 10px 0 19px">
-                  {{ submitForm.id ? 'Update Invoice' : 'Save Invoice' }}
+                  {{ submitForm.id ? $t('update_invoice') : $t('save_invoice') }}
                 </q-btn>
               </q-td>
               <q-td></q-td>
@@ -363,14 +363,14 @@ export default {
   computed: {
     columns: function () {
       return [
-        { name: "product_type", field: "product_type", label: "Product Type", align: "left" },
-        { name: "category", align: "center", label: "Category", field: "category", align: "left" },
-        { name: "color", label: "Color", field: "color", align: "left" },
-        { name: "unit", label: "Unit", field: "unit", align: "left" },
-        { name: "price", label: "Unit price", field: "price", align: "center" },
-        { name: "quantity", label: "Quantity", field: "quantity", align: "center" },
-        { name: "amount", label: "Amount", field: "amount", align: "right" },
-        { name: "action", label: "Action", field: "Action", align: "right" },
+        { name: "product_type", field: "product_type", label: this.$t('product_type'), align: "left" },
+        { name: "category", align: "center", label: this.$t('category'), field: "category", align: "left" },
+        { name: "color", label: "Color", field: this.$t('color'), align: "left" },
+        { name: "unit", label: "Unit", field: this.$t('unit'), align: "left" },
+        { name: "price", label: this.$t('unit_price'), field: "price", align: "center" },
+        { name: "quantity", label: this.$t('quantity'), field: "quantity", align: "center" },
+        { name: "amount", label: this.$t('amount'), field: "amount", align: "right" },
+        { name: "action", label: this.$t('action'), field: "Action", align: "right" },
       ]
     },
     subTotalAmount: function () {

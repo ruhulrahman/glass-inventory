@@ -43,7 +43,7 @@
               <q-file
                 class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 v-model="file"
-                label="Choose Photo"
+                :label="$t('choose_photo')"
                 dark
                 color="white"
                 clearable
@@ -67,7 +67,7 @@
               color="white"
               round
               v-model="user.name"
-              label="Full Name *"
+              :label="$t('name')"
               :rules="[(val) => (val && val != '') || 'Please enter your name']"
             />
           </q-item-section>
@@ -81,7 +81,7 @@
               color="white"
               round
               v-model="user.username"
-              label="Username *"
+              :label="$t('username')"
               :rules="[(val) => (val && val != '') || 'Please enter your username']"
             />
           </q-item-section>
@@ -94,7 +94,7 @@
               dark
               color="white"
               v-model="user.email"
-              label="Email *"
+              :label="$t('email')"
               :rules="[(val) => (val && val != '') || 'Please enter your email']"
             />
           </q-item-section>
@@ -124,7 +124,7 @@
               dark
               color="white"
               v-model="user.user_type"
-              label="User Type"
+              :label="$t('user_type')"
               :options="userTypes"
               emit-value
               map-options
@@ -135,7 +135,7 @@
 
         <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-toggle color="green" size="md" v-model="user.is_employee" val="md" label="Is Employee" />
+              <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
       </q-card-section>
@@ -145,7 +145,7 @@
           type="submit"
           class="text-capitalize bg-white q-mr-md q-mb-md text-primary"
           >
-          {{editItem.id ? 'Update' : 'Save'}}
+          {{ $t('save') }}
           </q-btn
         >
       </q-card-actions>
