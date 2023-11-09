@@ -11,12 +11,21 @@ const routes = [
     children: [
       {path: '', component: () => import('pages/Dashboard.vue')},
       {path: '/logout', component: () => import('pages/Logout.vue')},
-      {path: '/user-list', component: () => import('pages/configs/users/List.vue')},
+
+      // company-management
+      {path: '/permission-list', component: () => import('pages/company-management/permission/List.vue')},
+      {path: '/role-list', component: () => import('pages/company-management/role/List.vue')},
+      {path: '/add-or-update-role/:role_id?', component: () => import('pages/company-management/role/AddOrUpdate.vue')},
+      {path: '/company-list', component: () => import('pages/company-management/companies/List.vue')},
+      {path: '/company-bank-list', component: () => import('pages/company-management/banks/List.vue')},
+      {path: '/department-list', component: () => import('pages/company-management/departments/List.vue')},
+      {path: '/designation-list', component: () => import('pages/company-management/designations/List.vue')},
+      {path: '/weekends', component: () => import('pages/company-management/weekends/List.vue')},
+      {path: '/holidays', component: () => import('pages/company-management/holidays/List.vue')},
+      {path: '/user-list', component: () => import('pages/company-management/users/List.vue')},
+
       {path: '/employee-list', component: () => import('pages/configs/employees/List.vue')},
-      {path: '/company-list', component: () => import('pages/configs/companies/List.vue')},
-      {path: '/company-bank-list', component: () => import('pages/configs/banks/List.vue')},
-      {path: '/department-list', component: () => import('pages/configs/departments/List.vue')},
-      {path: '/designation-list', component: () => import('pages/configs/designations/List.vue')},
+
       {path: '/color-list', component: () => import('pages/product-management/color/List.vue')},
       {path: '/unit-list', component: () => import('pages/product-management/unit/List.vue')},
       {path: '/category-list', component: () => import('pages/product-management/category/List.vue')},
@@ -30,9 +39,8 @@ const routes = [
       {path: '/add-or-update-invoice/:id?', component: () => import('pages/product-management/sale/AddOrUpdate.vue')},
       {path: '/invoice-details/:id', component: () => import('pages/product-management/sale/InvoiceDetails.vue')},
       {path: '/customer-list', component: () => import('pages/product-management/customer/List.vue')},
+
       {path: '/employee-attendances', component: () => import('pages/attendance/List.vue')},
-      {path: '/weekends', component: () => import('pages/configs/weekends/List.vue')},
-      {path: '/holidays', component: () => import('pages/configs/holidays/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},

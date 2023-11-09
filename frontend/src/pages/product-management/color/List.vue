@@ -128,7 +128,7 @@ export default ({
         return this.listData.map(item => {
           item.name = item.name
           item.active = item.active ? true : false
-          item.status = item.active ? 'Active' : 'Inactive'
+          item.status = item.active ? this.$t('active') : this.$t('inactive')
           item.status_color = item.active ? 'green' : 'red'
           return Object.assign(item)
         })

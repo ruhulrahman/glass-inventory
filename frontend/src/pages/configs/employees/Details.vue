@@ -2,7 +2,7 @@
     <q-card class="card-bg text-white no-shadow" bordered style="width: 700px; max-width: 80vw;">
           <q-card-section class="text-center bg-transparent">
             <q-avatar size="100px" class="shadow-10">
-              <img v-if="editItem.photo" :src="apiUrl('/uploads/photo/')+editItem.photo">
+              <img v-if="editItem.photo_url" :src="editItem.photo_url">
               <img v-else :src="apiUrl('/uploads/demo.jpg')">
             </q-avatar>
             <div class="text-h6 q-mt-md">{{editItem.name}}</div>

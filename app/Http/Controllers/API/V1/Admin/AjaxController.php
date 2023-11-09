@@ -21,6 +21,7 @@ class AjaxController extends Controller
 		$data['user'] = $user;
 		$default_per_page = 10;
 		$carbon = new Carbon();
+        $request = $req;
 
 		if ($name == 'get_auth_user') {
 
@@ -64,7 +65,10 @@ class AjaxController extends Controller
 
 		} else if ($name == 'get_designation_list') {
 
-			$list = model('Designation')::with('department')->where('company_id', $user->company_id)->get();
+			$list = model('Designation')::with('department')
+            ->where('company_id', $user->company_id)
+            ->orderBy('ranking_number', 'asc')
+            ->get();
 
 			foreach ($list as $item) {
 				$item->value = $item->id;
@@ -200,10 +204,13 @@ class AjaxController extends Controller
 				'data' => $list
 			]);
 		} else if ($name == 'get_company_list') {
+
 			$companies = model('Company')::query()->orderBy('id','desc')->get();
+
 			return res_msg('list Data', 200, [
 				'data' => $companies
 			]);
+
 		} else if ($name == 'get_company_bank_list') {
 			$banks = model('CompanyBankInfo')::where('company_id', $user->company_id)->orderBy('id','desc')->get();
 			return res_msg('list Data', 200, [
@@ -495,6 +502,8 @@ class AjaxController extends Controller
 
             $employeeIds = (clone $attendanceQuery)->pluck('employee_id');
 
+            info($employeeIds);
+
             $employeeQuery = model('Employee')::where([
                 'company_id' => $user->company_id,
                 'active' => 1,
@@ -504,15 +513,17 @@ class AjaxController extends Controller
                 $employeeQuery->where('id', $req->employee_id);
 			}
 
-			if($employeeIds){
-                $employeeQuery->whereIn('id', $employeeIds);
-			}
+			// if(count($employeeIds)){
+            //     $employeeQuery->whereIn('id', $employeeIds);
+			// }
 
 			if($req->employee_name){
                 $employeeQuery->where('name', 'LIKE', "%$req->employee_name%");
 			}
 
+
             $employees = (clone $employeeQuery)->get();
+            info($employees);
 
             foreach($employees as $employee) {
 
@@ -637,7 +648,8 @@ class AjaxController extends Controller
             $month_days = cal_days_in_month(CAL_GREGORIAN,$monthNumber,$monthYear);
 
             if ($employee->current_salary) {
-                $perDaySalary = (int) ($employee->current_salary / $month_days);
+                // $perDaySalary = (int) ($employee->current_salary / $month_days);
+                $perDaySalary = (int) ($employee->current_salary / 26);
             } else {
                 $perDaySalary = 0;
             }
@@ -946,7 +958,153 @@ class AjaxController extends Controller
 			// 	'invoice' => $invoice,
 			// ]);
 
-		}
+		} else if ($name == "get_permission_list") {
+
+            $query = model('Permission')::with('parent')->latest();
+
+            if ($request->name) {
+                $query = $query->where('name', 'like', "%$req->name%");
+            }
+
+            if ($req->type) {
+                $query = $query->where('type', $req->type);
+            }
+
+            if ($req->code) {
+                $query = $query->where('code', $req->code);
+            }
+
+            $list = $query->paginate($default_per_page);
+
+            foreach ($list as $item) {
+                $item->active = $item->active == 1 ? TRUE : FALSE;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $list
+            ], 200);
+
+        } else if ($name == "get_permission_parent_list") {
+
+            $list = model('Permission')::whereNull('parent_id')->select('id as value', 'name as label', 'type')->get();
+
+            if (!$list) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Not Found!'
+                ], 402);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $list
+            ], 200);
+        } else if ($name == "get_permission_parent_and_child_list") {
+
+            $rolePermissionIds = model('PermissionRole')::where('role_id', $req->role_id)->pluck('permission_id')->toArray();
+
+            $query = model('Permission')::query();
+
+            $permissionParentList = (clone $query)->whereNull('parent_id')->orderBy('name', 'asc')->get();
+
+            foreach($permissionParentList as $item) {
+                $item->children_pages = (clone $query)->where([
+                    'parent_id' => $item->id,
+                    'type' => 'Page',
+                ])->orderBy('name', 'asc')->get();
+
+                $item->children_operations = (clone $query)->where([
+                    'parent_id' => $item->id,
+                    'type' => 'Feature',
+                ])->orderBy('name', 'asc')->get();
+
+                $permission_ids = (clone $query)->where([
+                    'parent_id' => $item->id,
+                ])->pluck('id')->toArray();
+
+                $parent_permission_ids = [$item->id];
+                $item->children_permission_ids = array_merge($permission_ids, $parent_permission_ids);
+
+                $permissionCheck = false;
+
+                foreach($item->children_permission_ids as $permissionId) {
+
+                    $permissionCheck = in_array($permissionId, $rolePermissionIds);
+
+                }
+
+                $item->checkAll = $permissionCheck;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $permissionParentList,
+                // 'userPermissionIds' => $userPermissionIds,
+            ], 200);
+
+        } else if ($name == "get_permissions_by_role_id") {
+
+            $validator = Validator::make($req->all(), [
+                'role_id' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+
+                $errors = $validator->errors()->all();
+                return response(['msg' => $errors[0]], 422);
+            }
+
+
+            $role = model('Role')::find($req->role_id);
+
+
+            $role->role_permission_ids = model('PermissionRole')::where('role_id', $req->role_id)->pluck('permission_id');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $role,
+            ], 200);
+
+        } else if ($name == "get_role_list") {
+
+            $query = DB::table('roles')->latest();
+
+            if ($req->name) {
+                $query = $query->where('name', 'like', "%{$req->name}%");
+            }
+
+            if ($req->type) {
+                $query = $query->where('type', $req->type);
+            }
+
+            if ($req->code) {
+                $query = $query->where('code', $req->code);
+            }
+
+            $list = $query->paginate($default_per_page);
+
+            foreach ($list as $item) {
+                $item->active = $item->active == 1 ? TRUE : FALSE;
+            }
+
+            if (!$list) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Not Found!'
+                ], 402);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $list
+            ], 200);
+        }
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
 	}
@@ -959,6 +1117,7 @@ class AjaxController extends Controller
 		$user = Auth::user();
 		$data['user'] = $user;
 		$carbon = new Carbon();
+        $request = $req;
 
 		if ($name == 'store_department_data') {
 
@@ -1127,6 +1286,7 @@ class AjaxController extends Controller
 				'phone1' => $req->phone1,
 				'phone2' => $req->phone2,
 				'note' => $req->note,
+				'bank_info' => $req->bank_info,
 				'active' => $req->active == 'true' ? 1 : 0,
 				'creator_id' => $user->id,
 			]);
@@ -1166,6 +1326,7 @@ class AjaxController extends Controller
 				'phone1' => $req->phone1,
 				'phone2' => $req->phone2,
 				'note' => $req->note,
+				'bank_info' => $req->bank_info,
 				'active' => $req->active == 'true' ? 1 : 0,
 				'editor_id' => $user->company_id,
 				'updated_at' => Carbon::now(),
@@ -1374,7 +1535,7 @@ class AjaxController extends Controller
 				return res_msg('User inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 				DB::rollback();
 			}
 
@@ -1453,7 +1614,7 @@ class AjaxController extends Controller
 				return res_msg('User updated successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 				DB::rollback();
 			}
 
@@ -1462,12 +1623,16 @@ class AjaxController extends Controller
 			$user = model('User')::find($req->id);
 
 			$employee = model('Employee')::where('user_id',$req->id)->first();
-			model('EmployeeSalaryHistory')::where('employee_id',$employee->id)->delete();
 
-			$employee->delete();
+            if ($employee) {
+                model('EmployeeSalaryHistory')::where('employee_id', $employee->id)->delete();
+                $employee->delete();
+            }
+
 			$user->delete();
 
 			return res_msg('User deleted successfully!', 200);
+
 		} else if($name == 'store_product_category_data'){
 
 			$validator= Validator::make($req->all(), [
@@ -1559,10 +1724,12 @@ class AjaxController extends Controller
 
 				DB::commit();
 				return res_msg('Company created successfully!', 200);
+
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
+
 		} else if ($name == 'update_company_data') {
 
 			$validator = Validator::make($req->all(), [
@@ -1611,8 +1778,8 @@ class AjaxController extends Controller
 
 				return res_msg('Company updated successfully!', 200);
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
 		} else if($name == 'delete_company_data'){
 
@@ -1862,9 +2029,16 @@ class AjaxController extends Controller
 
 			return res_msg('Product type deleted successfully!', 200);
 		}else if($name == "store_employee_data"){
+
             $validator = Validator::make($req->all(), [
-				'name' => 'required'
-			]);
+				'name' => 'required',
+				'current_salary' => 'required',
+				'joining_date' => 'required',
+			],[
+                'name.required' => 'The Name field is required',
+                'current_salary.required' => 'The Current Salary field is required',
+                'joining_date.required' => 'The Joining date field is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -1875,60 +2049,71 @@ class AjaxController extends Controller
 
 			try {
 
-				$fileName = NULL;
-
-				if ($req->file('photo')) {
-					$fileName = 'emp-' . time() . '.' . $req->photo->extension();
-				}
-
-				$data = model('Employee')::create([
+				$employee = model('Employee')::create([
 					'company_id' => $user->company_id,
 					'name' => $req->name,
-					'email' => $req->email,
-					'phone1' => $req->phone1,
-					'phone2' => $req->phone2,
-					'present_address' => $req->present_address,
-					'permanent_address' => $req->permanent_address,
-					'dob' => $req->dob,
-					'nid' => $req->nid,
-					'gender' => $req->gender,
-					'religion' => $req->religion,
-					'current_salary' => $req->current_salary,
-					'designation_id' => $req->designation_id,
-					'joining_date'=>$req->joining_date,
-					'photo'=>$fileName ? $fileName : NULL,
+					'email' => $req->email ? $req->email : NULL,
+					'phone1' => $req->phone1 ? $req->phone1 : NULL,
+					'phone2' => $req->phone2 ? $req->phone2 : NULL,
+					'present_address' => $req->present_address ? $req->present_address : NULL,
+					'permanent_address' => $req->permanent_address ? $req->permanent_address : NULL,
+					'dob' => $req->dob ? new Carbon($req->dob): NULL,
+					'nid' => $req->nid ? $req->nid : NULL,
+					'gender' => $req->gender ? $req->gender : NULL,
+					'religion' => $req->religion ? $req->religion : NULL,
+					'current_salary' => $req->current_salary ? $req->current_salary : NULL,
+					'designation_id' => $req->designation_id ? $req->designation_id : NULL,
+					'joining_date' => $req->joining_date ? new Carbon($req->joining_date) : NULL,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
 				]);
 
-				model('Employee')::where('id', $data->id)->update([
-					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($data->id, 3, "0", STR_PAD_LEFT)
+				if ($req->photo instanceof \Illuminate\Http\UploadedFile) {
+
+                    $media = upload_media($req->photo, [
+                        'model' => get_class($employee),
+                        'model_id' => $employee->id,
+                    ]);
+
+					if ($media) {
+                        $employee->media_id = $media ? $media->id : NULL;
+                        $employee->save();
+                    }
+                }
+
+				model('Employee')::where('id', $employee->id)->update([
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($employee->id, 3, "0", STR_PAD_LEFT)
 				]);
 
 				model('EmployeeSalaryHistory')::create([
 					'company_id' => $user->company_id,
-					'employee_id' => $data->id,
+					'employee_id' => $employee->id,
 					'salary' => $req->current_salary,
-					'start_date'=>$req->joining_date,
+					'start_date' => $req->joining_date,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
 				]);
 
 				DB::commit();
 
-				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
-
 				return res_msg('Employee created successfully!', 200);
+
 			} catch (\Throwable $e) {
 				DB::rollback();
-				return response(['msg' => 'Wrong data entry'], 422);
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
 		}else if($name == "update_employee_data"){
 
             $validator = Validator::make($req->all(), [
 				'id' => 'required',
-				'name' => 'required'
-			]);
+				'name' => 'required',
+				'current_salary' => 'required',
+				'joining_date' => 'required',
+			],[
+                'name.required' => 'The Name field is required',
+                'current_salary.required' => 'The Current Salary field is required',
+                'joining_date.required' => 'The Joining date field is required',
+            ]);
 
 			if ($validator->fails()) {
 				$errors = $validator->errors()->all();
@@ -1940,46 +2125,53 @@ class AjaxController extends Controller
 			DB::beginTransaction();
 
 			try {
-                $Employee = model('Employee')::find($req->id);
 
-				if ($Employee->photo != NULL && file_exists(public_path('uploads/photo/'.$Employee->photo)) && $req->file('photo')) {
-					unlink(public_path('uploads/photo/'.$Employee->photo));
-				}
+                $employee = model('Employee')::find($req->id);
 
-				$fileName = NULL;
-
-				if ($req->file('photo')) {
-					$fileName = 'emp-' . time() . '.' . $req->photo->extension();
-				}
-
-				$data = $Employee->update([
+				$employee->update([
 					'name' => $req->name,
-					'email' => $req->email,
-					'phone1' => $req->phone1,
-					'phone2' => $req->phone2,
-					'present_address' => $req->present_address,
-					'permanent_address' => $req->permanent_address,
+					'email' => $req->email == 'null' ? NULL : $req->email,
+					'phone1' => $req->phone1 == 'null' ? NULL : $req->phone1,
+					'phone2' => $req->phone2 == 'null' ? NULL : $req->phone2,
+					'present_address' => $req->present_address == 'null' ? NULL : $req->present_address,
+					'permanent_address' => $req->permanent_address == 'null' ? NULL : $req->permanent_address,
 					'dob' => $req->dob == 'null' ? NULL : new Carbon($req->dob),
-					'nid' => $req->nid,
-					'gender' => $req->gender,
-					'religion' => $req->religion,
+					'nid' => $req->nid == 'null' ? NULL : $req->nid,
+					'gender' => $req->gender == 'null' ? NULL : $req->gender,
+					'religion' => $req->religion == 'null' ? NULL : $req->religion,
 					'designation_id' => $req->designation_id == 'null' ? NULL : $req->designation_id,
 					'joining_date' => $req->joining_date == 'null' ? NULL : new Carbon($req->joining_date),
 					// 'photo'=>$fileName ? $fileName : NULL,
 					'active' => $req->active == 'false' ? 0 : 1,
+					'current_salary' => $req->current_salary,
 					'updated_at' => Carbon::now()
 				]);
+
+                if ($req->photo instanceof \Illuminate\Http\UploadedFile) {
+
+                    if ($employee->media_id) {
+                        delete_media($employee->media_id);
+                    }
+
+                    $media = upload_media($req->photo, [
+                        'model' => get_class($employee),
+                        'model_id' => $employee->id,
+                    ]);
+
+					if ($media) {
+                        $employee->media_id = $media ? $media->id : NULL;
+                        $employee->save();
+                    }
+                }
 
 
 				DB::commit();
 
-				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
-
 				return res_msg('Employee updated successfully!', 200);
+
 			} catch (\Throwable $e) {
-				// return response(['msg' => 'Wrong data entry'], 422);
-				return response(['msg' => $e->errorInfo], 422);
-				DB::rollback();
+                DB::rollback();
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
 		} else if($name == 'delete_employee_data'){
 
@@ -1990,6 +2182,7 @@ class AjaxController extends Controller
 			$employee->delete();
 
 			return res_msg('Employee deleted successfully!', 200);
+
 		} else if ($name == 'store_customer_data') {
 
 			$validator = Validator::make($req->all(), [
@@ -2029,8 +2222,8 @@ class AjaxController extends Controller
 				return res_msg('Customer inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
 
 		} else if ($name == 'update_customer_data') {
@@ -2071,8 +2264,8 @@ class AjaxController extends Controller
 				return res_msg('Customer updated successfully!', 200);
 
 			} catch (\Throwable $e) {
-				return response(['msg' => 'Wrong data entry'], 422);
 				DB::rollback();
+				return response([ 'msg' => 'Wrong data entry', 'error' => $e ], 422);
 			}
 
 		} else if ($name == 'delete_customer_data') {
@@ -2081,6 +2274,7 @@ class AjaxController extends Controller
 			$customer->delete();
 
 			return res_msg('Customer deleted successfully!', 200);
+
 		} else if($name == 'update_employee_attendance'){
 
 			$employeeAttendance = model('EmployeeAttendance')::where([
@@ -2155,11 +2349,13 @@ class AjaxController extends Controller
 
             $customer_id = $req->customer_id;
 
+            // return $req->all();
+
             DB::beginTransaction();
 
             try {
 
-                if (empty($req->customer_id) && $req->phone) {
+                if (empty($req->customer_id)) {
 
                     $customer = model('Customer')::create([
                         'company_id' => $user->company_id,
@@ -2407,11 +2603,13 @@ class AjaxController extends Controller
             }
 
             $productInvoice->payment_status_id = $req->payment_status_id;
+            $productInvoice->notes = $req->notes;
             $productInvoice->save();
 
 			return res_msg("Invoice payment added successfully", 200);
 
 		}else if($name == "update_holiday_data"){
+
 			$validator = Validator::make($req->all(), [
 				'name' => 'required',
 				'from' => 'required'
@@ -2441,7 +2639,9 @@ class AjaxController extends Controller
 			]);
 
 			return res_msg('Holiday update successfully', 200, []);
+
 		}else if($name == "store_holiday_data"){
+
 			$validator = Validator::make($req->all(), [
 				'name' => 'required',
 				'from' => 'required'
@@ -2473,14 +2673,19 @@ class AjaxController extends Controller
 
 
 			return res_msg('Holiday create successfully', 200, []);
+
 		}else if($name == 'delete_holiday_data'){
+
 			model('Holiday')::where('id', $req->id)->delete();
 			return res_msg('Holiday deleted successfully', 200, []);
-		}
-		else if($name == 'delete_attendance_data'){
+
+		} else if($name == 'delete_attendance_data'){
+
 			model('EmployeeAttendance')::where('id', $req->id)->delete();
 			return res_msg('Attendance deleted successfully', 200, []);
-		}else if($name == 'forgot_password'){
+
+		} else if($name == 'forgot_password'){
+
 			$validator= Validator::make($req->all(), [
 				'email'=>'required|email|exists:users,email',
 				'password'=>'required|string|min:8|max:30|required_with:confirm_password|same:confirm_password',
@@ -2498,7 +2703,7 @@ class AjaxController extends Controller
 
 			return res_msg('Password updated successfully', 200, []);
 
-		}if ($name == 'store_weekend_data') {
+		} else if ($name == 'store_weekend_data') {
 
 			$validator = Validator::make($req->all(), [
 				'day_name' => 'required',
@@ -2542,16 +2747,336 @@ class AjaxController extends Controller
 			]);
 
 			return res_msg('Weekend updated successfully!', 200);
-		}
+
+		} else if ($name == 'delete_permission_data') {
+
+            try {
+                $permissionDelete = model('Permission')::find($req->id);
+
+                if (!$permissionDelete) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Data not found',
+                    ], 422);
+                }
+
+                $permissionDelete->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data deleted Successfully',
+                    'data'  => $permissionDelete
+                ], 201);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else if ($name == 'store_permission_data') {
+
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            try {
+
+                $input = $request->all();
+                $input['active'] = $request->active == 'true' ? 1 : 0;
+                $model = model('Permission')::create($input);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data Created Successfully',
+                    'data'  => $model
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else if ($name == 'update_permission_data') {
+
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required'
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $permission = model('Permission')::find($req->id);
+
+            if (!$permission) {
+                return response([
+                    'success' => false,
+                    'message' => 'Data not found.'
+                ]);
+            }
+
+            try {
+
+                $permission->type  = $request->type;
+                $permission->name  = $request->name;
+                // $permission->code  = $request->code;
+                $permission->parent_id = $request->parent_id;
+                $permission->active = $request->active == 'true' ? 1 : 0;
+                $permission->save();
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data updated Successfully',
+                'data'    => $permission
+            ], 200);
+        } else if ($name == 'toggle_permission_active_status') {
+
+            $Permission = model('Permission')::find($req->id);
+            $Permission->active = $req->active == 'true' ? 1 : 0;
+            $Permission->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully!',
+                'data'    => $Permission
+            ], 200);
+
+            // return res_msg('Permission active status updated successfully!', 200);
+        } else  if ($name == 'store_role_data') {
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required',
+                'code' => 'required'
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            try {
+
+                $input = $request->all();
+                $model = model('Role')::create($input);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data Created Successfully',
+                    'data'  => $model
+                ], 201);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else if ($name == 'update_role_data') {
+
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required',
+                'code' => 'required'
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $role = model('Role')::find($req->id);
+
+            if (!$role) {
+                return response([
+                    'success' => false,
+                    'message' => 'Data not found.'
+                ]);
+            }
+
+            try {
+                $role->type  = $request->type;
+                $role->name  = $request->name;
+                $role->code  = $request->code;
+                $role->save();
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data update Successfully',
+                'data'    => $role
+            ], 200);
+        } else  if ($name == 'store_role_permission_data') {
+
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required',
+                'code' => 'required'
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            try {
+
+                if (!$req->role_permission_ids || count($req->role_permission_ids) < 1) {
+                    return res_msg('Please select permissions', 422);
+                }
+
+                $role = model('Role')::create([
+                    'company_id' => $user->company_id,
+                    'type' => $req->type,
+                    'name' => $req->name,
+                    'code' => $req->code,
+                ]);
+
+                foreach($req->role_permission_ids as $permission_id) {
+                    model('PermissionRole')::create([
+                        'permission_id' => (int) $permission_id,
+                        'role_id' => $role->id,
+                    ]);
+                }
+
+                return res_msg('Role permission inserted Successfully', 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+
+        } else  if ($name == 'update_role_permission_data') {
+
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'type' => 'required',
+                'code' => 'required'
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            try {
+
+                if (!$req->role_permission_ids || count($req->role_permission_ids) < 1) {
+                    return res_msg('Please select permissions', 422);
+                }
+
+                $role = model('Role')::find($req->id);
+                $role->update([
+                    // 'type' => $req->type,
+                    'name' => $req->name,
+                    // 'code' => $req->code,
+                ]);
+
+                model('PermissionRole')::where('role_id', $role->id)->delete();
+
+                foreach($req->role_permission_ids as $permission_id) {
+                    model('PermissionRole')::create([
+                        'permission_id' => (int) $permission_id,
+                        'role_id' => $role->id,
+                    ]);
+                }
+
+                return res_msg('Role permission updated Successfully', 200);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+
+        } else if ($name == 'toggle_role_active_status') {
+
+            $role = model('Role')::find($req->id);
+            $role->active = $req->active == 'true' ? 1 : 0;
+            $role->save();
+
+            return res_msg('Status Changed successfully!', 200,[
+                'data'    => $role
+            ]);
+
+        } else if ($name == 'delete_role_data') {
+
+            $roleDelete = model('Role')::find($req->id);
+
+            if (!$roleDelete) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data not found.'
+                ]);
+            }
+            $roleDelete->delete();
+
+            return res_msg('Role deleted successfully!', 200);
+
+        } else if ($name == 'delete_role_permission_data') {
+
+            $role = model('Role')::find($req->id);
+
+            if (!$role) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data not found.'
+                ]);
+            }
+            model('PermissionRole')::where('role_id', $role->id)->delete();
+            $role->delete();
+
+            return res_msg('Role permission deleted successfully!', 200);
+
+        }
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
 	}
 
 
-	public function download_pdf() {
-		$pdf = PDF::loadView('pdf.invoice')->setPaper('a4', 'portrait');
+	// public function download_pdf() {
 
+	// 	$pdf = PDF::loadView('pdf.invoice')->setPaper('a4', 'portrait');
+    //     return $pdf->stream('invoice.pdf');
 
-            return $pdf->stream('invoice.pdf');
-	}
+	// }
 }

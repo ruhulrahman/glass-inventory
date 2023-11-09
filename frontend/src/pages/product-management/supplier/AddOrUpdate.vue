@@ -55,6 +55,12 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
+              <q-input type="textarea" dark color="white" dense v-model="submitForm.bank_info" :label="$t('bank_info')"/>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-item-section>
               <q-toggle color="green" size="md" v-model="submitForm.active" val="md" :label="$t('is_active')" />
             </q-item-section>
           </q-item>
@@ -83,6 +89,7 @@ export default {
         phone1: '',
         phon2: '',
         note: '',
+        bank_info: '',
         active: true,
       }
     }

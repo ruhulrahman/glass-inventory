@@ -171,10 +171,10 @@ export default {
         is_employee: false
       },
       userTypes:[
-        'Admin',
-        'System Admin',
-        'Super Admin',
-        'User'
+        'admin',
+        'user',
+        'system_admin',
+        'super_admin'
       ],
       file: null,
       view_file: null,

@@ -34,7 +34,7 @@
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section side>
             <q-avatar size="100px">
-              <img v-if="view_file != null || editItem.photo != null" :src="view_file != null ? view_file : apiUrl('uploads/photo/'+editItem.photo)" />
+              <img v-if="view_file || editItem.photo_url" :src="view_file != null ? view_file : editItem.photo_url" />
               <img v-else :src="apiUrl('uploads/demo.jpg')" />
             </q-avatar>
           </q-item-section>
@@ -232,7 +232,6 @@
         </q-item>
 
         <q-item
-          v-if="employee.id == null"
           class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
           style="margin-top: 0px"
         >

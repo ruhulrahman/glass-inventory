@@ -82,6 +82,9 @@
               <q-td key="note" :props="props">
                 {{ props.row.note }}
               </q-td>
+              <q-td key="bank_info" :props="props">
+                {{ props.row.bank_info }}
+              </q-td>
               <q-td key="status" :props="props">
                 <q-badge :color="props.row.status_color" class="center">
                   {{ props.row.status }}
@@ -173,10 +176,11 @@ export default ({
           format: (val) => `${val}`,
           sortable: true,
         },
-        { name: "phone1", label: this.$t('supplier_name'), field: "phone1", sortable: true, align: "left" },
+        { name: "phone1", label: this.$t('phone1'), field: "phone1", sortable: true, align: "left" },
         { name: "email", label: this.$t('email'), field: "email", sortable: true, align: "left" },
         { name: "address", label: this.$t('address'), field: "address", sortable: true, align: "left" },
         { name: "note", label: this.$t('note'), field: "note", sortable: true, align: "left" },
+        { name: "bank_info", label: this.$t('bank_info'), field: "bank_info", sortable: true, align: "left" },
         { name: "status", label: this.$t('status'), field: "status", sortable: true, align: "left" },
         {
           name: "action",

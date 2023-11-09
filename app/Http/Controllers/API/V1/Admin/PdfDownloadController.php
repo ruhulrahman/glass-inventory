@@ -38,15 +38,15 @@ class PdfDownloadController extends Controller{
             }
 
 
-            $invoice_number = '#2306001';
-
             $auth_user = model('User')::with('company')->find($req->auth_user_id);
             $company = $auth_user->company;
             $searchingData->generated_by = $auth_user->name;
             // $searchingData->generated_at =  date("d M Y H:i:s a");
             $searchingData->generated_at =  date("d M Y");
 
-            $pdf = PDF::loadView('pdf.invoice',compact('invoice_number', 'invoice', 'searchingData', 'company'));
+            // info($company);
+
+            $pdf = PDF::loadView('pdf.invoice',compact('invoice', 'searchingData', 'company'));
             $fileName = 'invoice-#'.$invoice->invoice_code.'-'.date("d-m-Y-H-i-s");
             // return $pdf->download($fileName.'.pdf');
             return $pdf->stream($fileName.'.pdf');

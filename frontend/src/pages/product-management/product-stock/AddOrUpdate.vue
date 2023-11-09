@@ -52,14 +52,14 @@
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="number" min="0" dark color="white" dense v-model="submitForm.price" :label="$t('unit_price')"
+              <q-input type="number" step="0.01" dark color="white" dense v-model="submitForm.price" :label="$t('unit_price')"
                 :rules="[val => val > 0 || 'Please enter price']" />
             </q-item-section>
           </q-item>
 
           <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-input type="number" :disable="submitForm.id ? true : false" min="0" dark color="white" dense v-model="submitForm.quantity"
+              <q-input type="number" :disable="submitForm.id ? true : false" step="0.01" dark color="white" dense v-model="submitForm.quantity"
               :label="$t('product_quantity')" :rules="[val => val > 0 || 'Please enter quantity']" />
             </q-item-section>
           </q-item>

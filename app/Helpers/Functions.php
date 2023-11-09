@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Storage;
+
 $helpers=[
 	'js',
 	'css',
@@ -235,14 +237,12 @@ else{
 
 		do{
 	    	$filename=uniqid($media->id).'.'.$media->extension;
-		}while(\Storage::disk('media')->exists($filename));
+		}while(Storage::disk('media')->exists($filename));
 
 		$media->file=$filename;
 		$media->save();
 
-		$file->storeAs(NULL, $filename, 'media');
-
-		//\Storage::disk('media')->put($media->file, $file->getRealPath());
+        Storage::disk('media')->put($filename, $file->get());
 
 		return $media;
 
@@ -309,9 +309,9 @@ else{
 
 		if(empty($media)) return FALSE;
 
-		if(\Storage::disk('media')->exists($media->file)){
+		if(Storage::disk('media')->exists($media->file)){
 
-			\Storage::disk('media')->delete($media->file);
+			Storage::disk('media')->delete($media->file);
 
 		}
 

@@ -148,11 +148,19 @@
                 <q-input type="number" filled dense v-model="props.row.price" :label="$t('price')" input-class="text-right"
                   style="max-width: 130px" :rules="[val => val && val.length > 0 || 'Please enter price']" />
               </q-td>
+              <q-td key="stock" :props="props" class="q-mt-md">
+                {{ props.row.product_in_stock }}
+              </q-td>
               <q-td key="quantity" :props="props" class="q-mt-md">
                 <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)"
                   @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense
                   v-model="props.row.quantity" :label="$t('quantity')" input-class="text-right" style="max-width: 130px"
-                  :rules="[val => val && val.length > 0 || 'Please enter quantity']" />
+                  :error-message="quantityRule(props)"
+                  :error="!quantityIsValid(props)"/>
+                <!-- <q-input @blur="calculateUnitWisePrice(props.pageIndex)" @focus="calculateUnitWisePrice(props.pageIndex)"
+                  @update:model-value="calculateUnitWisePrice(props.pageIndex)" type="number" filled dense
+                  v-model="props.row.quantity" :label="$t('quantity')" input-class="text-right" style="max-width: 130px"
+                  :rules="[val => val && val.length > 0 || 'Please enter quantity']"/> -->
               </q-td>
               <q-td key="amount" :props="props" class="q-mt-md">
                 {{ props.row.amount }}
@@ -176,27 +184,26 @@
               <q-td></q-td>
             </q-tr>
             <q-tr>
-              <q-td colspan="6" class="text-right">
+              <q-td :colspan="submitForm.discount_type.label == 'Percentage' ? 4 : 5" class="text-right">
                 <b>{{ $t('discount') }}</b>
+              </q-td>
+              <q-td class="text-right">
+                <q-select filled dense
+                  v-model="submitForm.discount_type" :label="$t('discount_type')" style="min-width: 120px; max-width: 150px"
+                  :options="discountTypes">
+                </q-select>
+              </q-td>
+              <q-td v-if="submitForm.discount_type.label == 'Percentage'" class="text-right">
+                <q-input type="number" suffix="%" filled dense v-model="submitForm.discount_percentage" label="Percentage"
+                    input-class="text-right" />
               </q-td>
               <q-td class="text-right">
                 <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount"
                   input-class="text-right" />
               </q-td>
-              <!-- <q-td class="text-right">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <q-input type="number" filled dense v-model="submitForm.discount_amount" label="Amount"
-                    input-class="text-right" />
-                  </div>
-                  <div class="col-sm-6 text-right">
-                    <span class="text-right q-mt-sm">{{ submitForm.discount_amount }}</span>
-                  </div>
-                </div>
-              </q-td> -->
               <q-td></q-td>
             </q-tr>
-            <q-tr>
+            <!-- <q-tr>
               <q-td colspan="6" class="text-right">
                 <b>{{ $t('vat') }}</b>
               </q-td>
@@ -229,7 +236,7 @@
                 </div>
               </q-td>
               <q-td></q-td>
-            </q-tr>
+            </q-tr> -->
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="6" class="text-right">
                 <b>{{ $t('total_payable_amount') }}</b>
@@ -327,6 +334,7 @@ export default {
         po_no: '',
         payment_status_id: '',
         sub_total: 0,
+        discount_type: 'Amount',
         discount_percentage: 0,
         discount_amount: 0.00,
         vat_percentage: 0,
@@ -354,10 +362,15 @@ export default {
             product_stock_id: '',
             quantity: 0,
             price: 0.00,
+            product_in_stock: '',
             amount: 0.00,
           }
         ]
-      }
+      },
+      discountTypes: [
+        { id: "Amount", label: "Amount" },
+        { id: "Percentage", label: "Percentage" },
+      ]
     }
   },
   computed: {
@@ -368,6 +381,7 @@ export default {
         { name: "color", label: "Color", field: this.$t('color'), align: "left" },
         { name: "unit", label: "Unit", field: this.$t('unit'), align: "left" },
         { name: "price", label: this.$t('unit_price'), field: "price", align: "center" },
+        { name: "stock", label: this.$t('stock'), field: "stock", align: "center" },
         { name: "quantity", label: this.$t('quantity'), field: "quantity", align: "center" },
         { name: "amount", label: this.$t('amount'), field: "amount", align: "right" },
         { name: "action", label: this.$t('action'), field: "Action", align: "right" },
@@ -427,6 +441,35 @@ export default {
   mounted() {
   },
   methods: {
+    quantityIsValid: function (props) {
+      if (props.row.quantity){
+        const quantity = parseFloat(props.row.quantity)
+        const stock = parseFloat(props.row.product_in_stock)
+        if (quantity > stock) {
+          // console.log('quantity', quantity)
+          // console.log('stock', stock)
+          return 'Quantity crossed the stock limit'
+        } else {
+          return ''
+        }
+      } else {
+        return 'Please enter quantity'
+      }
+    },
+    quantityRule: function (props) {
+
+      if (props.row.quantity){
+        const quantity = parseFloat(props.row.quantity)
+        const stock = parseFloat(props.row.product_in_stock)
+        if (quantity > stock) {
+          // console.log('quantity', quantity)
+          // console.log('stock', stock)
+          return 'Quantity crossed the stock limit'
+        }
+      } else {
+        return 'Please enter quantity'
+      }
+    },
     calculateUnitWisePrice: function (index) {
       var quantity = 0;
       var unit_price = 0;
@@ -471,7 +514,7 @@ export default {
     },
     getProductPrice: async function (item, rowIndex) {
 
-      console.log('this.submitForm', this.submitForm)
+      // console.log('this.submitForm', this.submitForm)
 
       let ref = this;
       let jq = ref.jq();
@@ -485,6 +528,7 @@ export default {
 
         this.submitForm.details[objIndex].price = res.data.data ? res.data.data.selling_price : ''
         this.submitForm.details[objIndex].product_stock_id = res.data.data ? res.data.data.id : ''
+        this.submitForm.details[objIndex].product_in_stock = res.data.data ? res.data.data.product_in_stock : 0
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -499,6 +543,7 @@ export default {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
         this.submitForm = res.data.productInvoice
+        ref.form_data.discount_type = this.submitForm.discount_percentage > 0 ? 'Percentage' : 'Amount';
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -528,6 +573,8 @@ export default {
         // this.loading(true)
         let res = ''
         this.submitForm.sub_total = this.subTotalAmount
+        // console.log('this.submitForm', this.submitForm)
+        // return 0;
         if (this.submitForm.id) {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);
         } else {

@@ -5,18 +5,18 @@
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
       <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
-      <q-breadcrumbs-el :label="$t('employee_management')" icon="widgets" to="/" />
-      <q-breadcrumbs-el :label="$t('employee_list')" />
+      <q-breadcrumbs-el :label="$t('company_management')" icon="widgets" to="/" />
+      <q-breadcrumbs-el :label="$t('role_list')" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">{{ $t('employee_list') }}</div>
+          <div class="text-h6 col-10 text-grey-8">{{ $t('role_list') }}</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              {{ $t('add_new_employee') }}
+              {{ $t('add_new_role') }}
             </q-btn>
           </div>
         </div>
@@ -57,28 +57,18 @@
               <q-td key="sl" :props="props">
                 {{ props.row.sl }}
               </q-td>
+              <q-td key="type" :props="props">
+                {{ props.row.type }}
+              </q-td>
               <q-td key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="employee_code" :props="props">
-                {{ props.row.employee_code }}
-              </q-td>
-              <q-td key="email" :props="props">
-                {{ props.row.email }}
-              </q-td>
-              <q-td key="designation" :props="props">
-                {{ props.row.designation }}
-              </q-td>
               <q-td key="status" :props="props">
-                {{ props.row.status }}
-              </q-td>
-              <q-td key="photo" :props="props">
-                <img v-if="props.row.photo_url" style="width: 50px;border-radius: 50px;"
-                  :src="props.row.photo_url">
-                <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+                <q-badge :color="props.row.status_color">
+                  {{ props.row.status }}
+                </q-badge>
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
                 <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
@@ -87,18 +77,10 @@
         </q-table>
       </q-card-section>
     </q-card>
-    <q-dialog v-model="showAddNewDialog" position="right">
-      <create-employee :title="editItem.id ? $t('update') : $t('add_new_employee')" :companies="companies"
+    <!-- <q-dialog v-model="showAddNewDialog" position="right">
+        <add-or-update :title="editItem.id ? $t('update') : $t('add_new_permission')" :parentList="parentList"
         :editItem="editItem" @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
-    </q-dialog>
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-dialog v-model="showDetailsDialog">
-
-        <details-component :title="editItem.name + ' Details'" :editItem="editItem"
-          @closeModal="showDetailsDialog = false" />
-      </q-dialog>
-    </div>
+    </q-dialog> -->
   </q-page>
 </template>
 
@@ -108,18 +90,16 @@ import helperMixin from "../../../mixins/helper_mixin.js";
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from "vue";
 const metaData = {
-  title: "Employee List",
+  title: "Permission List",
   titleTemplate: (title) => `${title} - Inventory App`,
 };
-import createEmployee from "./AddOrUpdate.vue";
-import DetailsComponent from "./Details.vue";
+// import AddOrUpdate from "./AddOrUpdate.vue";
 
 export default {
-  name: "EmployeeList",
+  name: "PermissionList",
   mixins: [helperMixin],
   components: {
-    createEmployee,
-    DetailsComponent,
+    // AddOrUpdate,
   },
   setup() {
     useMeta(metaData);
@@ -134,11 +114,20 @@ export default {
     return {
       opened: false,
       showAddNewDialog: false,
-      showDetailsDialog: false,
       loading: false,
       departments: [],
       listData: [],
+      parentList: [],
       editItem: '',
+      search: {
+        name: '',
+        code: '',
+        type: null
+      },
+      typeList: [
+        { value: 'Page', label: 'Page' },
+        { value: 'Feature', label: 'Feature' }
+      ]
     };
   },
   computed: {
@@ -146,12 +135,9 @@ export default {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
           item.sl = i + 1
-          item.name = item.name
-          item.employee_code = item.employee_code
-          item.email = item.email
-          item.designation = item.designation ? item.designation.name : 'N/A'
-          item.status = item.active == 1 ? 'Active' : 'Inactive'
-          item.photo_url = item.photo_url ? item.photo_url : ''
+          item.active = item.active ? true : false
+          item.status = item.active ? 'Active' : 'Inactive'
+          item.status_color = item.active ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {
@@ -161,31 +147,26 @@ export default {
     columns: function () {
       return [
         { name: "sl", required: true, label: this.$t('sl'), align: "left", field: (row) => row.sl, format: (val) => `${val}`, sortable: true },
-        { name: "name", required: true, label: this.$t('employee_name'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
-        { name: "employee_code", required: true, align: "center", label: this.$t('employee_code'), field: "employee_code" },
-        { name: "email", label: this.$t('email'), field: "email" },
-        { name: "designation", label: this.$t('designation'), field: "designation" },
-        { name: "status", label: this.$t('status'), field: "status" },
-        { name: "photo", label: this.$t('photo'), field: "photo" },
-        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" },
+        { name: "type", label: this.$t('type'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
+        { name: "name", label: this.$t('name'), field: "name", align: "left" },
+        { name: "status", label: this.$t('status'), field: "status", align: "left" },
+        { name: "action", label: this.$t('action'), field: "action", sortable: false, align: "center" },
       ];
     }
   },
   mounted() {
     this.getListData();
-    // this.getCompanytList();
   },
   methods: {
     openAddNewDialog: function () {
-      this.editItem = ''
-      this.showAddNewDialog = true
+      this.$router.push('/add-or-update-role')
     },
     getListData: async function () {
       let ref = this;
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_employee_list'));
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_role_list'), this.search);
         this.listData = res.data.data
 
       } catch (err) {
@@ -197,11 +178,6 @@ export default {
     editData: async function (item) {
       this.editItem = this.clone_object(item)
       this.showAddNewDialog = true
-    },
-    detailsData: async function (item) {
-      this.editItem = this.clone_object(item)
-      // console.log(this.editItem);
-      this.showDetailsDialog = true
     },
     deleteData: async function (item) {
       Dialog.create({
@@ -221,7 +197,7 @@ export default {
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_employee_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_role_permission_data'), item);
         this.notify(res.msg)
         this.getListData()
 

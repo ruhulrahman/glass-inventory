@@ -288,6 +288,24 @@
               </q-item-section>
             </q-item>
 
+            <q-item to="/permission-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('permission_list') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item to="/role-list" active-class="q-item-no-link-highlighting">
+              <q-item-section avatar>
+                <q-icon name="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('role_list') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item to="/user-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="person" />
@@ -626,8 +644,8 @@ import helperMixin from '../mixins/helper_mixin.js'
 
 import { defineComponent, ref } from 'vue'
 import { useQuasar, useMeta } from "quasar";
-import ForgotPass from "../pages/configs/users/ForgotPass.vue";
-import UserProfile from "../pages/configs/users/Profile.vue";
+import ForgotPass from "../pages/company-management/users/ForgotPass.vue";
+import UserProfile from "../pages/company-management/users/Profile.vue";
 
 
 const metaData = {

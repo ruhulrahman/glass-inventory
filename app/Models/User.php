@@ -46,11 +46,26 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = ['avatar'];
+
     public function employee(){
         return $this->hasOne(Employee::class, 'user_id');
     }
 
     public function company(){
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function getAvatarAttribute(){
+
+        if($this->media_id){
+            return media_url($this->media_id);
+        }else{
+            return NULL;
+        }
     }
 }

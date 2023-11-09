@@ -228,7 +228,7 @@ export default ({
         { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
         { name: "invoice_code", field: "invoice_code", label: this.$t('invoice_code'), sortable: true, align: "left" },
         { name: "customer", field: "customer", label: this.$t('customer'), sortable: true, align: "left" },
-        { name: "invoice_date", field: "invoice_date", label: this.$t('sl'), sortable: true, align: "left" },
+        { name: "invoice_date", field: "invoice_date", label: this.$t('invoice_date'), sortable: true, align: "left" },
         { name: "total_payable_amount", field: "total_payable_amount", label: this.$t('payable_amount'), sortable: true, align: "right" },
         { name: "paid_amount", field: "paid_amount", label: this.$t('paid_amount'), sortable: true, align: "right" },
         { name: "due_amount", field: "due_amount", label: this.$t('due_amount'), sortable: true, align: "right" },

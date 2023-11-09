@@ -2064,11 +2064,7 @@
     <div class="container">
         <div class="invoice-top">
             <div class="left">
-                @if($company->name)
-                <img src="{{ $company->media_url }}" class="logo" alt="LOGO">
-                @else
                 <img src="{{url('bg-img/logo.jpg')}}" class="logo" alt="LOGO">
-                @endif
             </div>
             <div class="right">
                 <span class="invoice-title">Invoice</span>
@@ -2144,8 +2140,8 @@
                             <td class="tm_width_2">{{ $item->product_type }}</td>
                             <td class="tm_width_2">{{ $item->category }}</td>
                             <td class="tm_width_2">{{ $item->color }}</td>
-                            <td class="tm_width_2 tm_text_right">{{ $item->price }}</td>
                             <td class="tm_width_2">{{ $item->quantity }} {{ $item->unit }}</td>
+                            <td class="tm_width_2 tm_text_right">{{ $item->price }}</td>
                             <td class="tm_width_2 tm_text_right">{{ $item->amount }}</td>
                         </tr>
                     @endforeach
@@ -2165,14 +2161,14 @@
                                 <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Discount <span class="tm_ternary_color">({{ $invoice->discount_percentage }}%)</span></td>
                                 <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->discount_amount }}</td>
                             </tr>
-                            {{-- <tr>
+                            <tr>
                                 <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Tax <span class="tm_ternary_color">({{ $invoice->tax_percentage }}%)</span></td>
                                 <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->tax_amount }}</td>
                             </tr>
                             <tr>
                                 <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Vat <span class="tm_ternary_color">({{ $invoice->vat_percentage }}%)</span></td>
                                 <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{ $invoice->vat_amount }}</td>
-                            </tr> --}}
+                            </tr>
                             <tr class="tm_border_top tm_border_bottom">
                                 <td class="tm_width_3 tm_border_top_0 tm_bold tm_primary_color">Total Payable Amount</td>
                                 <td class="tm_width_3 tm_border_top_0 tm_bold tm_primary_color tm_text_right">{{ $invoice->total_payable_amount }}</td>

@@ -18,5 +18,5 @@ Route::middleware('auth:sanctum')->group(function(){
 
 });
 
-Route::get('generate_invoice_pdf', [AuthController::class, 'generate_invoice_pdf'])->name('generate_invoice_pdf');
+// Route::get('generate_invoice_pdf', [AuthController::class, 'generate_invoice_pdf'])->name('generate_invoice_pdf');
 Route::get('/download/{name}/{hash_args?}', [PdfDownloadController::class, 'index'])->name('index');

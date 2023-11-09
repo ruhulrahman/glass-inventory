@@ -119,13 +119,13 @@
             </q-tr>
             <q-tr>
               <q-td colspan="7" class="text-right">
-                <b>{{ $t('discount') }}</b>
+                <b>{{ $t('discount') }} ({{ submitForm.discount_percentage }}%)</b>
               </q-td>
               <q-td class="text-right">
                 {{ submitForm.discount_amount }}
               </q-td>
             </q-tr>
-            <q-tr>
+            <!-- <q-tr>
               <q-td colspan="7" class="text-right">
                 <b>{{ $t('vat') }} ({{ submitForm.vat_percentage }}%)</b>
               </q-td>
@@ -140,7 +140,7 @@
               <q-td class="text-right">
                 {{ submitForm.tax_amount }}
               </q-td>
-            </q-tr>
+            </q-tr> -->
             <q-tr class="bg-blue-grey-1">
               <q-td colspan="7" class="text-right">
                 <b>{{ $t('total_payable_amount') }}</b>
@@ -176,6 +176,13 @@
               </q-td>
               <q-td v-if="showDueAmount" class="text-right">
                 <q-input bg-color="green-1" type="number" filled dense v-model="pay_due_amount" label="Pay Due Amount"
+                  input-class="text-right" />
+              </q-td>
+            </q-tr>
+            <q-tr v-if="submitForm.notes || showDueAmount">
+              <q-td colspan="5" class="text-right"></q-td>
+              <q-td colspan="4" class="text-right">
+                <q-input bg-color="green-1" type="text" filled dense v-model="submitForm.notes" :label="$t('note')"
                   input-class="text-right" />
               </q-td>
             </q-tr>
@@ -266,7 +273,7 @@ export default {
         customer_phone: '',
         invoice_date: '',
         due_date: '',
-        note: '',
+        notes: '',
         po_no: '',
         payment_status_id: '',
         sub_total: 0,
@@ -448,7 +455,8 @@ export default {
         const params = {
           payment_status_id: this.submitForm.payment_status_id,
           product_invoice_id: this.submitForm.id,
-          paid_amount: this.pay_due_amount
+          paid_amount: this.pay_due_amount,
+          notes: this.submitForm.notes,
         }
         const res = await jq.post(ref.apiUrl('api/v1/admin/ajax/store_product_invoice_payment_data'), params);
         this.notify(res.msg)

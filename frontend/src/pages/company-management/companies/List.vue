@@ -83,7 +83,7 @@
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
-                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
+                <!-- <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense /> -->
               </q-td>
             </q-tr>
           </template>

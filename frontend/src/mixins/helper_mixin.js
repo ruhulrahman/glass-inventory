@@ -328,6 +328,8 @@ export default {
                 return null;
             }
 
+            console.log('err', err)
+
             var msg = "Request failed to process, try again later.";
 
             if (err.responseJSON && err.responseJSON.msg) {
