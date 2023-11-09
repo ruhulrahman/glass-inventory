@@ -217,4 +217,5 @@ export default {
   code: 'কোড',
   add_new_role: 'নতুন রোল যোগ করুন',
   add_new_role_permission: 'নতুন রোলের অনুমতি যোগ করুন',
+  role_name: 'রোলের নাম',
 }

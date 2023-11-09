@@ -20,16 +20,14 @@
           </q-item>
         </q-card-section>
         <q-separator></q-separator>
-        <q-card-section>
-          <q-card-section class="q-pa-sm row">
-            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <q-item-section>
-                <q-input type="text" dark color="white" round v-model="form.name" :label="$t('name')" :rules="[
-                  (val) => (val && val.length > 0) || 'Enter role name',
-                ]" />
-              </q-item-section>
-            </q-item>
-          </q-card-section>
+        <q-card-section class="q-pa-sm row">
+          <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input type="text" dark color="white" round v-model="form.name" :label="$t('role_name')" :rules="[
+                (val) => (val && val.length > 0) || 'Enter role name',
+              ]" />
+            </q-item-section>
+          </q-item>
         </q-card-section>
       </q-card>
 
@@ -37,8 +35,8 @@
 
         <q-card class="bg-primary text-white no-shadow q-mt-lg" bordered>
 
-          <q-card-section class="q-pa-sm row">
-            <q-item class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+          <div class="q-pa-sm row">
+            <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
               <q-checkbox
                 size="xs"
                 :id="'checkbox-' + index"
@@ -48,8 +46,8 @@
                 color="green"
                 keep-color
                 />
-            </q-item>
-            <q-item class="col-lg-2 col-md-2 col-sm-12 col-xs-12 text-right">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 text-right">
               <q-checkbox
                 size="xs"
                 :id="'selectAll-' + index"
@@ -62,15 +60,15 @@
                 color="green"
                 keep-color
                 />
-            </q-item>
-          </q-card-section>
+            </div>
+          </div>
 
 
           <div class="q-pa-sm row">
             <div class="col-lg-12">
               <q-separator v-if="item.children_pages.length"></q-separator>
-              <h6 v-if="item.children_pages.length">Page</h6>
-              <div class="row" v-if="item.children_pages.length" style="margin-left: 10px;">
+              <h6 v-if="item.children_pages.length" style="margin: 10px 10px;">Page</h6>
+              <div class="row q-mb-lg" v-if="item.children_pages.length">
                 <div class="col-lg-3" v-for="(childPage, childPageIndex) in item.children_pages" :key="childPageIndex">
                   <q-checkbox
                     size="xs"
@@ -85,8 +83,8 @@
               </div>
 
               <q-separator v-if="item.children_operations.length"></q-separator>
-              <h6 v-if="item.children_operations.length">Operation</h6>
-              <div class="row" v-if="item.children_operations.length" style="margin-left: 10px;">
+              <h6 v-if="item.children_operations.length" style="margin: 10px 10px;">Operation</h6>
+              <div class="row" v-if="item.children_operations.length">
                 <div class="col-lg-3" v-for="(childOperation, childOperationIndex) in item.children_operations" :key="childOperationIndex">
                   <q-checkbox
                     size="xs"
@@ -111,7 +109,6 @@
           {{ $t('save') }}
         </q-btn>
       </q-card-actions>
-      {{ form.role_permission_ids }}
     </q-form>
   </q-page>
 </template>

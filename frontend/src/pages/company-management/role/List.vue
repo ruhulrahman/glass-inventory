@@ -70,7 +70,7 @@
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
-                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
+                <q-btn v-if="props.row.code != 'super_admin'" @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -178,6 +178,7 @@ export default {
     editData: async function (item) {
       this.editItem = this.clone_object(item)
       this.showAddNewDialog = true
+      this.$router.push('/add-or-update-role/'+ item.id)
     },
     deleteData: async function (item) {
       Dialog.create({

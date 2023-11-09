@@ -216,4 +216,5 @@ export default {
   code: 'Code',
   add_new_role: 'Add New Role',
   add_new_role_permission: 'Add New Role Permission',
+  role_name: 'Role Name',
 }
