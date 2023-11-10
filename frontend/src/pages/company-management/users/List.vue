@@ -73,14 +73,19 @@
                 {{ props.row.role ? props.row.role.name : ''}}
               </q-td>
               <q-td key="photo" :props="props">
-                <img v-if="props.row.photo != 'NA'" style="width: 50px; height: 50px; border-radius: 100%;"
-                  :src="apiUrl('uploads/photo/' + props.row.photo)">
+                <img v-if="props.row.avatar" style="width: 50px; height: 50px; border-radius: 100%;"
+                  :src="props.row.avatar">
                 <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+              </q-td>
+              <q-td key="status" :props="props">
+                <q-badge :color="props.row.status_color">
+                  {{ props.row.status }}
+                </q-badge>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
-                <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
+                <q-btn v-if="props.row.role.code != 'super_admin'" @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
             </q-tr>
           </template>
@@ -158,6 +163,9 @@ export default {
           item.emaill = item.emaill
           item.photo = item.photo ? item.photo : 'NA'
           item.user_type = item.user_type
+          item.active = item.active ? true : false
+          item.status = item.active ? 'Active' : 'Inactive'
+          item.status_color = item.active ? 'green' : 'red'
           return Object.assign(item)
         })
       } else {
@@ -173,6 +181,7 @@ export default {
         // { name: "user_type", label: this.$t('user_type'), field: "user_type" },
         { name: "user_role", label: this.$t('user_role'), field: "user_role", align: "left" },
         { name: "photo", label: this.$t('photo'), field: "photo" },
+        { name: "status", label: this.$t('status'), field: "status", sortable: true },
         { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" }
       ];
     }

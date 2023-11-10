@@ -218,4 +218,5 @@ export default {
   add_new_role_permission: 'Add New Role Permission',
   role_name: 'Role Name',
   user_role: 'User Role',
+  is_employee: 'Ts Xmployee',
 }

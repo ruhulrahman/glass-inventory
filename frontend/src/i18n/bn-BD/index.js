@@ -219,4 +219,5 @@ export default {
   add_new_role_permission: 'নতুন রোলের অনুমতি যোগ করুন',
   role_name: 'রোলের নাম',
   user_role: 'ব্যবহারকারীর রোল',
+  is_employee: 'কর্মচারী',
 }

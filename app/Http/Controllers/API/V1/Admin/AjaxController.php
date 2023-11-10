@@ -1513,32 +1513,39 @@ class AjaxController extends Controller
 			DB::beginTransaction();
 
 			try {
-				$fileName = '';
 
-				if ($req->file('photo')) {
-					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
-
-				}
-
-				$data = model('User')::create([
+				$user = model('User')::create([
 					'company_id' => $user->company_id,
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
-					'photo' => $fileName,
 					'user_type' => $req->user_type,
 					'role_id' => $req->role_id,
+					'active' => $req->active == 'false' ? 0 : 1,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => $carbon,
 				]);
 
+                if ($req->photo instanceof \Illuminate\Http\UploadedFile) {
+
+                    $media = upload_media($req->photo, [
+                        'model' => get_class($user),
+                        'model_id' => $user->id,
+                    ]);
+
+					if ($media) {
+                        $user->media_id = $media ? $media->id : NULL;
+                        $user->save();
+                    }
+                }
+
 				if($req->is_employee == 'true'){
 
 				model('Employee')::create([
-					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($data->id, 3, "0", STR_PAD_LEFT),
+					'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($user->id, 3, "0", STR_PAD_LEFT),
 					'company_id' => $user->company_id,
 					'first_name' => $req->name,
-					'user_id' => $data->id,
+					'user_id' => $user->id,
 					'email' => $req->email,
 					'created_at' => $carbon
 				]);
@@ -1547,7 +1554,6 @@ class AjaxController extends Controller
 
 
 				DB::commit();
-				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User inserted successfully!', 200);
 
 			} catch (\Throwable $e) {
@@ -1578,57 +1584,39 @@ class AjaxController extends Controller
 			try {
 				$user_data = model('User')::find($req->id);
 
-				if ($user_data->photo != NULL && file_exists(public_path('uploads/photo/'.$user_data->photo)) && $req->file('photo')) {
-					unlink(public_path('uploads/photo/'.$user_data->photo));
-				}
+				$user = model('User')::find($req->id);
 
-				$fileName = NULL;
-
-				if ($req->file('photo')) {
-					$fileName = 'photo-' . time() . '.' . $req->photo->extension();
-
-				}
-
-				model('User')::where('id', $req->id)->update([
+				$user->update([
 					'name' => $req->name,
 					'username' => $req->username,
 					'email' => $req->email,
-					'photo' => $fileName ? $fileName : $user_data->photo,
 					'user_type' => $req->user_type,
 					'role_id' => $req->role_id,
+					'active' => $req->active == 'false' ? 0 : 1,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
 
 				]);
 
-				if($req->is_employee == 'true'){
+                if ($req->photo instanceof \Illuminate\Http\UploadedFile) {
 
-					$employee = model('Employee')::where('user_id', $req->id)->first();
+                    if ($user->media_id) {
+                        delete_media($user->media_id);
+                    }
 
-					if($employee){
+                    $media = upload_media($req->photo, [
+                        'model' => get_class($user),
+                        'model_id' => $user->id,
+                    ]);
 
-						model('Employee')::where('user_id', $req->id)->update([
-							'name' => $req->name,
-							'email' => $req->email,
-							'updated_at' => $carbon
-						]);
-					}else{
-
-						model('Employee')::create([
-							'employee_code'=>substr(strtolower($req->name), 0, 3).'-'.str_pad($req->id, 3, "0", STR_PAD_LEFT),
-							'company_id' => $user->company_id,
-							'name' => $req->name,
-							'user_id' => $req->id,
-							'email' => $req->email,
-							'created_at' => $carbon
-						]);
-					}
-
-			    }
+					if ($media) {
+                        $user->media_id = $media ? $media->id : NULL;
+                        $user->save();
+                    }
+                }
 
 
 				DB::commit();
-				$fileName ? $req->photo->move(public_path('uploads/photo'), $fileName) : '';
 				return res_msg('User updated successfully!', 200);
 
 			} catch (\Throwable $e) {

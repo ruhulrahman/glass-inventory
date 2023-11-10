@@ -152,7 +152,13 @@
 
         <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
           <q-item-section>
-            <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_active')" />
+            <q-toggle color="green" size="md" v-model="user.active" val="md" :label="$t('is_active')" />
+          </q-item-section>
+        </q-item>
+
+        <q-item v-if="!user.id" class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_employee')" />
           </q-item-section>
         </q-item>
       </q-card-section>
@@ -186,6 +192,7 @@ export default {
         email: '',
         user_type: '',
         role_id: '',
+        active: true,
         is_employee: false
       },
       userTypes:[
@@ -219,6 +226,7 @@ export default {
       formData.append('photo',ref.file);
       formData.append('user_type',ref.user.user_type);
       formData.append('role_id',ref.user.role_id);
+      formData.append('active',ref.user.active);
       formData.append('is_employee',ref.user.is_employee);
         ref.wait_me(".wait_me");
 
