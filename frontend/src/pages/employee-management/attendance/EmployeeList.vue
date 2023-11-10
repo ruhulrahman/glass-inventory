@@ -4,19 +4,19 @@
       <template v-slot:separator>
         <q-icon size="1.2em" name="arrow_forward" color="green" />
       </template>
-      <q-breadcrumbs-el :label="$t('dashboard')" icon="home" to="/" />
-      <q-breadcrumbs-el :label="$t('company_management')" icon="widgets" to="/" />
-      <q-breadcrumbs-el :label="$t('user_list')" />
+      <q-breadcrumbs-el label="Dashboard" icon="home" to="/" />
+      <q-breadcrumbs-el label="Configuration" icon="widgets" to="/" />
+      <q-breadcrumbs-el label="Employee" />
     </q-breadcrumbs>
     <q-card class="no-shadow" bordered>
       <q-card-section>
         <div class="row">
-          <div class="text-h6 col-10 text-grey-8">{{ $t('user_list') }}</div>
+          <div class="text-h6 col-10 text-grey-8">Employee List</div>
           <div class="col-2 text-right">
             <q-btn glossy flat color="white" class="bg-green-7 d-block"
               style="text-transform: capitalize; padding: 0px 10px 0 19px" @click="openAddNewDialog()">
               <q-icon name="add_circle" style="margin-left: -13px !important"></q-icon>
-              {{ $t('add_new_user') }}
+              Attendence
             </q-btn>
           </div>
         </div>
@@ -25,8 +25,10 @@
       <q-card-section class="q-pa-none">
         <!-- <q-toggle v-model="loading" label="Loading state" class="q-mb-md" /> -->
         <q-table :dense="$q.screen.lt.md" flat bordered class="no-shadow wait_me" :rows="tableRow" :columns="columns"
-          row-key="name" no-data-label=" I didn't find anything for you" :loading="loading"
-          :pagination="initialPagination" :filter="filter">
+          row-key="name" no-data-label=" I didn't find anything for you"
+          :loading="loading"
+          :pagination="initialPagination"
+          :filter="filter">
           <template v-slot:top-right>
             <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Search">
               <template v-slot:append>
@@ -60,25 +62,24 @@
               <q-td key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="username" :props="props">
-                {{ props.row.username }}
+              <q-td key="employee_code" :props="props">
+                {{ props.row.employee_code }}
               </q-td>
               <q-td key="email" :props="props">
                 {{ props.row.email }}
               </q-td>
-              <!-- <q-td key="user_type" :props="props">
-                {{ props.row.user_type }}
-              </q-td> -->
-              <q-td key="user_role" :props="props">
-                {{ props.row.role ? props.row.role.name : ''}}
+              <q-td key="designation" :props="props">
+                  {{ props.row.designation }}
+              </q-td>
+              <q-td key="status" :props="props">
+                   {{props.row.status}}
               </q-td>
               <q-td key="photo" :props="props">
-                <img v-if="props.row.photo != 'NA'" style="width: 50px; height: 50px; border-radius: 100%;"
-                  :src="apiUrl('uploads/photo/' + props.row.photo)">
-                <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
+                  <img v-if="props.row.photo != 'NA'" style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/photo/'+props.row.photo)">
+                  <img v-else style="width: 50px;border-radius: 50px;" :src="apiUrl('uploads/demo.jpg')">
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="detailsData(props.row)" icon="visibility" class="text-blue" size="sm" flat dense></q-btn>
+                <q-btn @click="detailsData(props.row)" icon="details" size="sm" flat dense></q-btn>
                 <q-btn @click="editData(props.row)" icon="edit" size="sm" flat dense></q-btn>
                 <q-btn @click="deleteData(props.row)" icon="delete" size="sm" class="q-ml-sm" flat dense />
               </q-td>
@@ -87,45 +88,85 @@
         </q-table>
       </q-card-section>
     </q-card>
-    <q-dialog v-model="showAddNewDialog" position="right">
-      <create-user :title="editItem.id ? $t('update') : $t('add_new_user')"
-        :companies="companies"
-        :editItem="editItem"
-        :roleList="roleList"
-        @reloadListData="getListData"
-        @closeModal="showAddNewDialog = false"
+      <q-dialog v-model="showAddNewDialog" position="right">
+        <create-employee
+          :title="editItem.id ? 'Update Employee' : 'Create Employee'"
+          :companies="companies" :editItem="editItem"
+          @reloadListData="getListData" @closeModal="showAddNewDialog = false"
         />
-    </q-dialog>
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-dialog v-model="showDetailsDialog">
-
-        <details-component :title="editItem.name + ' Details'" :editItem="editItem"
-          @closeModal="showDetailsDialog = false" />
       </q-dialog>
-    </div>
 
+      <div class="q-pa-md q-gutter-sm">
+        <q-dialog v-model="showDetailsDialog">
+
+        <details-component
+          :title="editItem.name+' Details'"
+          :editItem="editItem"
+          @closeModal="showDetailsDialog = false"
+        />
+        </q-dialog>
+      </div>
   </q-page>
 </template>
 
 <script>
 import { useMeta, Dialog } from "quasar";
 import helperMixin from 'src/mixins/helper_mixin.js'
+
 import DialogConfirmationComponent from 'src/components/DialogConfirmationComponent.vue'
 import { ref } from "vue";
 const metaData = {
-  title: "User List",
+  title: "Employee List",
   titleTemplate: (title) => `${title} - Inventory App`,
 };
-import createUser from "./AddOrUpdate.vue";
-import DetailsComponent from "./Profile.vue";
+import createEmployee from "./AddOrUpdate.vue";
+import DetailsComponent from "./Details.vue";
+
+const columns = [
+    {
+    name: "sl",
+    required: true,
+    label: "#SL",
+    align: "left",
+    field: (row) => row.sl,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "name",
+    required: true,
+    label: "Employee Name",
+    align: "left",
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "employee_code",
+    required: true,
+    align: "center",
+    label: "Employee Code",
+    field: "employee_code"
+  },
+  { name: "email", label: "Email", field: "email"},
+  { name: "designation", label: "Designation", field: "designation" },
+  { name: "status", label: "Status", field: "status" },
+  { name: "photo", label: "Photo", field: "photo" },
+  {
+    name: "action",
+    label: "Action",
+    field: "action",
+    sortable: false,
+    align: "center",
+  },
+];
 
 export default {
-  name: "CompanyList",
+  name: "EmployeeList",
   mixins: [helperMixin],
   components: {
-    createUser,
-    DetailsComponent
+    createEmployee,
+    DetailsComponent,
   },
   setup() {
     useMeta(metaData);
@@ -134,55 +175,44 @@ export default {
     return {
       filter: ref(""),
       show_filter,
+      columns,
     };
   },
   data() {
     return {
       opened: false,
       showAddNewDialog: false,
+      showDetailsDialog: false,
       loading: false,
       departments: [],
       listData: [],
-      roleList: [],
       editItem: '',
-      showDetailsDialog: false
     };
   },
   computed: {
     tableRow: function () {
       if (this.listData.length) {
         return this.listData.map((item, i) => {
-          item.sl = i + 1
+          item.sl = i+1
           item.name = item.name
-          item.username = item.username
-          item.emaill = item.emaill
-          item.photo = item.photo ? item.photo : 'NA'
-          item.user_type = item.user_type
+          item.employee_code = item.employee_code
+          item.email = item.email
+          item.designation = item.designation ? item.designation.name : 'N/A'
+          item.status = item.active == 1 ? 'Active' : 'Inactive'
+          item.photo = item.photo != null ? item.photo : 'N/A'
           return Object.assign(item)
         })
       } else {
         return []
       }
-    },
-    columns: function () {
-      return [
-        { name: "sl", label: this.$t('sl'), field: "sl", sortable: true, align: "left" },
-        { name: "name", required: true, label: this.$t('name'), align: "left", field: (row) => row.name, format: (val) => `${val}`, sortable: true },
-        { name: "username", required: true, align: "left", label: this.$t('username'), field: "username" },
-        { name: "email", label: this.$t('email'), field: "email", align: "left" },
-        // { name: "user_type", label: this.$t('user_type'), field: "user_type" },
-        { name: "user_role", label: this.$t('user_role'), field: "user_role", align: "left" },
-        { name: "photo", label: this.$t('photo'), field: "photo" },
-        { name: "action", field: "Action", label: this.$t('action'), sortable: false, align: "center" }
-      ];
     }
   },
   mounted() {
     this.getListData();
-    this.getRoleList();
+    // this.getCompanytList();
   },
   methods: {
-    openAddNewDialog: function () {
+    openAddNewDialog: function() {
       this.editItem = ''
       this.showAddNewDialog = true
     },
@@ -191,8 +221,8 @@ export default {
       let jq = ref.jq();
       try {
         this.loading = true
-        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_user_list_with_pagination'));
-        this.listData = res.data.data.data
+        let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_employee_list'));
+        this.listData = res.data.data
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -200,27 +230,14 @@ export default {
         this.loading = false
       }
     },
-    getRoleList: async function () {
-      let ref = this;
-      let jq = ref.jq();
-      ref.wait_me(".wait_me1");
-
-      try {
-        let res = "";
-        res = await jq.get(
-          ref.apiUrl("api/v1/admin/ajax/get_role_dropdown_list")
-        );
-        ref.roleList = res.data;
-        console.log('res.data.data', res.data)
-      } catch (err) {
-        this.notify(this.err_msg(err), "negative");
-      } finally {
-        ref.wait_me(".wait_me1", "hide");
-      }
-    },
     editData: async function (item) {
       this.editItem = this.clone_object(item)
       this.showAddNewDialog = true
+    },
+    detailsData: async function(item){
+      this.editItem = this.clone_object(item)
+      // console.log(this.editItem);
+      this.showDetailsDialog = true
     },
     deleteData: async function (item) {
       Dialog.create({
@@ -240,7 +257,7 @@ export default {
       ref.wait_me(".wait_me");
 
       try {
-        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_user_data'), item);
+        let res = await jq.post(ref.apiUrl('api/v1/admin/ajax/delete_employee_data'), item);
         this.notify(res.msg)
         this.getListData()
 
@@ -249,36 +266,30 @@ export default {
       } finally {
         ref.wait_me(".wait_me", "hide");
       }
-    },
-    detailsData: async function (item) {
-      this.editItem = this.clone_object(item)
-      // console.log(this.editItem);
-      this.showDetailsDialog = true
-    },
+    }
   },
 };
 </script>
 
 <style scoped>
 .swal2-confirm {
-  border: 0;
-  border-radius: 0.25em;
-  background: initial;
-  background-color: #28a745 !important;
-  color: #fff;
-  font-size: 1em;
-  padding: 6px 21px !important;
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    background-color: #28a745 !important;
+    color: #fff;
+    font-size: 1em;
+    padding: 6px 21px !important;
 }
-
 .swal2-cancel {
-  border: 0;
-  border-radius: 0.25em;
-  background: initial;
-  /* background-color: #dc3741; */
-  background-color: rgb(244 67 54);
-  color: #fff;
-  font-size: 1em;
-  padding: 6px 21px !important;
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    /* background-color: #dc3741; */
+    background-color: rgb(244 67 54);
+    color: #fff;
+    font-size: 1em;
+    padding: 6px 21px !important;
 }
 </style>
 

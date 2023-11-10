@@ -129,11 +129,12 @@ class AjaxController extends Controller
 			]);
 		} else if ($name == 'get_user_list_with_pagination') {
 
-			$list = model('User')::with('employee')->where('company_id', $user->company_id)->orderBy('id', 'desc')->paginate($default_per_page);
+			$list = model('User')::with('employee', 'role')->where('company_id', $user->company_id)->orderBy('id', 'desc')->paginate($default_per_page);
 
 			return res_msg('list Data', 200, [
 				'data' => $list
 			]);
+
 		} else if ($name == 'get_user_list') {
 
 			$list = model('User')::where('company_id', $user->company_id)->orderBy('id', 'desc')->get();
@@ -1104,6 +1105,19 @@ class AjaxController extends Controller
                 'message' => 'Data fetch Sucessfully!',
                 'data' => $list
             ], 200);
+        } else if ($name == "get_role_dropdown_list") {
+
+            $list = DB::table('roles')
+            ->where('active', 1)
+            ->select('id', 'id as value', 'name', 'name as label')
+            ->orderBy('name', 'asc')
+            ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetch Sucessfully!',
+                'data' => $list
+            ], 200);
         }
 
 		return response(['msg' => 'Sorry!, found no named argument.'], 403);
@@ -1487,6 +1501,7 @@ class AjaxController extends Controller
 				// 'mobile' => 'required|numeric',
 				// 'password' => 'required|string|min:8',
 				'user_type' => 'required',
+				'role_id' => 'required',
 				// 'password'=>'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
 			]);
 
@@ -1512,6 +1527,7 @@ class AjaxController extends Controller
 					'email' => $req->email,
 					'photo' => $fileName,
 					'user_type' => $req->user_type,
+					'role_id' => $req->role_id,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => $carbon,
 				]);
@@ -1546,6 +1562,7 @@ class AjaxController extends Controller
 				'email' => 'required|email|unique:users,email,' . $req->id,
 				// 'mobile' => 'required|numeric',
 				'user_type' => 'required',
+				'role_id' => 'required',
 				// 'password'=>'required|string|min:8',
 				// 'password'=>'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
 			]);
@@ -1578,6 +1595,7 @@ class AjaxController extends Controller
 					'email' => $req->email,
 					'photo' => $fileName ? $fileName : $user_data->photo,
 					'user_type' => $req->user_type,
+					'role_id' => $req->role_id,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
 					'created_at' => Carbon::now()
 

@@ -73,7 +73,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
               type="text"
@@ -87,7 +87,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
               type="email"
@@ -116,7 +116,7 @@
           </q-file>
         </q-item> -->
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <!-- <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
           <q-item-section
             style="margin-top: -20px !important; font-size: 12px !important"
           >
@@ -131,13 +131,30 @@
             >
             </q-select>
           </q-item-section>
+        </q-item> -->
+
+        <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+          <q-item-section
+            style="margin-top: -20px !important; font-size: 12px !important"
+          >
+            <q-select
+              dark
+              color="white"
+              v-model="user.role_id"
+              :label="$t('user_role')"
+              :options="roleList"
+              emit-value
+              map-options
+            >
+            </q-select>
+          </q-item-section>
         </q-item>
 
-        <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_active')" />
-            </q-item-section>
-          </q-item>
+        <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_active')" />
+          </q-item-section>
+        </q-item>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
@@ -157,7 +174,7 @@
 import helperMixin from "src/mixins/helper_mixin.js";
 
 export default {
-  props: ["title", "editItem", "company"],
+  props: ["title", "editItem", "company", 'roleList'],
   mixins: [helperMixin],
   data() {
     return {
@@ -168,6 +185,7 @@ export default {
         photo: '',
         email: '',
         user_type: '',
+        role_id: '',
         is_employee: false
       },
       userTypes:[
@@ -181,8 +199,8 @@ export default {
     };
   },
   created() {
-  var ref = this;
-  if (ref.editItem) {
+    var ref = this;
+    if (ref.editItem) {
         ref.user = ref.editItem;
         ref.user.is_employee = ref.editItem.is_employee == 1 ? true : false;
     }
@@ -200,6 +218,7 @@ export default {
       formData.append('email',ref.user.email);
       formData.append('photo',ref.file);
       formData.append('user_type',ref.user.user_type);
+      formData.append('role_id',ref.user.role_id);
       formData.append('is_employee',ref.user.is_employee);
         ref.wait_me(".wait_me");
 

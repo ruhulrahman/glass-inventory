@@ -24,8 +24,6 @@ const routes = [
       {path: '/holidays', component: () => import('pages/company-management/holidays/List.vue')},
       {path: '/user-list', component: () => import('pages/company-management/users/List.vue')},
 
-      {path: '/employee-list', component: () => import('pages/configs/employees/List.vue')},
-
       {path: '/color-list', component: () => import('pages/product-management/color/List.vue')},
       {path: '/unit-list', component: () => import('pages/product-management/unit/List.vue')},
       {path: '/category-list', component: () => import('pages/product-management/category/List.vue')},
@@ -40,7 +38,8 @@ const routes = [
       {path: '/invoice-details/:id', component: () => import('pages/product-management/sale/InvoiceDetails.vue')},
       {path: '/customer-list', component: () => import('pages/product-management/customer/List.vue')},
 
-      {path: '/employee-attendances', component: () => import('pages/attendance/List.vue')},
+      {path: '/employee-list', component: () => import('pages/employee-management/employees/List.vue')},
+      {path: '/employee-attendances', component: () => import('pages/employee-management/attendance/List.vue')},
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},
