@@ -143,6 +143,7 @@
               v-model="user.role_id"
               :label="$t('user_role')"
               :options="roleList"
+              :rules="[(val) => (val && val != '') || 'Please Select Role']"
               emit-value
               map-options
             >
@@ -156,11 +157,39 @@
           </q-item-section>
         </q-item>
 
+        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-input
+              type="password"
+              dark
+              color="white"
+              v-model="user.password"
+              :label="$t('password')"
+              :rules="[(val) => (val && val != '') || 'Please enter your password']"
+            />
+          </q-item-section>
+        </q-item>
+
+        <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <q-item-section>
+            <q-input
+              type="confirm_password"
+              dark
+              color="white"
+              v-model="user.confirm_password"
+              :label="$t('confirm_password')"
+              :rules="[(val) => (val && val != '') || 'Please enter your confirm password']"
+            />
+          </q-item-section>
+        </q-item>
+
         <q-item v-if="!user.id" class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
           <q-item-section>
             <q-toggle color="green" size="md" v-model="user.is_employee" val="md" :label="$t('is_employee')" />
           </q-item-section>
         </q-item>
+
+
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
@@ -190,10 +219,12 @@ export default {
         username: '',
         photo: '',
         email: '',
-        user_type: '',
+        user_type: 'user',
         role_id: '',
         active: true,
-        is_employee: false
+        is_employee: false,
+        password: '',
+        confirm_password: '',
       },
       userTypes:[
         'admin',
@@ -228,6 +259,8 @@ export default {
       formData.append('role_id',ref.user.role_id);
       formData.append('active',ref.user.active);
       formData.append('is_employee',ref.user.is_employee);
+      formData.append('password',ref.user.password);
+      formData.append('confirm_password',ref.user.confirm_password);
         ref.wait_me(".wait_me");
 
       try {

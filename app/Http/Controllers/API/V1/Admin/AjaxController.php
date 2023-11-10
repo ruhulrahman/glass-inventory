@@ -1499,10 +1499,12 @@ class AjaxController extends Controller
 				'email' => 'required|email|unique:users,email',
 				'username'=>'required',
 				// 'mobile' => 'required|numeric',
-				// 'password' => 'required|string|min:8',
 				'user_type' => 'required',
 				'role_id' => 'required',
-				// 'password'=>'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+                'password' => 'required|string|min:8',
+                'confirm_password' => 'required|same:password',
+				// 'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
+				// 'confirm_password'=>'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
 			]);
 
 			if ($validator->fails()) {
@@ -1523,6 +1525,7 @@ class AjaxController extends Controller
 					'role_id' => $req->role_id,
 					'active' => $req->active == 'false' ? 0 : 1,
 					'is_employee' => $req->is_employee == 'false' ? 0 : 1,
+					'password' => bcrypt($req->password),
 					'created_at' => $carbon,
 				]);
 
@@ -1598,6 +1601,25 @@ class AjaxController extends Controller
 
 				]);
 
+
+                if ($req->password) {
+                    $validate = validate_ajax([
+                        'password' => 'required|string|min:8',
+                        'confirm_password' => 'required|same:password',
+                    ]);
+
+                    if ($validate->fails()) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'validation error',
+                            'errors' => $validate->errors()
+                        ], 422);
+                    }
+
+                    $user->password = bcrypt($req->password);
+                    $user->save();
+                }
+
                 if ($req->photo instanceof \Illuminate\Http\UploadedFile) {
 
                     if ($user->media_id) {
@@ -1628,12 +1650,12 @@ class AjaxController extends Controller
 
 			$user = model('User')::find($req->id);
 
-			$employee = model('Employee')::where('user_id',$req->id)->first();
+			// $employee = model('Employee')::where('user_id',$req->id)->first();
 
-            if ($employee) {
-                model('EmployeeSalaryHistory')::where('employee_id', $employee->id)->delete();
-                $employee->delete();
-            }
+            // if ($employee) {
+            //     model('EmployeeSalaryHistory')::where('employee_id', $employee->id)->delete();
+            //     $employee->delete();
+            // }
 
 			$user->delete();
 

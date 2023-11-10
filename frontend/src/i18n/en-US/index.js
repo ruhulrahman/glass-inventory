@@ -188,6 +188,7 @@ export default {
   photo: 'Photo',
   user_type: 'User Type',
   choose_photo: 'Choose Photo',
+  password: 'Password',
   old_password: 'Old Password',
   new_password: 'New Password',
   confirm_password: 'Confirm Password',

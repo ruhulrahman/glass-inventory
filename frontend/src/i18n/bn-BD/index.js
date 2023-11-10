@@ -189,6 +189,7 @@ export default {
   photo: 'ছবি',
   user_type: 'ব্যবহারকারীর ধরণ',
   choose_photo: 'ছবি পছন্দ করুন',
+  password: 'পাসওয়ার্ড',
   old_password: 'পুরানো পাসওয়ার্ড',
   new_password: 'নতুন পাসওয়ার্ড',
   confirm_password: 'পাসওয়ার্ড নিশ্চিত করুন',
