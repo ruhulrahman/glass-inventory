@@ -40,7 +40,6 @@
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Please enter password']"
               />
-              {{ permission_disable }}
 
               <div>
                 <q-btn type="submit" label="Login" style="float: right; margin-bottom: 10px;" class="bg-teal" color="secondary"/>
