@@ -44,6 +44,10 @@ $helpers=[
 	'tmp_aws_media',
 	'flag_url',
 	'lt_to_utc',
+	'has_permission',
+	'hash_ids',
+	'dateFormat',
+	'parse_excel_date',
 ];
 
 $helper_exists=FALSE;
@@ -966,5 +970,57 @@ else{
 		return $full_address;
 	}
 
+	function has_permission(\App\Models\User $user, $permission_code){
+
+		$permit_disabled=config('permission.disable_role_permission');
+
+		if($permit_disabled) return TRUE;
+
+		$permission_exists = \DB::table('permission_roles')->join(
+			'permissions', 'permission_roles.permission_id', '=', 'permissions.id'
+		)->where([
+			'permissions.code' => $permission_code,
+			'permission_roles.role_id' => $user->role_id
+		])->exists();
+
+		return $permission_exists;
+
+	}
+
+    // function hash_ids ($value, $encode = TRUE) {
+	// 	$hash_ids=new Hashids\Hashids('hashids_for_passing_url_id', 32);
+	// 	if ($encode) {
+	// 		return $hash_ids->encode($value);
+	// 	} else {
+	// 		return $hash_ids->decode($value);
+	// 	}
+	// }
+
+	function dateFormat ($date, $format = "d M Y") {
+		return date_format(date_create($date), $format);
+	}
+
+	function parse_excel_date($dt){
+
+		try{
+
+			if(empty($dt)){
+				return NULL;
+			}elseif(is_string($dt)){
+
+					return \Carbon\Carbon::createFromFormat('d/m/Y', $dt);
+
+			}elseif(is_int($dt)){
+
+				$excel_dt=\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dt);
+				return \Carbon\Carbon::parse($excel_dt);
+
+			}else return NULL;
+
+		}catch(\Exception $ex){
+			return NULL;
+		}
+
+	}
 }
 //End of function existance check

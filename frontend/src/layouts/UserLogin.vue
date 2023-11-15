@@ -40,6 +40,7 @@
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Please enter password']"
               />
+              {{ permission_disable }}
 
               <div>
                 <q-btn type="submit" label="Login" style="float: right; margin-bottom: 10px;" class="bg-teal" color="secondary"/>
@@ -58,6 +59,10 @@ import helperMixin from 'src/mixins/helper_mixin.js'
 import {defineComponent} from 'vue'
 import {ref} from 'vue'
 
+import { computed } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store.js';
+import { storeToRefs } from 'pinia';
+
 const metaData = {
   // sets document title
   title: 'Login Page',
@@ -74,7 +79,8 @@ export default defineComponent({
         user: {
           identity: '',
           password: ''
-        }
+        },
+        authStore: {},
     }
   },
   created: function () {
@@ -94,6 +100,12 @@ export default defineComponent({
             let res = await jq.post(ref.apiUrl('api/v1/admin/sign_in'), this.user);
             this.notify(res.msg)
 
+            const store = useAuthStore()
+            store.authUser = res.data.auth_user
+            store.userPermissions = res.data.user_permissions
+            console.log('store.authUser', store.authUser)
+            console.log('store.permission_disable', store.permission_disable)
+
             localStorage.setItem('api_token', res.data.api_token);
             localStorage.setItem('auth_user_id', res.data.auth_user.id);
 
@@ -109,13 +121,17 @@ export default defineComponent({
   },
   setup () {
     useMeta(metaData)
+    const store = useAuthStore();
+    const permission_disable = computed(() => store.permission_disable);
     // const email = ref(null)
     // const password = ref(null)
 
-    // return {
-    //   email,
-    //   password,
-    // }
+    return {
+      // email,
+      // password,
+      store,
+      permission_disable
+    }
 
   }
 })

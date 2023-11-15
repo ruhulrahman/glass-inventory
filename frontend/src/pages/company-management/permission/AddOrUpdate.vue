@@ -26,14 +26,14 @@
 
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
-            <q-input type="text" dark color="white" round v-model="form.code" :label="$t('code')" />
+            <q-input type="text" dark color="white" round v-model="form.code" :label="$t('code')"  :rules="[(val) => (val && val.length > 0) || 'Please enter unique code',]" />
           </q-item-section>
         </q-item>
 
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section style="margin-top: -15px !important; font-size: 15px !important">
             <q-select dark color="white" v-model="form.type" :options="typeList" :label="$t('type')" emit-value
-              map-options>
+              map-options :rules="[(val) => (val && val.length > 0) || 'Please select type',]" >
             </q-select>
           </q-item-section>
         </q-item>

@@ -8,6 +8,9 @@ import Hashids from "hashids";
 import { Notify, Loading } from 'quasar'
 import env from '../../config/env.js'
 
+import { computed } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store.js';
+
 waitMe($);
 
 
@@ -593,6 +596,37 @@ export default {
             };
         },
         has_permission: function (permit_code){
+
+            const store = useAuthStore();
+
+            let permission_disable = store.permission_disable
+
+            if(permission_disable){
+                return true;
+            }else if(permit_code){
+
+                if(permit_code == "permitted"){
+                    return true;
+                }else{
+
+                    const permissions = store.userPermissions
+
+                    if(permissions && permissions.length){
+
+                        const userPermission = permissions.find(
+                            (permission) => permission == permit_code
+                        );
+
+                        return userPermission == undefined ? false : true;
+
+                    } else {
+                        return false;
+                    }
+                }
+
+            }else return false;
+        },
+        has_permission2: function (permit_code){
 
             let permission_disable=this.$store.state.site.permission_disable;
 

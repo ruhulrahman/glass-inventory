@@ -42,7 +42,8 @@
           </q-btn> -->
           <q-btn round flat>
             <q-avatar size="26px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+              <img v-if="authUserData && authUserData.avatar" :src="authUserData.avatar">
+              <img v-else src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
 
             <q-menu>
@@ -108,6 +109,7 @@
             <q-item-label class="text-h6 text-green-13">{{ $t('glass_inventory') }}</q-item-label>
           </q-item-section>
         </q-item>
+
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard" />
@@ -118,10 +120,10 @@
         </q-item>
 
 
-        <q-expansion-item icon="inventory" :label="$t('product_management')">
+        <q-expansion-item v-if="has_permission('product_management')" icon="inventory" :label="$t('product_management')">
           <q-list class="q-pl-lg">
 
-            <q-item to="/supplier-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('supplier_list')" to="/supplier-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="airport_shuttle" color="light-blue" />
               </q-item-section>
@@ -130,7 +132,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/customer-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('customer_list')" to="/customer-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="people" color="deep-purple-11" />
               </q-item-section>
@@ -139,7 +141,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/color-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('color_list')" to="/color-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="palette" color="warning" />
               </q-item-section>
@@ -148,7 +150,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/unit-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('unit_list')" to="/unit-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="straighten" color="positive" />
               </q-item-section>
@@ -157,7 +159,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/category-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('category_list')" to="/category-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="category" color="pink" />
               </q-item-section>
@@ -166,7 +168,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/product-type-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('product_type_list')" to="/product-type-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="keyboard_alt" color="teal" />
               </q-item-section>
@@ -175,7 +177,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/product-stock-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('products_stock')" to="/product-stock-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="inventory" color="accent" />
               </q-item-section>
@@ -188,7 +190,7 @@
         </q-expansion-item>
 
 
-        <q-expansion-item>
+        <q-expansion-item v-if="has_permission('sales_management')">
           <template v-slot:header>
             <q-item-section avatar>
               <!-- <q-avatar icon="flag" color="primary" text-color="yellow" /> -->
@@ -200,7 +202,7 @@
           </template>
           <q-list class="q-pl-lg">
 
-            <q-item to="/sale-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('sales')" to="/sale-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="point_of_sale" color="light-green-14" />
               </q-item-section>
@@ -209,7 +211,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/benefit-or-loss-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('benefit_and_loss')" to="/benefit-or-loss-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="account_balance_wallet" color="indigo-4" />
               </q-item-section>
@@ -218,7 +220,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/due-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('due')" to="/due-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="money" color="deep-orange-13" />
               </q-item-section>
@@ -231,10 +233,10 @@
         </q-expansion-item>
 
 
-        <q-expansion-item icon="fas fa-building" :label="$t('company_management')">
+        <q-expansion-item icon="fas fa-building" :label="$t('company_management')" v-if="has_permission('company_management')">
           <q-list class="q-pl-lg">
 
-            <q-item to="/company-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('company_list')" to="/company-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="business" />
               </q-item-section>
@@ -243,7 +245,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/department-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('department_list')" to="/department-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="apartment" />
               </q-item-section>
@@ -252,7 +254,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/designation-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('designation_list')" to="/designation-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="business_center" />
               </q-item-section>
@@ -261,7 +263,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/company-bank-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('bank_list')" to="/company-bank-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="account_balance" />
               </q-item-section>
@@ -270,7 +272,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/weekends" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('weekend_list')" to="/weekends" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="watch" />
               </q-item-section>
@@ -279,7 +281,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/holidays" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('holiday_list')" to="/holidays" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="watch" />
               </q-item-section>
@@ -288,25 +290,25 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/permission-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('permission_list')" to="/permission-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="person" />
+                <q-icon name="lock_person" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ $t('permission_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item to="/role-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('role_list')" to="/role-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
-                <q-icon name="person" />
+                <q-icon name="accessibility" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ $t('role_list') }}</q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item to="/user-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('user_list')" to="/user-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="person" />
               </q-item-section>
@@ -319,10 +321,10 @@
         </q-expansion-item>
 
 
-        <q-expansion-item icon="far fa-address-card" :label="$t('employee_management')">
+        <q-expansion-item icon="far fa-address-card" :label="$t('employee_management')" v-if="has_permission('employee_management')">
           <q-list class="q-pl-lg">
 
-            <q-item to="/employee-list" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('employee_list')" to="/employee-list" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="badge" />
               </q-item-section>
@@ -331,7 +333,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item to="/employee-attendances" active-class="q-item-no-link-highlighting">
+            <q-item v-if="has_permission('attendance')" to="/employee-attendances" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
                 <q-icon name="fas fa-clipboard-user" />
               </q-item-section>
@@ -640,12 +642,15 @@
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
 import Messages from "./Messages.vue";
-import helperMixin from '../mixins/helper_mixin.js'
+import helperMixin from 'src/mixins/helper_mixin.js'
 
 import { defineComponent, ref } from 'vue'
 import { useQuasar, useMeta } from "quasar";
 import ForgotPass from "../pages/company-management/users/ForgotPass.vue";
 import UserProfile from "../pages/company-management/users/Profile.vue";
+
+import { computed } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store.js';
 
 
 const metaData = {
@@ -668,12 +673,19 @@ export default defineComponent({
     const leftDrawerOpen = ref(false)
     const $q = useQuasar()
 
+    const store = useAuthStore()
+    const authUserData = computed(() => store.authUser);
+    const userPermissions = computed(() => store.userPermissions);
+
     return {
       $q,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      store,
+      authUserData,
+      userPermissions
     }
   },
   data() {
@@ -694,6 +706,9 @@ export default defineComponent({
     }
   },
   created() {
+
+    // store.authUser = res.data.auth_user
+    // store.userPermissions = res.data.user_permissions
 
     let api_token = localStorage.getItem('api_token');
 
@@ -733,6 +748,11 @@ export default defineComponent({
       try {
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_auth_user'));
         ref.user = res.data.auth_user
+        
+        const store = useAuthStore()
+        store.authUser = res.data.auth_user
+        store.userPermissions = res.data.user_permissions
+
       } catch (error) {
         this.alert(ref.err_msg(error), 'error')
       }

@@ -184,7 +184,7 @@
               <q-td></q-td>
             </q-tr>
             <q-tr>
-              <q-td :colspan="submitForm.discount_type.label == 'Percentage' ? 4 : 5" class="text-right">
+              <q-td :colspan="submitForm.discount_type && submitForm.discount_type.label == 'Percentage' ? 4 : 5" class="text-right">
                 <b>{{ $t('discount') }}</b>
               </q-td>
               <q-td class="text-right">
@@ -193,7 +193,7 @@
                   :options="discountTypes">
                 </q-select>
               </q-td>
-              <q-td v-if="submitForm.discount_type.label == 'Percentage'" class="text-right">
+              <q-td v-if="submitForm.discount_type && submitForm.discount_type.label == 'Percentage'" class="text-right">
                 <q-input type="number" suffix="%" filled dense v-model="submitForm.discount_percentage" label="Percentage"
                     input-class="text-right" />
               </q-td>
@@ -278,14 +278,18 @@
               <q-td></q-td>
             </q-tr>
             <q-tr>
-              <q-td colspan="7" class="text-right">
+              <q-td colspan="3" class="text-right">
+                <q-toggle v-if="has_permission('show_vat_check_option')" color="green" size="md" v-model="submitForm.vat_user_can_see" val="md" :label="$t('vat_user_can_see')" />
+              </q-td>
+              <q-td colspan="4" class="text-right">
 
                 <q-btn glossy @click="saveInvoiceData()" flat color="white" class="bg-green-7 d-block"
                   style="text-transform: capitalize; padding: 0px 10px 0 19px">
                   {{ submitForm.id ? $t('update_invoice') : $t('save_invoice') }}
                 </q-btn>
               </q-td>
-              <q-td></q-td>
+              <q-td>
+              </q-td>
             </q-tr>
           </template>
         </q-table>
@@ -351,6 +355,7 @@ export default {
         supplier_id: '',
         product_code: '',
         active: true,
+        vat_user_can_see: false,
         details: [
           {
             id: '',
@@ -543,7 +548,7 @@ export default {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_product_invoice_data_by_id'), { id: productInvoiceId});
         this.submitForm = res.data.productInvoice
-        ref.form_data.discount_type = this.submitForm.discount_percentage > 0 ? 'Percentage' : 'Amount';
+        this.submitForm.discount_type = this.submitForm.discount_percentage > 0 ? 'Percentage' : 'Amount';
 
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
@@ -574,6 +579,9 @@ export default {
         let res = ''
         this.submitForm.sub_total = this.subTotalAmount
         // console.log('this.submitForm', this.submitForm)
+        if (!has_permission('show_vat_check_option')) {
+          this.submitForm.vat_user_can_see = true
+        }
         // return 0;
         if (this.submitForm.id) {
           res = await jq.post(ref.apiUrl('api/v1/admin/ajax/update_product_invoice_data'), this.submitForm);

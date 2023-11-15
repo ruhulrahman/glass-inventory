@@ -304,7 +304,7 @@ export default {
         permanent_address: "",
         designation_id: null,
         joining_date: null,
-        current_salary: null,
+        current_salary: 0,
         active: true,
         photo: null,
       },

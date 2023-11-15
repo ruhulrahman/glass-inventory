@@ -84,8 +84,13 @@
       </q-card-section>
     </q-card>
     <q-dialog v-model="showAddNewDialog" position="right">
-        <add-or-update :title="editItem.id ? $t('update') : $t('add_new_permission')" :parentList="parentList"
-        :editItem="editItem" @reloadListData="getListData" @closeModal="showAddNewDialog = false" />
+        <add-or-update
+        :title="editItem.id ? $t('update') : $t('add_new_permission')"
+        :parentList="parentList"
+        :editItem="editItem"
+        @reloadListData="getListData"
+        @closeModal="showAddNewDialog = false"
+        />
     </q-dialog>
   </q-page>
 </template>
@@ -165,7 +170,6 @@ export default {
   },
   mounted() {
     this.getListData();
-    this.getParentPermissionListData();
   },
   methods: {
     openAddNewDialog: function () {
@@ -179,7 +183,7 @@ export default {
         this.loading = true
         let res = await jq.get(ref.apiUrl('api/v1/admin/ajax/get_permission_list'), this.search);
         this.listData = res.data.data
-
+        this.getParentPermissionListData();
       } catch (err) {
         this.notify(this.err_msg(err), 'negative')
       } finally {

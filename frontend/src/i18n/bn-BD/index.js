@@ -221,4 +221,5 @@ export default {
   role_name: 'রোলের নাম',
   user_role: 'ব্যবহারকারীর রোল',
   is_employee: 'কর্মচারী',
+  vat_user_can_see: 'ভ্যাট ইউজার দেখতে পাবে',
 }

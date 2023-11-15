@@ -165,7 +165,6 @@
               color="white"
               v-model="user.password"
               :label="$t('password')"
-              :rules="[(val) => (val && val != '') || 'Please enter your password']"
             />
           </q-item-section>
         </q-item>
@@ -178,7 +177,6 @@
               color="white"
               v-model="user.confirm_password"
               :label="$t('confirm_password')"
-              :rules="[(val) => (val && val != '') || 'Please enter your confirm password']"
             />
           </q-item-section>
         </q-item>
@@ -241,6 +239,7 @@ export default {
     if (ref.editItem) {
         ref.user = ref.editItem;
         ref.user.is_employee = ref.editItem.is_employee == 1 ? true : false;
+        this.view_file = ref.editItem.avatar
     }
   },
   mounted() {},

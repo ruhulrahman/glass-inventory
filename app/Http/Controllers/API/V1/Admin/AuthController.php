@@ -119,6 +119,10 @@ class AuthController extends Controller
 
 		if(empty($auth_user)) return res_msg($err_txt, 422); //unauthorised http status code 422;
 
+        $permissionIds = model('PermissionRole')::where('role_id', $auth_user->role_id)->pluck('permission_id');
+        $auth_user->permission_codes = model('Permission')::whereIn('id', $permissionIds)->pluck('code');
+        $permission_codes = model('Permission')::whereIn('id', $permissionIds)->pluck('code');
+
 		if(Hash::check($req->password, $auth_user->password)){
 			// return $auth_user;
 
@@ -131,6 +135,7 @@ class AuthController extends Controller
 			return res_msg('User authenticated successfully!.', 200, [
 				'api_token'=>$sanctum_token->plainTextToken,
 				'auth_user'=>$auth_user,
+                'user_permissions' => $permission_codes,
 				// 'permission_disable'=>config('permission.disable_role_permission', FALSE),
 			]);
 

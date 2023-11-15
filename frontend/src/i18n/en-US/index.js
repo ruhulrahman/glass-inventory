@@ -220,4 +220,5 @@ export default {
   role_name: 'Role Name',
   user_role: 'User Role',
   is_employee: 'Ts Xmployee',
+  vat_user_can_see: 'Vat user can see',
 }
